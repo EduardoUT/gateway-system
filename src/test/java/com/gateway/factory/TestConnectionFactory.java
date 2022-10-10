@@ -4,6 +4,7 @@
  */
 package com.gateway.factory;
 
+import com.mx.grupogateway.factory.ConnectionFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 
