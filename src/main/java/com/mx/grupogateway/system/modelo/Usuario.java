@@ -80,9 +80,11 @@ public class Usuario {
 
     @Override
     public String toString() {
-        return String.format("[ID: %d | Nombre Usuario: %s | Contraseña: %s]",
+        return String.format("[ID: %d | Nombre Usuario: %s | Contraseña: %s | "
+                + "Clave Seguridad: %s]",
                 this.usuarioId,
                 this.nombreUsuario,
-                this.password);
+                this.password,
+                this.claveSeguridad);
     }
 }
