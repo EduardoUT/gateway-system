@@ -17,12 +17,39 @@ public class Empleado {
     private Integer categoriaId;
     private Integer usuarioId;
 
+    /**
+     * Constructor para crear un Empleado.
+     *
+     * @param nombre
+     * @param apellidoPaterno
+     * @param apellidoMaterno
+     */
     public Empleado(String nombre, String apellidoPaterno,
             String apellidoMaterno) {
         validarEmpleado(nombre, apellidoPaterno, apellidoMaterno);
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
+    }
+
+    /**
+     * Constructor para obtener datos Empleado de BD.
+     *
+     * @param empleadoId
+     * @param nombre
+     * @param apellidoPaterno
+     * @param apellidoMaterno
+     * @param categoriaId
+     * @param usuarioId
+     */
+    public Empleado(Integer empleadoId, String nombre, String apellidoPaterno,
+            String apellidoMaterno, Integer categoriaId, Integer usuarioId) {
+        this.empleadoId = empleadoId;
+        this.nombre = nombre;
+        this.apellidoPaterno = apellidoPaterno;
+        this.apellidoMaterno = apellidoMaterno;
+        this.categoriaId = categoriaId;
+        this.usuarioId = usuarioId;
     }
 
     /**
