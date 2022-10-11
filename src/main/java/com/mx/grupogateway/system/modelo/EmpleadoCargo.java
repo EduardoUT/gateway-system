@@ -48,9 +48,7 @@ public class EmpleadoCargo {
 
     @Override
     public String toString() {
-        return String.format("[ID: %d | Cargo: %s]",
-                this.CargoId,
-                this.nombreCargo);
+        return this.nombreCargo;
     }
 
 }

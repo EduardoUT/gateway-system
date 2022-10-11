@@ -8,8 +8,10 @@ import com.mx.grupogateway.system.controller.EmpleadoCargoController;
 import com.mx.grupogateway.system.controller.EmpleadoController;
 import com.mx.grupogateway.system.controller.UsuarioController;
 import com.mx.grupogateway.system.modelo.Empleado;
+import com.mx.grupogateway.system.modelo.EmpleadoCargo;
 import com.mx.grupogateway.system.modelo.Usuario;
 import java.util.List;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -20,9 +22,9 @@ public class Gestion extends javax.swing.JFrame {
 
     private DefaultTableModel modeloTablaEmpleado;
     private DefaultTableModel modeloTablaUsuario;
-    
+    private DefaultComboBoxModel modeloComboBoxCargoEmpleado;
     private final EmpleadoController empleadoController;
-    //private final EmpleadoCargoController empleadoCargoController;
+    private final EmpleadoCargoController empleadoCargoController;
     private final UsuarioController usuarioController;
 
     /**
@@ -31,9 +33,32 @@ public class Gestion extends javax.swing.JFrame {
     public Gestion() {
         initComponents();
         this.empleadoController = new EmpleadoController();
+        this.empleadoCargoController = new EmpleadoCargoController();
         this.usuarioController = new UsuarioController();
+        configurarComboBoxEmpleado();
         cargarTablaEmpleado();
         cargarTablaUsuario();
+    }
+
+    /**
+     * Configura las opciones que se obtendrán de la List de tipo EmpleadoCargo
+     * del empleadoCargoController.
+     *
+     * La primer opción es la selección por default con valor "Seleccione un
+     * Cargo"
+     */
+    private void configurarComboBoxEmpleado() {
+        modeloComboBoxCargoEmpleado = (DefaultComboBoxModel) empleadoCargos.getModel();
+        modeloComboBoxCargoEmpleado.addElement(
+                new EmpleadoCargo(0, "Seleccione un Cargo")
+        );
+
+        List<EmpleadoCargo> listaCargos = this.empleadoCargoController
+                .listar();
+
+        listaCargos.forEach((empleadoCargo) -> {
+            modeloComboBoxCargoEmpleado.addElement(empleadoCargo);
+        });
     }
 
     /**
@@ -101,7 +126,7 @@ public class Gestion extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        empleadoCargos = new javax.swing.JComboBox<>();
         jButton4 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
@@ -158,8 +183,6 @@ public class Gestion extends javax.swing.JFrame {
 
         jLabel5.setText("Cargo:");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
         jButton4.setText("Crear Usuario");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -182,7 +205,7 @@ public class Gestion extends javax.swing.JFrame {
                                 .addComponent(jTextField2)))
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                             .addContainerGap()
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(empleadoCargos, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -222,7 +245,7 @@ public class Gestion extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(empleadoCargos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -424,13 +447,13 @@ public class Gestion extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> empleadoCargos;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
