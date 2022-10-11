@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +49,32 @@ public class EmpleadoDAO {
                     resultado.add(fila);
                 }
                 return resultado;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void guardar(Empleado empleado) {
+        String sql = "INSERT INTO EMPLEADO "
+                + "(NOMBRE, APELLIDO_P, APELLIDO_M, ID_CATEGORIA, ID_USUARIO)"
+                + "VALUES (?, ?, ?, ?, ?)";
+
+        try ( PreparedStatement preparedStatement = con.prepareStatement(sql,
+                Statement.RETURN_GENERATED_KEYS);) {
+            preparedStatement.setString(1, empleado.getNombre());
+            preparedStatement.setString(2, empleado.getApellidoPaterno());
+            preparedStatement.setString(3, empleado.getApellidoMaterno());
+            preparedStatement.setInt(4, empleado.getCategoriaId());
+            preparedStatement.setInt(5, empleado.getUsuarioId());
+            preparedStatement.execute();
+
+            try ( ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
+                while (resultSet.next()) {
+                    System.out.println(
+                            String.format("Fue guardado el empleado %s",
+                                    empleado));
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

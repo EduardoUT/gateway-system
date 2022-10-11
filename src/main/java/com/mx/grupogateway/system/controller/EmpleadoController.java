@@ -25,10 +25,23 @@ public class EmpleadoController {
     }
 
     /**
+     * Listando una lista de empleados.
      *
      * @return Lista de tipo Empleado.
      */
     public List<Empleado> listar() {
         return this.empleadoDAO.listar();
+    }
+
+    /**
+     * Pasando por parámetros el objeto empleado a ser guardado y asignando el
+     * id de la categoría a la que pertenece.
+     *
+     * @param empleado Objeto de tipo Empleado.
+     * @param categoriaId El id de la categoría correspondiente.
+     */
+    public void guardar(Empleado empleado, Integer categoriaId) {
+        empleado.setCategoriaId(categoriaId);
+        empleadoDAO.guardar(empleado);
     }
 }
