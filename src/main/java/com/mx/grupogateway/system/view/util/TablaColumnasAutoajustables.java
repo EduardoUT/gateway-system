@@ -11,7 +11,8 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 /**
- *
+ * Realiza el ajuste interno de las columnas de un JTable acorde al contenido de
+ * las celdas.
  *
  * @author Eduardo Reyes Hernández
  */
