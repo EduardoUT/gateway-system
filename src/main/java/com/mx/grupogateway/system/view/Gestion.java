@@ -94,6 +94,9 @@ public class Gestion extends javax.swing.JFrame {
         });
     }
 
+    /**
+     * Pasa los registros de la tablaEmpleado al formulario para ser editados.
+     */
     private void llenarCamposFormularioFromTablaEmpleado() {
         int fila = TableCommonMethods.indiceFilaSeleccionada(tablaEmpleado);
         if (TableCommonMethods.filaEstaSeleccionada(tablaEmpleado)) {
@@ -113,6 +116,13 @@ public class Gestion extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Evalúa si los campos del formulario son llenados correctamente.
+     *
+     * Si no lo estan devuelve un mensaje.
+     *
+     * @return boolean
+     */
     private boolean sonCamposValidosEmpleado() {
         if (!campoNombre.getText().isEmpty()) {
             return true;
