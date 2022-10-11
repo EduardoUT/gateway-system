@@ -20,7 +20,7 @@ public class TableCommonMethods {
      * @param tabla JTable a evaluar.
      * @return Número de fila seleccionada.
      */
-    public static int numeroFilaSeleccionada(JTable tabla) {
+    public static int indiceFilaSeleccionada(JTable tabla) {
         return tabla.getSelectedRow();
     }
 
@@ -30,7 +30,7 @@ public class TableCommonMethods {
      * @param tabla JTable a ser evaluada.
      * @return Boleano y mensaje de aviso en caso de no estar seleccionada.
      */
-    public static boolean indiceFilaSeleccionada(JTable tabla) {
+    public static boolean filaEstaSeleccionada(JTable tabla) {
         int filaSeleccionada = tabla.getSelectedRow();
         if (filaSeleccionada < 0) {
             JOptionPane.showMessageDialog(

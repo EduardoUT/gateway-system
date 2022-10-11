@@ -14,8 +14,10 @@ public class Empleado {
     private final String nombre;
     private final String apellidoPaterno;
     private final String apellidoMaterno;
-    private Integer categoriaId;
-    private Integer usuarioId;
+    private Integer cargoId;
+    private final Integer usuarioId;
+    
+    private static final Integer DEFAULT_USUARIO_ID = 0;
 
     /**
      * Constructor para crear un Empleado.
@@ -23,6 +25,7 @@ public class Empleado {
      * @param nombre
      * @param apellidoPaterno
      * @param apellidoMaterno
+     * @param categoriaId
      */
     public Empleado(String nombre, String apellidoPaterno,
             String apellidoMaterno) {
@@ -30,6 +33,7 @@ public class Empleado {
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
+        this.usuarioId = DEFAULT_USUARIO_ID;
     }
 
     /**
@@ -48,7 +52,7 @@ public class Empleado {
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
-        this.categoriaId = categoriaId;
+        this.cargoId = categoriaId;
         this.usuarioId = usuarioId;
     }
 
@@ -81,17 +85,17 @@ public class Empleado {
     }
 
     /**
-     * @return the categoriaId
+     * @return the cargoId
      */
-    public int getCategoriaId() {
-        return categoriaId;
+    public int getCargoId() {
+        return cargoId;
     }
 
     /**
-     * @param categoriaId the categoriaId to set
+     * @param cargoId the cargoId to set
      */
-    public void setCategoriaId(Integer categoriaId) {
-        this.categoriaId = categoriaId;
+    public void setCargoId(Integer cargoId) {
+        this.cargoId = cargoId;
     }
 
     /**
@@ -127,7 +131,7 @@ public class Empleado {
                 this.nombre,
                 this.apellidoPaterno,
                 this.apellidoMaterno,
-                this.categoriaId,
+                this.cargoId,
                 this.usuarioId);
     }
 

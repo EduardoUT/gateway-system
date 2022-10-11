@@ -65,7 +65,7 @@ public class EmpleadoDAO {
             preparedStatement.setString(1, empleado.getNombre());
             preparedStatement.setString(2, empleado.getApellidoPaterno());
             preparedStatement.setString(3, empleado.getApellidoMaterno());
-            preparedStatement.setInt(4, empleado.getCategoriaId());
+            preparedStatement.setInt(4, empleado.getCargoId());
             preparedStatement.setInt(5, empleado.getUsuarioId());
             preparedStatement.execute();
 

@@ -10,20 +10,20 @@ package com.mx.grupogateway.system.modelo;
  */
 public class EmpleadoCargo {
 
-    private final Integer CargoId;
+    private final Integer cargoId;
     private final String nombreCargo;
 
-    public EmpleadoCargo(Integer idCargo, String nombreCargo) {
-        validarCategoriaEmpleado(idCargo, nombreCargo);
-        this.CargoId = idCargo;
+    public EmpleadoCargo(Integer cargoId, String nombreCargo) {
+        validarCategoriaEmpleado(cargoId, nombreCargo);
+        this.cargoId = cargoId;
         this.nombreCargo = nombreCargo;
     }
 
     /**
      * @return the categoriaId
      */
-    public int getCategoriaId() {
-        return CargoId;
+    public int getCargoId() {
+        return cargoId;
     }
 
     /**

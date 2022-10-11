@@ -87,7 +87,7 @@ public class Gestion extends javax.swing.JFrame {
                         empleado.getNombre(),
                         empleado.getApellidoPaterno(),
                         empleado.getApellidoMaterno(),
-                        empleado.getCategoriaId(),
+                        empleado.getCargoId(),
                         empleado.getUsuarioId()
                     }
             );
@@ -95,8 +95,8 @@ public class Gestion extends javax.swing.JFrame {
     }
 
     private void llenarCamposFormularioFromTablaEmpleado() {
-        int fila = TableCommonMethods.numeroFilaSeleccionada(tablaEmpleado);
-        if (TableCommonMethods.indiceFilaSeleccionada(tablaEmpleado)) {
+        int fila = TableCommonMethods.indiceFilaSeleccionada(tablaEmpleado);
+        if (TableCommonMethods.filaEstaSeleccionada(tablaEmpleado)) {
             campoNombre.setText(
                     String.valueOf(tablaEmpleado.getValueAt(fila, 1))
             );
@@ -110,6 +110,36 @@ public class Gestion extends javax.swing.JFrame {
                     Integer.valueOf(tablaEmpleado.getValueAt(fila, 4)
                             .toString())
             );
+        }
+    }
+
+    private boolean sonCamposValidosEmpleado() {
+        if (!campoNombre.getText().isEmpty()) {
+            return true;
+        } else if (!campoApellidoP.getText().isEmpty()) {
+            return true;
+        } else if (!campoApellidoM.getText().isEmpty()) {
+            return true;
+        } else if (empleadoCargos.getSelectedIndex() != 0) {
+            return true;
+        } else {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Campos obligatorios, por favor, complete el formulario.",
+                    "Formulario incompleto", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }
+    }
+
+    private void guardarEmpleado() {
+        if (sonCamposValidosEmpleado()) {
+            Empleado empleado = new Empleado(
+                    campoNombre.getText(),
+                    campoApellidoP.getText(),
+                    campoApellidoM.getText()
+            );
+            EmpleadoCargo empleadoCargo = (EmpleadoCargo) empleadoCargos.getSelectedItem();
+            this.empleadoController.guardar(empleado, empleadoCargo.getCargoId());
         }
     }
 
@@ -198,6 +228,11 @@ public class Gestion extends javax.swing.JFrame {
         jScrollPane1.setViewportView(tablaEmpleado);
 
         botonGuardar.setText("Guardar");
+        botonGuardar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                botonGuardarMouseClicked(evt);
+            }
+        });
 
         botonActualizar.setText("Actualizar");
 
@@ -362,6 +397,13 @@ public class Gestion extends javax.swing.JFrame {
         evt.consume();
         llenarCamposFormularioFromTablaEmpleado();
     }//GEN-LAST:event_tablaEmpleadoMouseClicked
+
+    private void botonGuardarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonGuardarMouseClicked
+        evt.consume();
+        if (TableCommonMethods.filaEstaSeleccionada(tablaEmpleado)) {
+            guardarEmpleado();
+        }
+    }//GEN-LAST:event_botonGuardarMouseClicked
 
     /**
      * @param args the command line arguments
