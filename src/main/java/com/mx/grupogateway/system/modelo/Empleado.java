@@ -25,7 +25,6 @@ public class Empleado {
      * @param nombre
      * @param apellidoPaterno
      * @param apellidoMaterno
-     * @param categoriaId
      */
     public Empleado(String nombre, String apellidoPaterno,
             String apellidoMaterno) {

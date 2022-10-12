@@ -38,10 +38,10 @@ public class EmpleadoController {
      * id de la categoría a la que pertenece.
      *
      * @param empleado Objeto de tipo Empleado.
-     * @param categoriaId El id de la categoría correspondiente.
+     * @param cargoId El id de la categoría correspondiente.
      */
-    public void guardar(Empleado empleado, Integer categoriaId) {
-        empleado.setCargoId(categoriaId);
+    public void guardar(Empleado empleado, Integer cargoId) {
+        empleado.setCargoId(cargoId);
         empleadoDAO.guardar(empleado);
     }
 }

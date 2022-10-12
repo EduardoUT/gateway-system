@@ -23,7 +23,7 @@ import javax.swing.table.DefaultTableModel;
  * @author Eduardo Reyes Hernández
  */
 public class Gestion extends javax.swing.JFrame {
-
+    
     private DefaultTableModel modeloTablaEmpleado;
     private DefaultTableModel modeloTablaUsuario;
     private DefaultComboBoxModel modeloComboBoxCargoEmpleado;
@@ -43,12 +43,14 @@ public class Gestion extends javax.swing.JFrame {
         this.tablaColumnasAutoajustables = new TablaColumnasAutoajustables();
         configurarFormularioEmpleado();
     }
-
+    
     private void configurarFormularioEmpleado() {
         cargarTablaEmpleado();
         cargarTablaUsuario();
         tablaColumnasAutoajustables.autoajustarColumnas(tablaUsuario);
         tablaColumnasAutoajustables.autoajustarColumnas(tablaEmpleado);
+        botonGuardar.setVisible(false);
+        botonCancelarNuevoRegistro.setVisible(false);
         configurarComboBoxEmpleado();
     }
 
@@ -64,10 +66,10 @@ public class Gestion extends javax.swing.JFrame {
         modeloComboBoxCargoEmpleado.addElement(
                 new EmpleadoCargo(0, "Seleccione un Cargo")
         );
-
+        
         List<EmpleadoCargo> listaCargos = this.empleadoCargoController
                 .listar();
-
+        
         listaCargos.forEach((empleadoCargo) -> {
             modeloComboBoxCargoEmpleado.addElement(empleadoCargo);
         });
@@ -140,7 +142,18 @@ public class Gestion extends javax.swing.JFrame {
             return false;
         }
     }
+    
+    private void limpiarCamposFormularioEmpleado() {
+        campoNombre.setText("");
+        campoApellidoP.setText("");
+        campoApellidoM.setText("");
+        empleadoCargos.setSelectedIndex(0);
+    }
 
+    /**
+     * Construyendo objeto de tipo Empleado y pasandolo por parámetro en el
+     * Controller.
+     */
     private void guardarEmpleado() {
         if (sonCamposValidosEmpleado()) {
             Empleado empleado = new Empleado(
@@ -149,7 +162,13 @@ public class Gestion extends javax.swing.JFrame {
                     campoApellidoM.getText()
             );
             EmpleadoCargo empleadoCargo = (EmpleadoCargo) empleadoCargos.getSelectedItem();
+            System.out.println("->> " + empleadoCargo.getCargoId());
+            System.out.println("----> " + empleado.getUsuarioId());
             this.empleadoController.guardar(empleado, empleadoCargo.getCargoId());
+            JOptionPane.showMessageDialog(null, "Empleado guardado éxitosamente.");
+            tablaEmpleado.setVisible(true);
+            botonGuardar.setVisible(false);
+            botonCancelarNuevoRegistro.setVisible(false);
         }
     }
 
@@ -197,6 +216,8 @@ public class Gestion extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         empleadoCargos = new javax.swing.JComboBox<>();
         botonCrearUsuario = new javax.swing.JButton();
+        botonNuevoRegistro = new javax.swing.JButton();
+        botonCancelarNuevoRegistro = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tablaUsuario = new javax.swing.JTable();
@@ -254,42 +275,63 @@ public class Gestion extends javax.swing.JFrame {
 
         botonCrearUsuario.setText("Crear Usuario");
 
+        botonNuevoRegistro.setText("Nuevo Registro");
+        botonNuevoRegistro.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                botonNuevoRegistroMouseClicked(evt);
+            }
+        });
+
+        botonCancelarNuevoRegistro.setText("Cancelar Registro");
+        botonCancelarNuevoRegistro.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                botonCancelarNuevoRegistroMouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addGap(1, 1, 1)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jLabel2)
-                                .addComponent(jLabel3)
-                                .addComponent(jLabel4)
-                                .addComponent(campoNombre)
-                                .addComponent(campoApellidoP)
-                                .addComponent(campoApellidoM, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addComponent(empleadoCargos, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel5)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(botonEliminar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(botonGuardar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(botonActualizar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGap(12, 12, 12)
+                    .addComponent(empleadoCargos, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(botonNuevoRegistro, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(botonGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(1, 1, 1)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel4)
+                                    .addComponent(campoNombre)
+                                    .addComponent(campoApellidoP)
+                                    .addComponent(campoApellidoM, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jLabel5)
+                            .addComponent(botonCancelarNuevoRegistro)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(botonActualizar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(botonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 4, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(botonCrearUsuario)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 462, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(8, 8, 8)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel2)
@@ -308,14 +350,18 @@ public class Gestion extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(empleadoCargos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(botonGuardar)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(botonNuevoRegistro)
+                            .addComponent(botonGuardar))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(botonActualizar)
+                        .addComponent(botonCancelarNuevoRegistro)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(botonEliminar)))
-                .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(botonActualizar)
+                            .addComponent(botonEliminar))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(botonCrearUsuario)
-                .addContainerGap(38, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Gestión de Empleados", jPanel1);
@@ -379,7 +425,7 @@ public class Gestion extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(botonEliminarUsuario)
                 .addGap(54, 54, 54)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -410,10 +456,23 @@ public class Gestion extends javax.swing.JFrame {
 
     private void botonGuardarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonGuardarMouseClicked
         evt.consume();
-        if (TableCommonMethods.filaEstaSeleccionada(tablaEmpleado)) {
-            guardarEmpleado();
-        }
+        guardarEmpleado();
     }//GEN-LAST:event_botonGuardarMouseClicked
+
+    private void botonNuevoRegistroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonNuevoRegistroMouseClicked
+        evt.consume();
+        limpiarCamposFormularioEmpleado();
+        botonGuardar.setVisible(true);
+        botonCancelarNuevoRegistro.setVisible(true);
+        tablaEmpleado.setVisible(false);
+    }//GEN-LAST:event_botonNuevoRegistroMouseClicked
+
+    private void botonCancelarNuevoRegistroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonCancelarNuevoRegistroMouseClicked
+       limpiarCamposFormularioEmpleado();
+       botonGuardar.setVisible(false);
+       botonCancelarNuevoRegistro.setVisible(false);
+       tablaEmpleado.setVisible(true);
+    }//GEN-LAST:event_botonCancelarNuevoRegistroMouseClicked
 
     /**
      * @param args the command line arguments
@@ -452,10 +511,12 @@ public class Gestion extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonActualizar;
+    private javax.swing.JButton botonCancelarNuevoRegistro;
     private javax.swing.JButton botonCrearUsuario;
     private javax.swing.JButton botonEliminar;
     private javax.swing.JButton botonEliminarUsuario;
     private javax.swing.JButton botonGuardar;
+    private javax.swing.JButton botonNuevoRegistro;
     private javax.swing.JTextField campoApellidoM;
     private javax.swing.JTextField campoApellidoP;
     private javax.swing.JTextField campoClaveSeguridad;
