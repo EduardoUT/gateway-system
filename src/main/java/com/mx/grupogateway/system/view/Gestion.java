@@ -23,7 +23,7 @@ import javax.swing.table.DefaultTableModel;
  * @author Eduardo Reyes Hernández
  */
 public class Gestion extends javax.swing.JFrame {
-    
+
     private DefaultTableModel modeloTablaEmpleado;
     private DefaultTableModel modeloTablaUsuario;
     private DefaultComboBoxModel modeloComboBoxCargoEmpleado;
@@ -43,7 +43,7 @@ public class Gestion extends javax.swing.JFrame {
         this.tablaColumnasAutoajustables = new TablaColumnasAutoajustables();
         configurarFormularioEmpleado();
     }
-    
+
     private void configurarFormularioEmpleado() {
         cargarTablaEmpleado();
         cargarTablaUsuario();
@@ -66,10 +66,10 @@ public class Gestion extends javax.swing.JFrame {
         modeloComboBoxCargoEmpleado.addElement(
                 new EmpleadoCargo(0, "Seleccione un Cargo")
         );
-        
+
         List<EmpleadoCargo> listaCargos = this.empleadoCargoController
                 .listar();
-        
+
         listaCargos.forEach((empleadoCargo) -> {
             modeloComboBoxCargoEmpleado.addElement(empleadoCargo);
         });
@@ -126,23 +126,12 @@ public class Gestion extends javax.swing.JFrame {
      * @return boolean
      */
     private boolean sonCamposValidosEmpleado() {
-        if (!campoNombre.getText().isEmpty()) {
-            return true;
-        } else if (!campoApellidoP.getText().isEmpty()) {
-            return true;
-        } else if (!campoApellidoM.getText().isEmpty()) {
-            return true;
-        } else if (empleadoCargos.getSelectedIndex() != 0) {
-            return true;
-        } else {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Campos obligatorios, por favor, complete el formulario.",
-                    "Formulario incompleto", JOptionPane.INFORMATION_MESSAGE);
-            return false;
-        }
+        return !campoNombre.getText().isEmpty()
+                && !campoApellidoP.getText().isEmpty()
+                && !campoApellidoM.getText().isEmpty()
+                && empleadoCargos.getSelectedIndex() != 0;
     }
-    
+
     private void limpiarCamposFormularioEmpleado() {
         campoNombre.setText("");
         campoApellidoP.setText("");
@@ -155,20 +144,37 @@ public class Gestion extends javax.swing.JFrame {
      * Controller.
      */
     private void guardarEmpleado() {
+        System.out.println(sonCamposValidosEmpleado());
         if (sonCamposValidosEmpleado()) {
             Empleado empleado = new Empleado(
                     campoNombre.getText(),
                     campoApellidoP.getText(),
                     campoApellidoM.getText()
             );
-            EmpleadoCargo empleadoCargo = (EmpleadoCargo) empleadoCargos.getSelectedItem();
+            EmpleadoCargo empleadoCargo
+                    = (EmpleadoCargo) empleadoCargos.getSelectedItem();
             System.out.println("->> " + empleadoCargo.getCargoId());
             System.out.println("----> " + empleado.getUsuarioId());
-            this.empleadoController.guardar(empleado, empleadoCargo.getCargoId());
-            JOptionPane.showMessageDialog(null, "Empleado guardado éxitosamente.");
+            this.empleadoController.guardar(
+                    empleado,
+                    empleadoCargo.getCargoId()
+            );
+            JOptionPane.showMessageDialog(null, "Empleado guardado "
+                    + "éxitosamente.");
             tablaEmpleado.setVisible(true);
             botonGuardar.setVisible(false);
             botonCancelarNuevoRegistro.setVisible(false);
+            limpiarCamposFormularioEmpleado();
+            TableCommonMethods.limpiarSeleccionTabla(
+                    modeloTablaEmpleado,
+                    tablaEmpleado
+            );
+            cargarTablaEmpleado();
+        } else {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Campos obligatorios, por favor, complete el formulario.",
+                    "Formulario incompleto", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -468,10 +474,10 @@ public class Gestion extends javax.swing.JFrame {
     }//GEN-LAST:event_botonNuevoRegistroMouseClicked
 
     private void botonCancelarNuevoRegistroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonCancelarNuevoRegistroMouseClicked
-       limpiarCamposFormularioEmpleado();
-       botonGuardar.setVisible(false);
-       botonCancelarNuevoRegistro.setVisible(false);
-       tablaEmpleado.setVisible(true);
+        limpiarCamposFormularioEmpleado();
+        botonGuardar.setVisible(false);
+        botonCancelarNuevoRegistro.setVisible(false);
+        tablaEmpleado.setVisible(true);
     }//GEN-LAST:event_botonCancelarNuevoRegistroMouseClicked
 
     /**

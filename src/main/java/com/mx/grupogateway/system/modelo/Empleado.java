@@ -107,18 +107,18 @@ public class Empleado {
     private void validarEmpleado(String nombre, String apellidoPaterno,
             String apellidoMaterno) {
         if (nombre == null || nombre.isEmpty()) {
-            throw new IllegalArgumentException("El campo" + nombre
-                    + "está vacío.");
+            throw new IllegalArgumentException("El campo nombre"
+                    + " está vacío.");
         }
 
         if (apellidoPaterno == null || apellidoPaterno.isEmpty()) {
-            throw new IllegalArgumentException("El campo" + apellidoPaterno
-                    + "está vacío.");
+            throw new IllegalArgumentException("El campo apellidoPaterno"
+                    + " está vacío.");
         }
 
         if (apellidoMaterno == null || apellidoMaterno.isEmpty()) {
-            throw new IllegalArgumentException("El campo" + apellidoMaterno
-                    + "está vacío.");
+            throw new IllegalArgumentException("El campo apellidoMaterno"
+                    + " está vacío.");
         }
     }
 

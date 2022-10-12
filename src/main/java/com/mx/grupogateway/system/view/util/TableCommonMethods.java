@@ -52,8 +52,8 @@ public class TableCommonMethods {
      * @param modeloTabla DafaultTableModel específicado por el usuario.
      * @param tabla JTable al que se limpiará la selección.
      */
-    private static void limpiarSeleccionTabla(DefaultTableModel modeloTabla, JTable tabla) {
-        //modeloTabla.getDataVector().clear(); <-- Limpia todo el contenido en la tabla.
+    public static void limpiarSeleccionTabla(DefaultTableModel modeloTabla, JTable tabla) {
+        modeloTabla.getDataVector().clear();
         tabla.clearSelection();
     }
 
