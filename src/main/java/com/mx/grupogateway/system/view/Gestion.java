@@ -121,8 +121,6 @@ public class Gestion extends javax.swing.JFrame {
     /**
      * Evalúa si los campos del formulario son llenados correctamente.
      *
-     * Si no lo estan devuelve un mensaje.
-     *
      * @return boolean
      */
     private boolean sonCamposValidosEmpleado() {
@@ -144,21 +142,20 @@ public class Gestion extends javax.swing.JFrame {
      * Controller.
      */
     private void guardarEmpleado() {
-        System.out.println(sonCamposValidosEmpleado());
         if (sonCamposValidosEmpleado()) {
             Empleado empleado = new Empleado(
                     campoNombre.getText(),
                     campoApellidoP.getText(),
                     campoApellidoM.getText()
             );
+            
             EmpleadoCargo empleadoCargo
                     = (EmpleadoCargo) empleadoCargos.getSelectedItem();
-            System.out.println("->> " + empleadoCargo.getCargoId());
-            System.out.println("----> " + empleado.getUsuarioId());
             this.empleadoController.guardar(
                     empleado,
                     empleadoCargo.getCargoId()
             );
+            
             JOptionPane.showMessageDialog(null, "Empleado guardado "
                     + "éxitosamente.");
             tablaEmpleado.setVisible(true);
@@ -474,6 +471,7 @@ public class Gestion extends javax.swing.JFrame {
     }//GEN-LAST:event_botonNuevoRegistroMouseClicked
 
     private void botonCancelarNuevoRegistroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonCancelarNuevoRegistroMouseClicked
+        evt.consume();
         limpiarCamposFormularioEmpleado();
         botonGuardar.setVisible(false);
         botonCancelarNuevoRegistro.setVisible(false);

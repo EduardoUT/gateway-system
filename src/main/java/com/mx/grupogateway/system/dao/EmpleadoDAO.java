@@ -80,4 +80,23 @@ public class EmpleadoDAO {
             throw new RuntimeException(e);
         }
     }
+
+    public int modificar(Integer empleadoId, String nombre, String apellidoP, String apellidoM, Integer cargoId) {
+        String sql = "UPDATE EMPLEADO "
+                + "SET NOMBRE = ?, APELLIDO_P = ?, APELLIDO_M = ?, "
+                + "ID_CATEGORIA = ? "
+                + "WHERE ID = ?";
+        try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+            preparedStatement.setString(1, nombre);
+            preparedStatement.setString(2, apellidoP);
+            preparedStatement.setString(3, apellidoM);
+            preparedStatement.setInt(4, cargoId);
+            preparedStatement.setInt(5, empleadoId);
+            preparedStatement.execute();
+            int updateCount = preparedStatement.getUpdateCount();
+            return updateCount;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -25,6 +25,23 @@ public class EmpleadoController {
     }
 
     /**
+     * Recibe los valores registrados en la tablaEmpleado a ser modificados.
+     *
+     * @param empleadoId
+     * @param nombre
+     * @param apellidoP
+     * @param apellidoM
+     * @param cargoId
+     * @return 
+     */
+    public int modificar(Integer empleadoId, String nombre,
+            String apellidoP, String apellidoM, Integer cargoId) {
+        return this.empleadoDAO.modificar(empleadoId, nombre,
+                apellidoP, apellidoM, cargoId);
+
+    }
+
+    /**
      * Listando una lista de empleados.
      *
      * @return Lista de tipo Empleado.
