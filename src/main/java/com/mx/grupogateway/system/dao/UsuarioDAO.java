@@ -52,11 +52,10 @@ public class UsuarioDAO {
     }
 
     /**
-     * Consulta en la BD si el empleado está o no registrado.
+     * Consulta en la BD si el empleado está o no registrado.El usuario no existe si el id_usuario obtenido es igual a cero.
      *
-     * El usuario no existe si el id_usuario obtenido es igual a cero.
      *
-     * @param empleadoId
+     * @param empleado
      * @return
      */
     public boolean estaRegistrado(Empleado empleado) {
@@ -70,7 +69,7 @@ public class UsuarioDAO {
                     empleado.setUsuarioId(resultSet.getInt("ID_USUARIO"));
                     System.out.println("ResultSet: " + resultSet.getInt("ID_USUARIO"));
                 }
-                return empleado.getUsuarioId() != 0;
+                return empleado.getUsuarioId() == 0;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

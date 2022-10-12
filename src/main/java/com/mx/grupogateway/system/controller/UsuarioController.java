@@ -36,7 +36,7 @@ public class UsuarioController {
      * Permite comprobar y validar que un empleado tenga una cuenta de usuario
      * existente.
      *
-     * @param empleadoId
+     * @param empleado
      * @return
      */
     public boolean estaRegistrado(Empleado empleado) {
