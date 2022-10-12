@@ -26,6 +26,39 @@ public class EmpleadoDAO {
     }
 
     /**
+     * Realiza el guardado en la BD del empleado.
+     *
+     * @param empleado
+     */
+    public void guardar(Empleado empleado) {
+        String sql = "INSERT INTO EMPLEADO "
+                + "(NOMBRE, APELLIDO_P, APELLIDO_M, ID_CATEGORIA, ID_USUARIO)"
+                + "VALUES (?, ?, ?, ?, ?)";
+
+        try ( PreparedStatement preparedStatement = con.prepareStatement(sql,
+                Statement.RETURN_GENERATED_KEYS);) {
+            preparedStatement.setString(1, empleado.getNombre());
+            preparedStatement.setString(2, empleado.getApellidoPaterno());
+            preparedStatement.setString(3, empleado.getApellidoMaterno());
+            preparedStatement.setInt(4, empleado.getCargoId());
+            preparedStatement.setNull(5, empleado.getUsuarioId());
+            preparedStatement.execute();
+
+            try ( ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
+                while (resultSet.next()) {
+                    System.out.println(
+                            String.format("Fue guardado el empleado %s",
+                                    empleado));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Devuelve un listado con todos los valores de la BD correspondientes a los
+     * atributos del objeto de tipo Empleado.
      *
      * @return Lista de tipo Empleado de la BD.
      */
@@ -55,32 +88,6 @@ public class EmpleadoDAO {
         }
     }
 
-    public void guardar(Empleado empleado) {
-        String sql = "INSERT INTO EMPLEADO "
-                + "(NOMBRE, APELLIDO_P, APELLIDO_M, ID_CATEGORIA, ID_USUARIO)"
-                + "VALUES (?, ?, ?, ?, ?)";
-
-        try ( PreparedStatement preparedStatement = con.prepareStatement(sql,
-                Statement.RETURN_GENERATED_KEYS);) {
-            preparedStatement.setString(1, empleado.getNombre());
-            preparedStatement.setString(2, empleado.getApellidoPaterno());
-            preparedStatement.setString(3, empleado.getApellidoMaterno());
-            preparedStatement.setInt(4, empleado.getCargoId());
-            preparedStatement.setNull(5, empleado.getUsuarioId());
-            preparedStatement.execute();
-
-            try ( ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
-                while (resultSet.next()) {
-                    System.out.println(
-                            String.format("Fue guardado el empleado %s",
-                                    empleado));
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     /**
      * Realiza la actualización de los registros del empleado acorde a su
      * empleadoId.
@@ -103,6 +110,24 @@ public class EmpleadoDAO {
             preparedStatement.setString(3, apellidoM);
             preparedStatement.setInt(4, cargoId);
             preparedStatement.setInt(5, empleadoId);
+            preparedStatement.execute();
+            int updateCount = preparedStatement.getUpdateCount();
+            return updateCount;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Realiza la eliminación del registro en la BD, acorde al empleadoId.
+     *
+     * @param empleadoId
+     * @return
+     */
+    public int eliminar(Integer empleadoId) {
+        String sql = "DELETE FROM EMPLEADO WHERE ID_EMPLEADO = ?";
+        try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+            preparedStatement.setInt(1, empleadoId);
             preparedStatement.execute();
             int updateCount = preparedStatement.getUpdateCount();
             return updateCount;

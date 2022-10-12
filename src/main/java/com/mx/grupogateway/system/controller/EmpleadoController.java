@@ -25,20 +25,15 @@ public class EmpleadoController {
     }
 
     /**
-     * Recibe los valores registrados en la tablaEmpleado a ser modificados.
+     * Pasando por parámetros el objeto empleado a ser guardado y asignando el
+     * id de la categoría a la que pertenece.
      *
-     * @param empleadoId
-     * @param nombre
-     * @param apellidoP
-     * @param apellidoM
-     * @param cargoId
-     * @return 
+     * @param empleado Objeto de tipo Empleado.
+     * @param cargoId El id de la categoría correspondiente.
      */
-    public int modificar(Integer empleadoId, String nombre,
-            String apellidoP, String apellidoM, Integer cargoId) {
-        return this.empleadoDAO.modificar(empleadoId, nombre,
-                apellidoP, apellidoM, cargoId);
-
+    public void guardar(Empleado empleado, Integer cargoId) {
+        empleado.setCargoId(cargoId);
+        empleadoDAO.guardar(empleado);
     }
 
     /**
@@ -51,14 +46,30 @@ public class EmpleadoController {
     }
 
     /**
-     * Pasando por parámetros el objeto empleado a ser guardado y asignando el
-     * id de la categoría a la que pertenece.
+     * Recibe los valores registrados en la tablaEmpleado a ser modificados.
      *
-     * @param empleado Objeto de tipo Empleado.
-     * @param cargoId El id de la categoría correspondiente.
+     * @param empleadoId
+     * @param nombre
+     * @param apellidoP
+     * @param apellidoM
+     * @param cargoId
+     * @return Cantidad de registros actualizados.
      */
-    public void guardar(Empleado empleado, Integer cargoId) {
-        empleado.setCargoId(cargoId);
-        empleadoDAO.guardar(empleado);
+    public int modificar(Integer empleadoId, String nombre,
+            String apellidoP, String apellidoM, Integer cargoId) {
+        return this.empleadoDAO.modificar(empleadoId, nombre,
+                apellidoP, apellidoM, cargoId);
+
+    }
+
+    /**
+     * Recibe el identificador del empleado de la tabla de registros
+     * tablaEmpleado.
+     *
+     * @param empleadoId
+     * @return Cantidad de registros eliminados.
+     */
+    public int eliminar(Integer empleadoId) {
+        return this.empleadoDAO.eliminar(empleadoId);
     }
 }
