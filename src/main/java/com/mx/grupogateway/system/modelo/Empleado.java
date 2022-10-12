@@ -11,11 +11,11 @@ package com.mx.grupogateway.system.modelo;
 public class Empleado {
 
     private Integer empleadoId;
-    private final String nombre;
-    private final String apellidoPaterno;
-    private final String apellidoMaterno;
+    private String nombre;
+    private String apellidoPaterno;
+    private String apellidoMaterno;
     private Integer cargoId;
-    private final Integer usuarioId;
+    private Integer usuarioId;
     
     private static final Integer DEFAULT_USUARIO_ID = 0;
 
@@ -53,6 +53,15 @@ public class Empleado {
         this.apellidoMaterno = apellidoMaterno;
         this.cargoId = categoriaId;
         this.usuarioId = usuarioId;
+    }
+
+    /**
+     * Constructor para asignar el empleadoId.
+     * 
+     * @param empleadoId 
+     */
+    public Empleado(Integer empleadoId) {
+        this.empleadoId = empleadoId;
     }
 
     /**
@@ -132,6 +141,13 @@ public class Empleado {
                 this.apellidoMaterno,
                 this.cargoId,
                 this.usuarioId);
+    }
+
+    /**
+     * @param usuarioId the usuarioId to set
+     */
+    public void setUsuarioId(Integer usuarioId) {
+        this.usuarioId = usuarioId;
     }
 
 }

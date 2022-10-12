@@ -281,6 +281,8 @@ public class Gestion extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         tablaUsuario = new javax.swing.JTable();
         botonEliminarUsuario = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -421,7 +423,7 @@ public class Gestion extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab("Gestión de Empleados", jPanel1);
+        jTabbedPane1.addTab("Registro Empleado", jPanel1);
 
         tablaUsuario.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -448,12 +450,13 @@ public class Gestion extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 699, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 699, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(281, 281, 281)
+                        .addComponent(botonEliminarUsuario)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(287, 287, 287)
-                .addComponent(botonEliminarUsuario)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -467,31 +470,52 @@ public class Gestion extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Gestión de Usuarios", jPanel2);
 
+        jButton1.setText("Perfil");
+
+        jButton2.setText("Cerrar Sesión");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 711, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton2)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 370, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(12, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 370, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(25, 25, 25))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void tablaEmpleadoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaEmpleadoMouseClicked
-        evt.consume();
-        llenarCamposFormularioFromTablaEmpleado();
-    }//GEN-LAST:event_tablaEmpleadoMouseClicked
+    private void botonEliminarUsuarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonEliminarUsuarioMouseClicked
+        if (TableCommonMethods.filaEstaSeleccionada(tablaUsuario)) {
+            eliminarUsuario();
+        }
+    }//GEN-LAST:event_botonEliminarUsuarioMouseClicked
 
-    private void botonGuardarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonGuardarMouseClicked
+    private void botonCancelarNuevoRegistroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonCancelarNuevoRegistroMouseClicked
         evt.consume();
-        guardarEmpleado();
-    }//GEN-LAST:event_botonGuardarMouseClicked
+        limpiarCamposFormularioEmpleado();
+        botonGuardar.setVisible(false);
+        botonCancelarNuevoRegistro.setVisible(false);
+        tablaEmpleado.setVisible(true);
+    }//GEN-LAST:event_botonCancelarNuevoRegistroMouseClicked
 
     private void botonNuevoRegistroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonNuevoRegistroMouseClicked
         evt.consume();
@@ -502,13 +526,12 @@ public class Gestion extends javax.swing.JFrame {
         tablaEmpleado.setVisible(false);
     }//GEN-LAST:event_botonNuevoRegistroMouseClicked
 
-    private void botonCancelarNuevoRegistroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonCancelarNuevoRegistroMouseClicked
+    private void botonEliminarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonEliminarMouseClicked
         evt.consume();
-        limpiarCamposFormularioEmpleado();
-        botonGuardar.setVisible(false);
-        botonCancelarNuevoRegistro.setVisible(false);
-        tablaEmpleado.setVisible(true);
-    }//GEN-LAST:event_botonCancelarNuevoRegistroMouseClicked
+        if (TableCommonMethods.filaEstaSeleccionada(tablaEmpleado)) {
+            eliminarEmpleado();
+        }
+    }//GEN-LAST:event_botonEliminarMouseClicked
 
     private void botonActualizarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonActualizarMouseClicked
         evt.consume();
@@ -517,18 +540,15 @@ public class Gestion extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_botonActualizarMouseClicked
 
-    private void botonEliminarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonEliminarMouseClicked
+    private void botonGuardarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonGuardarMouseClicked
         evt.consume();
-        if (TableCommonMethods.filaEstaSeleccionada(tablaEmpleado)) {
-            eliminarEmpleado();
-        }
-    }//GEN-LAST:event_botonEliminarMouseClicked
+        guardarEmpleado();
+    }//GEN-LAST:event_botonGuardarMouseClicked
 
-    private void botonEliminarUsuarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonEliminarUsuarioMouseClicked
-        if (TableCommonMethods.filaEstaSeleccionada(tablaUsuario)) {
-            eliminarUsuario();
-        }
-    }//GEN-LAST:event_botonEliminarUsuarioMouseClicked
+    private void tablaEmpleadoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaEmpleadoMouseClicked
+        evt.consume();
+        llenarCamposFormularioFromTablaEmpleado();
+    }//GEN-LAST:event_tablaEmpleadoMouseClicked
 
     /**
      * @param args the command line arguments
@@ -576,6 +596,8 @@ public class Gestion extends javax.swing.JFrame {
     private javax.swing.JTextField campoApellidoP;
     private javax.swing.JTextField campoNombre;
     private javax.swing.JComboBox<String> empleadoCargos;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

@@ -6,6 +6,7 @@ package com.mx.grupogateway.system.controller;
 
 import com.mx.grupogateway.system.dao.UsuarioDAO;
 import com.mx.grupogateway.system.factory.ConnectionFactory;
+import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Usuario;
 import java.util.List;
 
@@ -29,6 +30,17 @@ public class UsuarioController {
      */
     public List<Usuario> listar() {
         return this.usuarioDAO.listar();
+    }
+
+    /**
+     * Permite comprobar y validar que un empleado tenga una cuenta de usuario
+     * existente.
+     *
+     * @param empleadoId
+     * @return
+     */
+    public boolean estaRegistrado(Empleado empleado) {
+        return this.usuarioDAO.estaRegistrado(empleado);
     }
 
     /**

@@ -4,6 +4,7 @@
  */
 package com.mx.grupogateway.system.dao;
 
+import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Usuario;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,6 +45,32 @@ public class UsuarioDAO {
                     resultado.add(fila);
                 }
                 return resultado;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Consulta en la BD si el empleado está o no registrado.
+     *
+     * El usuario no existe si el id_usuario obtenido es igual a cero.
+     *
+     * @param empleadoId
+     * @return
+     */
+    public boolean estaRegistrado(Empleado empleado) {
+        System.out.println(empleado.getIdEmpleado());
+        String sql = "SELECT ID_USUARIO FROM EMPLEADO WHERE ID_EMPLEADO = ?";
+        try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+            preparedStatement.setInt(1, empleado.getIdEmpleado());
+            preparedStatement.execute();
+            try ( ResultSet resultSet = preparedStatement.getResultSet()) {
+                while (resultSet.next()) {
+                    empleado.setUsuarioId(resultSet.getInt("ID_USUARIO"));
+                    System.out.println("ResultSet: " + resultSet.getInt("ID_USUARIO"));
+                }
+                return empleado.getUsuarioId() != 0;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
