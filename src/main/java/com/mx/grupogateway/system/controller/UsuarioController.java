@@ -30,4 +30,14 @@ public class UsuarioController {
     public List<Usuario> listar() {
         return this.usuarioDAO.listar();
     }
+
+    /**
+     * Obtiene el identificador de usuario como referencia de la tablaUsuario.
+     *
+     * @param usuarioId
+     * @return
+     */
+    public int eliminar(Integer usuarioId) {
+        return this.usuarioDAO.eliminar(usuarioId);
+    }
 }

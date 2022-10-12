@@ -49,4 +49,23 @@ public class UsuarioDAO {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Realiza la eliminación de un usuario en la BD tomando como referencia el
+     * ID.
+     *
+     * @param usuarioId
+     * @return
+     */
+    public int eliminar(Integer usuarioId) {
+        String sql = "DELETE FROM USUARIO WHERE ID_USUARIO = ?";
+        try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+            preparedStatement.setInt(1, usuarioId);
+            preparedStatement.execute();
+            int updateCount = preparedStatement.getUpdateCount();
+            return updateCount;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
