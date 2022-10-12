@@ -30,7 +30,7 @@ public class UsuarioDAO {
      */
     public List<Usuario> listar() {
         List<Usuario> resultado = new ArrayList<>();
-        String sql = "SELECT ID_USUARIO, NOMBRE, PASSWORD, CLAVE_SEGURIDAD FROM USUARIO";
+        String sql = "SELECT ID_USUARIO, NOMBRE, CLAVE_SEGURIDAD FROM USUARIO";
 
         try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
             preparedStatement.execute();
@@ -39,7 +39,6 @@ public class UsuarioDAO {
                     Usuario fila = new Usuario(
                             resultSet.getInt("ID_USUARIO"),
                             resultSet.getString("NOMBRE"),
-                            resultSet.getString("PASSWORD"),
                             resultSet.getString("CLAVE_SEGURIDAD")
                     );
                     resultado.add(fila);

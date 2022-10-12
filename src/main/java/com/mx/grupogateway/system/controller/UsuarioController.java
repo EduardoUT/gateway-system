@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class UsuarioController {
 
-    private UsuarioDAO usuarioDAO;
+    private final UsuarioDAO usuarioDAO;
 
     public UsuarioController() {
         this.usuarioDAO = new UsuarioDAO(

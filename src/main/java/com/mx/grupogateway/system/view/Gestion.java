@@ -247,7 +247,6 @@ public class Gestion extends javax.swing.JFrame {
                     new Object[]{
                         usuario.getUsuarioId(),
                         usuario.getNombreUsuario(),
-                        usuario.getPassword(),
                         usuario.getClaveSeguridad()
                     }
             );
@@ -278,18 +277,11 @@ public class Gestion extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         empleadoCargos = new javax.swing.JComboBox<>();
-        botonCrearUsuario = new javax.swing.JButton();
         botonNuevoRegistro = new javax.swing.JButton();
         botonCancelarNuevoRegistro = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tablaUsuario = new javax.swing.JTable();
-        campoClaveSeguridad = new javax.swing.JTextField();
-        jLabel12 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        campoId = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
-        campoNombreUsuario = new javax.swing.JTextField();
         botonEliminarUsuario = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -314,6 +306,8 @@ public class Gestion extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tablaEmpleado.setFocusable(false);
+        tablaEmpleado.getTableHeader().setReorderingAllowed(false);
         tablaEmpleado.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tablaEmpleadoMouseClicked(evt);
@@ -345,8 +339,6 @@ public class Gestion extends javax.swing.JFrame {
         jLabel2.setText("Nombre:");
 
         jLabel5.setText("Cargo:");
-
-        botonCrearUsuario.setText("Crear Usuario");
 
         botonNuevoRegistro.setText("Nuevo Registro");
         botonNuevoRegistro.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -393,11 +385,7 @@ public class Gestion extends javax.swing.JFrame {
                                 .addComponent(botonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 4, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(botonCrearUsuario)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 462, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 462, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -432,8 +420,6 @@ public class Gestion extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(botonActualizar)
                             .addComponent(botonEliminar))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(botonCrearUsuario)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -444,16 +430,12 @@ public class Gestion extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "Nombre de Usuario", "Contraseña", "Clave de Seguridad"
+                "ID", "Nombre de Usuario", "Clave de Seguridad"
             }
         ));
+        tablaUsuario.setFocusable(false);
+        tablaUsuario.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(tablaUsuario);
-
-        jLabel12.setText("Clave de Seguridad:");
-
-        jLabel6.setText("ID:");
-
-        jLabel7.setText("Nombre Usuario:");
 
         botonEliminarUsuario.setText("Eliminar Usuario ");
 
@@ -463,43 +445,21 @@ public class Gestion extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 699, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(187, 187, 187)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jLabel6)
-                        .addComponent(jLabel7)
-                        .addComponent(campoId)
-                        .addComponent(campoNombreUsuario)
-                        .addComponent(jLabel12)
-                        .addComponent(campoClaveSeguridad, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(92, 92, 92)
-                        .addComponent(botonEliminarUsuario)))
-                .addContainerGap(200, Short.MAX_VALUE))
+                .addGap(287, 287, 287)
+                .addComponent(botonEliminarUsuario)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(43, 43, 43)
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(campoId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(campoNombreUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel12)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(campoClaveSeguridad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(botonEliminarUsuario)
-                .addGap(54, 54, 54)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
-                .addContainerGap())
+                .addContainerGap(168, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Gestión de Usuarios", jPanel2);
@@ -514,9 +474,7 @@ public class Gestion extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jTabbedPane1)
-                .addContainerGap())
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 370, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -601,25 +559,18 @@ public class Gestion extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonActualizar;
     private javax.swing.JButton botonCancelarNuevoRegistro;
-    private javax.swing.JButton botonCrearUsuario;
     private javax.swing.JButton botonEliminar;
     private javax.swing.JButton botonEliminarUsuario;
     private javax.swing.JButton botonGuardar;
     private javax.swing.JButton botonNuevoRegistro;
     private javax.swing.JTextField campoApellidoM;
     private javax.swing.JTextField campoApellidoP;
-    private javax.swing.JTextField campoClaveSeguridad;
-    private javax.swing.JTextField campoId;
     private javax.swing.JTextField campoNombre;
-    private javax.swing.JTextField campoNombreUsuario;
     private javax.swing.JComboBox<String> empleadoCargos;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;

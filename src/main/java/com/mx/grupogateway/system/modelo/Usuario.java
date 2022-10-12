@@ -14,7 +14,7 @@ public class Usuario {
 
     private Integer usuarioId;
     private final String nombreUsuario;
-    private final String password;
+    private String password;
     private final String claveSeguridad;
 
     /**
@@ -35,14 +35,12 @@ public class Usuario {
      *
      * @param usuarioId
      * @param nombreUsuario
-     * @param password
      * @param claveSeguridad
      */
-    public Usuario(Integer usuarioId, String nombreUsuario, String password,
+    public Usuario(Integer usuarioId, String nombreUsuario,
             String claveSeguridad) {
         this.usuarioId = usuarioId;
         this.nombreUsuario = nombreUsuario;
-        this.password = password;
         this.claveSeguridad = claveSeguridad;
     }
 
