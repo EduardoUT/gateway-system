@@ -81,11 +81,22 @@ public class EmpleadoDAO {
         }
     }
 
+    /**
+     * Realiza la actualización de los registros del empleado acorde a su
+     * empleadoId.
+     *
+     * @param empleadoId
+     * @param nombre
+     * @param apellidoP
+     * @param apellidoM
+     * @param cargoId
+     * @return
+     */
     public int modificar(Integer empleadoId, String nombre, String apellidoP, String apellidoM, Integer cargoId) {
         String sql = "UPDATE EMPLEADO "
                 + "SET NOMBRE = ?, APELLIDO_P = ?, APELLIDO_M = ?, "
                 + "ID_CATEGORIA = ? "
-                + "WHERE ID = ?";
+                + "WHERE ID_EMPLEADO = ?";
         try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
             preparedStatement.setString(1, nombre);
             preparedStatement.setString(2, apellidoP);

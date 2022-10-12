@@ -13,6 +13,7 @@ import com.mx.grupogateway.system.modelo.Usuario;
 import com.mx.grupogateway.system.view.util.TablaColumnasAutoajustables;
 import com.mx.grupogateway.system.view.util.TableCommonMethods;
 import java.util.List;
+import java.util.Optional;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -148,24 +149,56 @@ public class Gestion extends javax.swing.JFrame {
                     campoApellidoP.getText(),
                     campoApellidoM.getText()
             );
-            
+
             EmpleadoCargo empleadoCargo
                     = (EmpleadoCargo) empleadoCargos.getSelectedItem();
             this.empleadoController.guardar(
                     empleado,
                     empleadoCargo.getCargoId()
             );
-            
+
             JOptionPane.showMessageDialog(null, "Empleado guardado "
                     + "éxitosamente.");
             tablaEmpleado.setVisible(true);
             botonGuardar.setVisible(false);
             botonCancelarNuevoRegistro.setVisible(false);
             limpiarCamposFormularioEmpleado();
-            TableCommonMethods.limpiarSeleccionTabla(
-                    modeloTablaEmpleado,
-                    tablaEmpleado
+            TableCommonMethods.limpiarTabla(
+                    modeloTablaEmpleado, tablaEmpleado);
+            cargarTablaEmpleado();
+        } else {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Campos obligatorios, por favor, complete el formulario.",
+                    "Formulario incompleto", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    /**
+     * Método que recopila los datos adquiridos de la tablaEmpleado pasados por
+     * parámetro al EmpleadoController.
+     */
+    private void actualizarEmpleado() {
+        if (sonCamposValidosEmpleado()) {
+            int fila = TableCommonMethods.indiceFilaSeleccionada(tablaEmpleado);
+            int empleadoIdFromTable = Integer.valueOf(
+                    tablaEmpleado.getValueAt(fila, 0).toString()
             );
+
+            int lineasActualizadas;
+            lineasActualizadas = this.empleadoController.modificar(
+                    empleadoIdFromTable,
+                    campoNombre.getText(),
+                    campoApellidoP.getText(),
+                    campoApellidoM.getText(),
+                    empleadoCargos.getSelectedIndex()
+            );
+
+            JOptionPane.showMessageDialog(null, lineasActualizadas
+                    + " item actualizado con éxito.");
+            limpiarCamposFormularioEmpleado();
+            TableCommonMethods.limpiarTabla(
+                    modeloTablaEmpleado, tablaEmpleado);
             cargarTablaEmpleado();
         } else {
             JOptionPane.showMessageDialog(
@@ -269,6 +302,11 @@ public class Gestion extends javax.swing.JFrame {
         });
 
         botonActualizar.setText("Actualizar");
+        botonActualizar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                botonActualizarMouseClicked(evt);
+            }
+        });
 
         botonEliminar.setText("Eliminar");
 
@@ -465,6 +503,7 @@ public class Gestion extends javax.swing.JFrame {
     private void botonNuevoRegistroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonNuevoRegistroMouseClicked
         evt.consume();
         limpiarCamposFormularioEmpleado();
+        TableCommonMethods.limpiarSeleccion(tablaEmpleado);
         botonGuardar.setVisible(true);
         botonCancelarNuevoRegistro.setVisible(true);
         tablaEmpleado.setVisible(false);
@@ -477,6 +516,13 @@ public class Gestion extends javax.swing.JFrame {
         botonCancelarNuevoRegistro.setVisible(false);
         tablaEmpleado.setVisible(true);
     }//GEN-LAST:event_botonCancelarNuevoRegistroMouseClicked
+
+    private void botonActualizarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonActualizarMouseClicked
+        evt.consume();
+        if (TableCommonMethods.filaEstaSeleccionada(tablaEmpleado)) {
+            actualizarEmpleado();
+        }
+    }//GEN-LAST:event_botonActualizarMouseClicked
 
     /**
      * @param args the command line arguments
