@@ -306,6 +306,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Eliminar Usuario "/>
               </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="botonEliminarUsuarioMouseClicked"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

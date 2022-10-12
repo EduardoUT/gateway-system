@@ -58,12 +58,30 @@ public class UsuarioDAO {
      * @return
      */
     public int eliminar(Integer usuarioId) {
+        eliminarAsociacionEmpleadoUsuario(usuarioId);
         String sql = "DELETE FROM USUARIO WHERE ID_USUARIO = ?";
         try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
             preparedStatement.setInt(1, usuarioId);
             preparedStatement.execute();
             int updateCount = preparedStatement.getUpdateCount();
             return updateCount;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Actualiza el id_usuario en la tabla empleado asociada a la tabla de
+     * usuario a fin de poder eliminarlo.
+     *
+     * @param usuarioId
+     */
+    private void eliminarAsociacionEmpleadoUsuario(Integer usuarioId) {
+        String sql = "UPDATE EMPLEADO SET ID_USUARIO = ? WHERE ID_USUARIO = ?";
+        try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+            preparedStatement.setNull(1, usuarioId);
+            preparedStatement.setInt(2, usuarioId);
+            preparedStatement.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

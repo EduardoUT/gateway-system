@@ -66,4 +66,25 @@ public class TableCommonMethods {
         tabla.clearSelection();
     }
 
+    /**
+     * Obtiene el valor del id correspondiente a la fila seleccionada en la
+     * tabla, el usuario debe índicar el índice de la columna donde el campo
+     * único identificador ID se encuentra.
+     *
+     * @param tabla Tabla seleccionada.
+     * @param indexColumnID Índice donde el campo único identificador de
+     * encuentra.
+     * @return ïd del empleado.
+     */
+    public static int obtenerID(JTable tabla, Integer indexColumnID) {
+        if (TableCommonMethods.filaEstaSeleccionada(tabla)) {
+            int fila = TableCommonMethods.indiceFilaSeleccionada(tabla);
+            int Id = Integer.valueOf(
+                    tabla.getValueAt(fila, indexColumnID).toString()
+            );
+            return Id;
+        }
+        return 0;
+    }
+
 }

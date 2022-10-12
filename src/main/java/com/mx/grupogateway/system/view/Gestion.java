@@ -121,7 +121,7 @@ public class Gestion extends javax.swing.JFrame {
 
             int lineasActualizadas;
             lineasActualizadas = this.empleadoController.modificar(
-                    empleadoIDFromTabla(),
+                    TableCommonMethods.obtenerID(tablaEmpleado, 0),
                     campoNombre.getText(),
                     campoApellidoP.getText(),
                     campoApellidoM.getText(),
@@ -148,8 +148,8 @@ public class Gestion extends javax.swing.JFrame {
      */
     private void eliminarEmpleado() {
         int cantidadEliminada = this.empleadoController
-                .eliminar(empleadoIDFromTabla());
-        JOptionPane.showMessageDialog(null, cantidadEliminada 
+                .eliminar(TableCommonMethods.obtenerID(tablaEmpleado, 0));
+        JOptionPane.showMessageDialog(null, cantidadEliminada
                 + " registro eliminado exitosamente.");
         limpiarCamposFormularioEmpleado();
         TableCommonMethods.limpiarTabla(modeloTablaEmpleado, tablaEmpleado);
@@ -198,23 +198,6 @@ public class Gestion extends javax.swing.JFrame {
     }
 
     /**
-     * Obtiene el valor del id del empleado acorde a la fila seleccionada en la
-     * tabla.
-     *
-     * @return ïd del empleado.
-     */
-    private int empleadoIDFromTabla() {
-        if (TableCommonMethods.filaEstaSeleccionada(tablaEmpleado)) {
-            int fila = TableCommonMethods.indiceFilaSeleccionada(tablaEmpleado);
-            int empleadoIdFromTable = Integer.valueOf(
-                    tablaEmpleado.getValueAt(fila, 0).toString()
-            );
-            return empleadoIdFromTable;
-        }
-        return 0;
-    }
-
-    /**
      * Configura las opciones que se obtendrán de la List de tipo EmpleadoCargo
      * del empleadoCargoController.
      *
@@ -251,6 +234,21 @@ public class Gestion extends javax.swing.JFrame {
                     }
             );
         });
+    }
+
+    /**
+     * Recopila el identificador del usuario de la tabla tablaUsuario y lo pasa
+     * por parámetro en el método eliminar() del UsuarioController.
+     */
+    private void eliminarUsuario() {
+        int cantidadEliminada = this.usuarioController
+                .eliminar(TableCommonMethods.obtenerID(tablaUsuario, 0));
+        JOptionPane.showMessageDialog(null, cantidadEliminada
+                + " registro eliminado exitosamente.");
+        TableCommonMethods.limpiarTabla(modeloTablaUsuario, tablaUsuario);
+        TableCommonMethods.limpiarTabla(modeloTablaEmpleado, tablaEmpleado);
+        cargarTablaUsuario();
+        cargarTablaEmpleado();
     }
 
     /**
@@ -438,6 +436,11 @@ public class Gestion extends javax.swing.JFrame {
         jScrollPane2.setViewportView(tablaUsuario);
 
         botonEliminarUsuario.setText("Eliminar Usuario ");
+        botonEliminarUsuario.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                botonEliminarUsuarioMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -520,6 +523,12 @@ public class Gestion extends javax.swing.JFrame {
             eliminarEmpleado();
         }
     }//GEN-LAST:event_botonEliminarMouseClicked
+
+    private void botonEliminarUsuarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonEliminarUsuarioMouseClicked
+        if (TableCommonMethods.filaEstaSeleccionada(tablaUsuario)) {
+            eliminarUsuario();
+        }
+    }//GEN-LAST:event_botonEliminarUsuarioMouseClicked
 
     /**
      * @param args the command line arguments
