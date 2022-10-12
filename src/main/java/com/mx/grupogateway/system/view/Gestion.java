@@ -56,29 +56,44 @@ public class Gestion extends javax.swing.JFrame {
     }
 
     /**
-     * Configura las opciones que se obtendrán de la List de tipo EmpleadoCargo
-     * del empleadoCargoController.
-     *
-     * La primer opción es la selección por default con valor "Seleccione un
-     * Cargo"
+     * Construyendo objeto de tipo Empleado y pasandolo por parámetro en el
+     * método guardar() del EmpleadoController.
      */
-    private void configurarComboBoxEmpleado() {
-        modeloComboBoxCargoEmpleado = (DefaultComboBoxModel) empleadoCargos.getModel();
-        modeloComboBoxCargoEmpleado.addElement(
-                new EmpleadoCargo(0, "Seleccione un Cargo")
-        );
+    private void guardarEmpleado() {
+        if (sonCamposValidosEmpleado()) {
+            Empleado empleado = new Empleado(
+                    campoNombre.getText(),
+                    campoApellidoP.getText(),
+                    campoApellidoM.getText()
+            );
 
-        List<EmpleadoCargo> listaCargos = this.empleadoCargoController
-                .listar();
+            EmpleadoCargo empleadoCargo
+                    = (EmpleadoCargo) empleadoCargos.getSelectedItem();
+            this.empleadoController.guardar(
+                    empleado,
+                    empleadoCargo.getCargoId()
+            );
 
-        listaCargos.forEach((empleadoCargo) -> {
-            modeloComboBoxCargoEmpleado.addElement(empleadoCargo);
-        });
+            JOptionPane.showMessageDialog(null, "Empleado guardado "
+                    + "éxitosamente.");
+            tablaEmpleado.setVisible(true);
+            botonGuardar.setVisible(false);
+            botonCancelarNuevoRegistro.setVisible(false);
+            limpiarCamposFormularioEmpleado();
+            TableCommonMethods.limpiarTabla(
+                    modeloTablaEmpleado, tablaEmpleado);
+            cargarTablaEmpleado();
+        } else {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Campos obligatorios, por favor, complete el formulario.",
+                    "Formulario incompleto", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     /**
-     * Obteniendo List de tipo Empleado de EmpleadoController y asignando
-     * registros en la TablaEmpleado.
+     * Obteniendo List de tipo Empleado del método listar() del
+     * EmpleadoController y asignando registros en la tablaEmpleado.
      */
     private void cargarTablaEmpleado() {
         modeloTablaEmpleado = (DefaultTableModel) tablaEmpleado.getModel();
@@ -95,6 +110,50 @@ public class Gestion extends javax.swing.JFrame {
                     }
             );
         });
+    }
+
+    /**
+     * Método que recopila los datos adquiridos de la tablaEmpleado pasados por
+     * parámetro al método modificar() del EmpleadoController.
+     */
+    private void actualizarEmpleado() {
+        if (sonCamposValidosEmpleado()) {
+
+            int lineasActualizadas;
+            lineasActualizadas = this.empleadoController.modificar(
+                    empleadoIDFromTabla(),
+                    campoNombre.getText(),
+                    campoApellidoP.getText(),
+                    campoApellidoM.getText(),
+                    empleadoCargos.getSelectedIndex()
+            );
+
+            JOptionPane.showMessageDialog(null, lineasActualizadas
+                    + " registro actualizado exitosamente.");
+            limpiarCamposFormularioEmpleado();
+            TableCommonMethods.limpiarTabla(
+                    modeloTablaEmpleado, tablaEmpleado);
+            cargarTablaEmpleado();
+        } else {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Campos obligatorios, por favor, complete el formulario.",
+                    "Formulario incompleto", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    /**
+     * Recopila el identificador del empleado de la tabla tablaEmpleado y lo
+     * pasa por parámetro en el método eliminar() del EmpleadoController.
+     */
+    private void eliminarEmpleado() {
+        int cantidadEliminada = this.empleadoController
+                .eliminar(empleadoIDFromTabla());
+        JOptionPane.showMessageDialog(null, cantidadEliminada 
+                + " registro eliminado exitosamente.");
+        limpiarCamposFormularioEmpleado();
+        TableCommonMethods.limpiarTabla(modeloTablaEmpleado, tablaEmpleado);
+        cargarTablaEmpleado();
     }
 
     /**
@@ -139,73 +198,41 @@ public class Gestion extends javax.swing.JFrame {
     }
 
     /**
-     * Construyendo objeto de tipo Empleado y pasandolo por parámetro en el
-     * Controller.
+     * Obtiene el valor del id del empleado acorde a la fila seleccionada en la
+     * tabla.
+     *
+     * @return ïd del empleado.
      */
-    private void guardarEmpleado() {
-        if (sonCamposValidosEmpleado()) {
-            Empleado empleado = new Empleado(
-                    campoNombre.getText(),
-                    campoApellidoP.getText(),
-                    campoApellidoM.getText()
-            );
-
-            EmpleadoCargo empleadoCargo
-                    = (EmpleadoCargo) empleadoCargos.getSelectedItem();
-            this.empleadoController.guardar(
-                    empleado,
-                    empleadoCargo.getCargoId()
-            );
-
-            JOptionPane.showMessageDialog(null, "Empleado guardado "
-                    + "éxitosamente.");
-            tablaEmpleado.setVisible(true);
-            botonGuardar.setVisible(false);
-            botonCancelarNuevoRegistro.setVisible(false);
-            limpiarCamposFormularioEmpleado();
-            TableCommonMethods.limpiarTabla(
-                    modeloTablaEmpleado, tablaEmpleado);
-            cargarTablaEmpleado();
-        } else {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Campos obligatorios, por favor, complete el formulario.",
-                    "Formulario incompleto", JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
-
-    /**
-     * Método que recopila los datos adquiridos de la tablaEmpleado pasados por
-     * parámetro al EmpleadoController.
-     */
-    private void actualizarEmpleado() {
-        if (sonCamposValidosEmpleado()) {
+    private int empleadoIDFromTabla() {
+        if (TableCommonMethods.filaEstaSeleccionada(tablaEmpleado)) {
             int fila = TableCommonMethods.indiceFilaSeleccionada(tablaEmpleado);
             int empleadoIdFromTable = Integer.valueOf(
                     tablaEmpleado.getValueAt(fila, 0).toString()
             );
-
-            int lineasActualizadas;
-            lineasActualizadas = this.empleadoController.modificar(
-                    empleadoIdFromTable,
-                    campoNombre.getText(),
-                    campoApellidoP.getText(),
-                    campoApellidoM.getText(),
-                    empleadoCargos.getSelectedIndex()
-            );
-
-            JOptionPane.showMessageDialog(null, lineasActualizadas
-                    + " item actualizado con éxito.");
-            limpiarCamposFormularioEmpleado();
-            TableCommonMethods.limpiarTabla(
-                    modeloTablaEmpleado, tablaEmpleado);
-            cargarTablaEmpleado();
-        } else {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Campos obligatorios, por favor, complete el formulario.",
-                    "Formulario incompleto", JOptionPane.INFORMATION_MESSAGE);
+            return empleadoIdFromTable;
         }
+        return 0;
+    }
+
+    /**
+     * Configura las opciones que se obtendrán de la List de tipo EmpleadoCargo
+     * del empleadoCargoController.
+     *
+     * La primer opción es la selección por default con valor "Seleccione un
+     * Cargo"
+     */
+    private void configurarComboBoxEmpleado() {
+        modeloComboBoxCargoEmpleado = (DefaultComboBoxModel) empleadoCargos.getModel();
+        modeloComboBoxCargoEmpleado.addElement(
+                new EmpleadoCargo(0, "Seleccione un Cargo")
+        );
+
+        List<EmpleadoCargo> listaCargos = this.empleadoCargoController
+                .listar();
+
+        listaCargos.forEach((empleadoCargo) -> {
+            modeloComboBoxCargoEmpleado.addElement(empleadoCargo);
+        });
     }
 
     /**
@@ -309,6 +336,11 @@ public class Gestion extends javax.swing.JFrame {
         });
 
         botonEliminar.setText("Eliminar");
+        botonEliminar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                botonEliminarMouseClicked(evt);
+            }
+        });
 
         jLabel2.setText("Nombre:");
 
@@ -523,6 +555,13 @@ public class Gestion extends javax.swing.JFrame {
             actualizarEmpleado();
         }
     }//GEN-LAST:event_botonActualizarMouseClicked
+
+    private void botonEliminarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonEliminarMouseClicked
+        evt.consume();
+        if (TableCommonMethods.filaEstaSeleccionada(tablaEmpleado)) {
+            eliminarEmpleado();
+        }
+    }//GEN-LAST:event_botonEliminarMouseClicked
 
     /**
      * @param args the command line arguments
