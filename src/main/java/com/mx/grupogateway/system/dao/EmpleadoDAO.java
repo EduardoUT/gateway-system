@@ -32,16 +32,18 @@ public class EmpleadoDAO {
      */
     public void guardar(Empleado empleado) {
         String sql = "INSERT INTO EMPLEADO "
-                + "(NOMBRE, APELLIDO_P, APELLIDO_M, ID_CATEGORIA, ID_USUARIO)"
-                + "VALUES (?, ?, ?, ?, ?)";
+                + "(ID_EMPLEADO, NOMBRE, APELLIDO_P, "
+                + "APELLIDO_M, ID_CATEGORIA, ID_USUARIO) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
 
         try ( PreparedStatement preparedStatement = con.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS);) {
-            preparedStatement.setString(1, empleado.getNombre());
-            preparedStatement.setString(2, empleado.getApellidoPaterno());
-            preparedStatement.setString(3, empleado.getApellidoMaterno());
-            preparedStatement.setInt(4, empleado.getCargoId());
-            preparedStatement.setNull(5, empleado.getUsuarioId());
+            preparedStatement.setString(1, empleado.getIdEmpleado());
+            preparedStatement.setString(2, empleado.getNombre());
+            preparedStatement.setString(3, empleado.getApellidoPaterno());
+            preparedStatement.setString(4, empleado.getApellidoMaterno());
+            preparedStatement.setInt(5, empleado.getCargoId());
+            preparedStatement.setNull(6, empleado.getUsuarioId());
             preparedStatement.execute();
 
             try ( ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
@@ -72,7 +74,7 @@ public class EmpleadoDAO {
             try ( ResultSet resultSet = preparedStatement.getResultSet();) {
                 while (resultSet.next()) {
                     Empleado fila = new Empleado(
-                            resultSet.getInt("ID_EMPLEADO"),
+                            resultSet.getString("ID_EMPLEADO"),
                             resultSet.getString("NOMBRE"),
                             resultSet.getString("APELLIDO_P"),
                             resultSet.getString("APELLIDO_M"),
@@ -99,7 +101,7 @@ public class EmpleadoDAO {
      * @param cargoId
      * @return
      */
-    public int modificar(Integer empleadoId, String nombre, String apellidoP, String apellidoM, Integer cargoId) {
+    public int modificar(String empleadoId, String nombre, String apellidoP, String apellidoM, Integer cargoId) {
         String sql = "UPDATE EMPLEADO "
                 + "SET NOMBRE = ?, APELLIDO_P = ?, APELLIDO_M = ?, "
                 + "ID_CATEGORIA = ? "
@@ -109,7 +111,7 @@ public class EmpleadoDAO {
             preparedStatement.setString(2, apellidoP);
             preparedStatement.setString(3, apellidoM);
             preparedStatement.setInt(4, cargoId);
-            preparedStatement.setInt(5, empleadoId);
+            preparedStatement.setString(5, empleadoId);
             preparedStatement.execute();
             int updateCount = preparedStatement.getUpdateCount();
             return updateCount;
@@ -124,10 +126,10 @@ public class EmpleadoDAO {
      * @param empleadoId
      * @return
      */
-    public int eliminar(Integer empleadoId) {
+    public int eliminar(String empleadoId) {
         String sql = "DELETE FROM EMPLEADO WHERE ID_EMPLEADO = ?";
         try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
-            preparedStatement.setInt(1, empleadoId);
+            preparedStatement.setString(1, empleadoId);
             preparedStatement.execute();
             int updateCount = preparedStatement.getUpdateCount();
             return updateCount;

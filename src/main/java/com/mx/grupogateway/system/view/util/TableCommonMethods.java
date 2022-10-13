@@ -74,17 +74,29 @@ public class TableCommonMethods {
      * @param tabla Tabla seleccionada.
      * @param indexColumnID Índice donde el campo único identificador de
      * encuentra.
-     * @return ïd del empleado.
+     * @return Id del registro seleccionado.
      */
     public static int obtenerID(JTable tabla, Integer indexColumnID) {
-        if (TableCommonMethods.filaEstaSeleccionada(tabla)) {
-            int fila = TableCommonMethods.indiceFilaSeleccionada(tabla);
-            int Id = Integer.valueOf(
-                    tabla.getValueAt(fila, indexColumnID).toString()
-            );
-            return Id;
+        if (filaEstaSeleccionada(tabla)) {
+            int fila = indiceFilaSeleccionada(tabla);
+            return Integer.valueOf(
+                    tabla.getValueAt(fila, indexColumnID).toString());
         }
         return 0;
     }
 
+    /**
+     * Obtiene el UUID de la fila seleccionada en la tabla.
+     *
+     * @param tabla Tabla seleccionada.
+     * @param indexColumnID Índice donde el campo ID en la tabla se encuentra.
+     * @return UUID del registro seleccionado.
+     */
+    public static String obtenerUUID(JTable tabla, Integer indexColumnID) {
+        if (filaEstaSeleccionada(tabla)) {
+            int fila = indiceFilaSeleccionada(tabla);
+            return String.valueOf(tabla.getValueAt(fila, indexColumnID));
+        }
+        return "";
+    }
 }

@@ -40,8 +40,8 @@ public class Registro extends javax.swing.JFrame {
      * el usuario asociandolo a ese empleadoID.
      */
     private void registrarUsuario() {
-        int empleadoId = Integer.valueOf(campoIdEmpleado.getText());
-        if (sonCamposValidosRegistro() && empleadoId > 0) {
+        String empleadoId = campoIdEmpleado.getText();
+        if (sonCamposValidosRegistro()) {
             Empleado empleado = new Empleado(empleadoId);
             Optional id = this.usuarioController.consultarIdUsuario(empleado);
             if (id.equals(Optional.empty())) {
@@ -63,10 +63,8 @@ public class Registro extends javax.swing.JFrame {
             if (id.isPresent() && id.get().equals(0)) {
                 Usuario usuario = new Usuario(
                         campoNombreUsuario.getText(),
-                        String.valueOf(campoPassword.getPassword())
-                        
+                        String.valueOf(campoPassword.getPassword())          
                 );
-                System.out.println(usuario);
                 this.usuarioController.guardar(usuario, empleadoId);
             }
         } else {
@@ -212,6 +210,7 @@ public class Registro extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1MouseClicked
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
+        evt.consume();
         registrarUsuario();
     }//GEN-LAST:event_jButton2MouseClicked
 

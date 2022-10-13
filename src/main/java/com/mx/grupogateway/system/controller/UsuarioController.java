@@ -32,7 +32,7 @@ public class UsuarioController {
      * @param usuario
      * @param empleadoId
      */
-    public void guardar(Usuario usuario, Integer empleadoId) {
+    public void guardar(Usuario usuario, String empleadoId) {
         this.usuarioDAO.guardar(usuario, empleadoId);
     }
     

@@ -55,7 +55,7 @@ public class EmpleadoController {
      * @param cargoId
      * @return Cantidad de registros actualizados.
      */
-    public int modificar(Integer empleadoId, String nombre,
+    public int modificar(String empleadoId, String nombre,
             String apellidoP, String apellidoM, Integer cargoId) {
         return this.empleadoDAO.modificar(empleadoId, nombre,
                 apellidoP, apellidoM, cargoId);
@@ -69,7 +69,7 @@ public class EmpleadoController {
      * @param empleadoId
      * @return Cantidad de registros eliminados.
      */
-    public int eliminar(Integer empleadoId) {
+    public int eliminar(String empleadoId) {
         return this.empleadoDAO.eliminar(empleadoId);
     }
 }

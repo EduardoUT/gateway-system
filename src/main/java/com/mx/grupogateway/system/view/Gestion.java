@@ -121,7 +121,7 @@ public class Gestion extends javax.swing.JFrame {
 
             int lineasActualizadas;
             lineasActualizadas = this.empleadoController.modificar(
-                    TableCommonMethods.obtenerID(tablaEmpleado, 0),
+                    TableCommonMethods.obtenerUUID(tablaEmpleado, 0),
                     campoNombre.getText(),
                     campoApellidoP.getText(),
                     campoApellidoM.getText(),
@@ -148,7 +148,7 @@ public class Gestion extends javax.swing.JFrame {
      */
     private void eliminarEmpleado() {
         int cantidadEliminada = this.empleadoController
-                .eliminar(TableCommonMethods.obtenerID(tablaEmpleado, 0));
+                .eliminar(TableCommonMethods.obtenerUUID(tablaEmpleado, 0));
         JOptionPane.showMessageDialog(null, cantidadEliminada
                 + " registro eliminado exitosamente.");
         limpiarCamposFormularioEmpleado();
@@ -306,6 +306,7 @@ public class Gestion extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tablaEmpleado.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         tablaEmpleado.setFocusable(false);
         tablaEmpleado.getTableHeader().setReorderingAllowed(false);
         tablaEmpleado.addMouseListener(new java.awt.event.MouseAdapter() {

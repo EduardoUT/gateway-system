@@ -42,7 +42,7 @@ public class UsuarioDAO {
      * @param usuario
      * @param empleadoId
      */
-    public void guardar(Usuario usuario, Integer empleadoId) {
+    public void guardar(Usuario usuario, String empleadoId) {
         Integer usuarioIdGenerado = 0;
         String sql = "INSERT INTO USUARIO (NOMBRE, PASSWORD, CLAVE_SEGURIDAD)"
                 + "VALUES (?, ?, ?)";
@@ -106,7 +106,7 @@ public class UsuarioDAO {
     public Optional consultarIdUsuario(Empleado empleado) {
         String sql = "SELECT ID_USUARIO FROM EMPLEADO WHERE ID_EMPLEADO = ?";
         try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
-            preparedStatement.setInt(1, empleado.getIdEmpleado());
+            preparedStatement.setString(1, empleado.getIdEmpleado());
             preparedStatement.execute();
             try ( ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
@@ -125,11 +125,11 @@ public class UsuarioDAO {
      * @param usuarioId
      * @param empleadoId
      */
-    public void modificarUsuarioIdOnTablaEmpleado(Integer usuarioId, Integer empleadoId) {
+    public void modificarUsuarioIdOnTablaEmpleado(Integer usuarioId, String empleadoId) {
         String sql = "UPDATE EMPLEADO SET ID_USUARIO = ? WHERE ID_EMPLEADO = ?";
         try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
             preparedStatement.setInt(1, usuarioId);
-            preparedStatement.setInt(2, empleadoId);
+            preparedStatement.setString(2, empleadoId);
             preparedStatement.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);

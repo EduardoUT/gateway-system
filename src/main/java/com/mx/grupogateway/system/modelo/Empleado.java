@@ -4,19 +4,20 @@
  */
 package com.mx.grupogateway.system.modelo;
 
+import java.util.UUID;
+
 /**
  *
  * @author Eduardo Reyes Hernández
  */
 public class Empleado {
 
-    private Integer empleadoId;
+    private String empleadoId;
     private String nombre;
     private String apellidoPaterno;
     private String apellidoMaterno;
     private Integer cargoId;
     private Integer usuarioId;
-    private String correo;
 
     /**
      * El valor por defecto es 0.
@@ -33,6 +34,7 @@ public class Empleado {
     public Empleado(String nombre, String apellidoPaterno,
             String apellidoMaterno) {
         validarEmpleado(nombre, apellidoPaterno, apellidoMaterno);
+        this.empleadoId = generarId();
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
@@ -49,7 +51,7 @@ public class Empleado {
      * @param categoriaId
      * @param usuarioId
      */
-    public Empleado(Integer empleadoId, String nombre, String apellidoPaterno,
+    public Empleado(String empleadoId, String nombre, String apellidoPaterno,
             String apellidoMaterno, Integer categoriaId, Integer usuarioId) {
         this.empleadoId = empleadoId;
         this.nombre = nombre;
@@ -64,14 +66,14 @@ public class Empleado {
      *
      * @param empleadoId
      */
-    public Empleado(Integer empleadoId) {
+    public Empleado(String empleadoId) {
         this.empleadoId = empleadoId;
     }
 
     /**
      * @return the idEmpleado
      */
-    public int getIdEmpleado() {
+    public String getIdEmpleado() {
         return empleadoId;
     }
 
@@ -142,16 +144,17 @@ public class Empleado {
         }
     }
 
-    private void generarCorreo(String nombreEmpleado, 
-            String apellidoEmpleado) {
-        
-        StringBuilder construirCorreo = new StringBuilder();
-        
+    /**
+     * Método que generá el identificador único de los empleados creados.
+     * @return Cadena aleatoria de 18 carácteres de formato UUID.
+     */
+    private String generarId() {
+            return UUID.randomUUID().toString().substring(0, 18);
     }
 
     @Override
     public String toString() {
-        return String.format("[ID: %d | Nombre: %s | Apellido P: %s "
+        return String.format("[ID: %s | Nombre: %s | Apellido P: %s "
                 + "| Apellido M: %s | ID Categoría: %d | ID Usuario: %d]",
                 this.empleadoId,
                 this.nombre,
