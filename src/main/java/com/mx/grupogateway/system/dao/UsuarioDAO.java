@@ -53,12 +53,14 @@ public class UsuarioDAO {
     }
 
     /**
-     * Consulta en la BD si el empleado está o no registrado.El usuario no
-     * existe si el id_usuario obtenido es igual a cero.
-     *
+     * Consulta el id_usuario del empleado.
      *
      * @param empleado
-     * @return
+     * @return Como puede o no devolver un valor la BD, se envuelve el resultado
+     * de getUsuarioId() en un Optional, si no devuelve nada el empleado no
+     * existe, si devuelve cero el empleado no posee una cuenta y si devueslve un
+     * id de usuario entonces ya fue asignada una cuenta de usuario a ese
+     * empleado.
      */
     public Optional consultarIdUsuario(Empleado empleado) {
         String sql = "SELECT ID_USUARIO FROM EMPLEADO WHERE ID_EMPLEADO = ?";
@@ -66,12 +68,10 @@ public class UsuarioDAO {
             preparedStatement.setInt(1, empleado.getIdEmpleado());
             preparedStatement.execute();
             try ( ResultSet resultSet = preparedStatement.getResultSet()) {
-                
                 while (resultSet.next()) {
                     empleado.setUsuarioId(resultSet.getInt("ID_USUARIO"));
                 }
-                
-                return Optional.ofNullable(empleado.getUsuarioId());//empleado.getUsuarioId() == 0;
+                return Optional.ofNullable(empleado.getUsuarioId());
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

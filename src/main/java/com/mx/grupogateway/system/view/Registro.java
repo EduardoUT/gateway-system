@@ -42,7 +42,7 @@ public class Registro extends javax.swing.JFrame {
         int empleadoId = Integer.valueOf(campoIdEmpleado.getText());
         if (sonCamposValidosRegistro() && empleadoId > 0) {
             Empleado empleado = new Empleado(empleadoId);
-            Optional id = this.usuarioController.estaRegistrado(empleado);
+            Optional id = this.usuarioController.consultarIdUsuario(empleado);
             if (id.equals(Optional.empty())) {
                 System.out.println(id);
                 JOptionPane.showMessageDialog(

@@ -40,7 +40,7 @@ public class UsuarioController {
      * @param empleado
      * @return
      */
-    public Optional estaRegistrado(Empleado empleado) {
+    public Optional consultarIdUsuario(Empleado empleado) {
         return this.usuarioDAO.consultarIdUsuario(empleado);
     }
 
