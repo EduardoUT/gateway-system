@@ -26,6 +26,17 @@ public class UsuarioController {
     }
 
     /**
+     * Obtiene el usuario recopilado del formulario de registro, y el ID del
+     * empleado asociado.
+     *
+     * @param usuario
+     * @param empleadoId
+     */
+    public void guardar(Usuario usuario, Integer empleadoId) {
+        this.usuarioDAO.guardar(usuario, empleadoId);
+    }
+    
+    /**
      *
      * @return List de tipo Usuario.
      */

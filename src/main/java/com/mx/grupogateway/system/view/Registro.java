@@ -6,6 +6,7 @@ package com.mx.grupogateway.system.view;
 
 import com.mx.grupogateway.system.controller.UsuarioController;
 import com.mx.grupogateway.system.modelo.Empleado;
+import com.mx.grupogateway.system.modelo.Usuario;
 import java.util.Optional;
 import javax.swing.JOptionPane;
 
@@ -44,7 +45,6 @@ public class Registro extends javax.swing.JFrame {
             Empleado empleado = new Empleado(empleadoId);
             Optional id = this.usuarioController.consultarIdUsuario(empleado);
             if (id.equals(Optional.empty())) {
-                System.out.println(id);
                 JOptionPane.showMessageDialog(
                         null,
                         "El ID Empleado " + empleadoId + " no existe en la BD.",
@@ -53,7 +53,6 @@ public class Registro extends javax.swing.JFrame {
             }
 
             if (id.isPresent() && !id.get().equals(0)) {
-                System.out.println(id);
                 JOptionPane.showMessageDialog(
                         null, "El usuario asociado al ID Empleado " + empleadoId
                         + " ya existe.", "Usuario ya existe",
@@ -62,8 +61,13 @@ public class Registro extends javax.swing.JFrame {
             }
 
             if (id.isPresent() && id.get().equals(0)) {
-                System.out.println(id);
-                System.out.println("Registrando....");
+                Usuario usuario = new Usuario(
+                        campoNombreUsuario.getText(),
+                        String.valueOf(campoPassword.getPassword())
+                        
+                );
+                System.out.println(usuario);
+                this.usuarioController.guardar(usuario, empleadoId);
             }
         } else {
             JOptionPane.showMessageDialog(

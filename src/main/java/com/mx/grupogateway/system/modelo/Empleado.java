@@ -16,6 +16,8 @@ public class Empleado {
     private String apellidoMaterno;
     private Integer cargoId;
     private Integer usuarioId;
+    private String correo;
+
     /**
      * El valor por defecto es 0.
      */
@@ -59,8 +61,8 @@ public class Empleado {
 
     /**
      * Constructor para asignar el empleadoId.
-     * 
-     * @param empleadoId 
+     *
+     * @param empleadoId
      */
     public Empleado(Integer empleadoId) {
         this.empleadoId = empleadoId;
@@ -115,6 +117,13 @@ public class Empleado {
         return usuarioId;
     }
 
+    /**
+     * @param usuarioId the usuarioId to set
+     */
+    public void setUsuarioId(Integer usuarioId) {
+        this.usuarioId = usuarioId;
+    }
+
     private void validarEmpleado(String nombre, String apellidoPaterno,
             String apellidoMaterno) {
         if (nombre == null || nombre.isEmpty()) {
@@ -133,6 +142,13 @@ public class Empleado {
         }
     }
 
+    private void generarCorreo(String nombreEmpleado, 
+            String apellidoEmpleado) {
+        
+        StringBuilder construirCorreo = new StringBuilder();
+        
+    }
+
     @Override
     public String toString() {
         return String.format("[ID: %d | Nombre: %s | Apellido P: %s "
@@ -143,13 +159,6 @@ public class Empleado {
                 this.apellidoMaterno,
                 this.cargoId,
                 this.usuarioId);
-    }
-
-    /**
-     * @param usuarioId the usuarioId to set
-     */
-    public void setUsuarioId(Integer usuarioId) {
-        this.usuarioId = usuarioId;
     }
 
 }

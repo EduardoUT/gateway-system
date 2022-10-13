@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,46 @@ public class UsuarioDAO {
 
     public UsuarioDAO(Connection con) {
         this.con = con;
+    }
+
+    /**
+     * Ejecuta dos operaciones:
+     *
+     * 1. Guarda los valores de los atributos de Usuario en la tabla usuario.
+     *
+     * 2. Consulta el nuevo id_usuario almacenado.
+     *
+     * 2. Actualiza el id_usuario obtenido de la consulta.
+     *
+     *
+     * TODO Encriptar contraseña al almacenar.
+     *
+     * @param usuario
+     * @param empleadoId
+     */
+    public void guardar(Usuario usuario, Integer empleadoId) {
+        Integer usuarioIdGenerado = 0;
+        String sql = "INSERT INTO USUARIO (NOMBRE, PASSWORD, CLAVE_SEGURIDAD)"
+                + "VALUES (?, ?, ?)";
+        try ( PreparedStatement preparedStatement = con.prepareStatement(sql,
+                Statement.RETURN_GENERATED_KEYS);) {
+            preparedStatement.setString(1, usuario.getNombreUsuario());
+            preparedStatement.setString(2, usuario.getPassword());
+            preparedStatement.setString(3, usuario.getClaveSeguridad());
+            preparedStatement.execute();
+            try ( ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
+                while (resultSet.next()) {
+                    System.out.println(
+                            String.format("Fue guardado el usuaro %s ",
+                                    usuario)
+                    );
+                    usuarioIdGenerado = resultSet.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        modificarUsuarioIdOnTablaEmpleado(usuarioIdGenerado, empleadoId);
     }
 
     /**
@@ -58,8 +99,8 @@ public class UsuarioDAO {
      * @param empleado
      * @return Como puede o no devolver un valor la BD, se envuelve el resultado
      * de getUsuarioId() en un Optional, si no devuelve nada el empleado no
-     * existe, si devuelve cero el empleado no posee una cuenta y si devueslve un
-     * id de usuario entonces ya fue asignada una cuenta de usuario a ese
+     * existe, si devuelve cero el empleado no posee una cuenta y si devueslve
+     * un id de usuario entonces ya fue asignada una cuenta de usuario a ese
      * empleado.
      */
     public Optional consultarIdUsuario(Empleado empleado) {
@@ -73,6 +114,23 @@ public class UsuarioDAO {
                 }
                 return Optional.ofNullable(empleado.getUsuarioId());
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Actializa el id_usuario en la tabla empleado.
+     *
+     * @param usuarioId
+     * @param empleadoId
+     */
+    public void modificarUsuarioIdOnTablaEmpleado(Integer usuarioId, Integer empleadoId) {
+        String sql = "UPDATE EMPLEADO SET ID_USUARIO = ? WHERE ID_EMPLEADO = ?";
+        try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+            preparedStatement.setInt(1, usuarioId);
+            preparedStatement.setInt(2, empleadoId);
+            preparedStatement.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
