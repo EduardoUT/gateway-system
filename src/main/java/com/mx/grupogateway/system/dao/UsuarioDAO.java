@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -52,24 +53,25 @@ public class UsuarioDAO {
     }
 
     /**
-     * Consulta en la BD si el empleado está o no registrado.El usuario no existe si el id_usuario obtenido es igual a cero.
+     * Consulta en la BD si el empleado está o no registrado.El usuario no
+     * existe si el id_usuario obtenido es igual a cero.
      *
      *
      * @param empleado
      * @return
      */
-    public boolean estaRegistrado(Empleado empleado) {
-        System.out.println(empleado.getIdEmpleado());
+    public Optional consultarIdUsuario(Empleado empleado) {
         String sql = "SELECT ID_USUARIO FROM EMPLEADO WHERE ID_EMPLEADO = ?";
         try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
             preparedStatement.setInt(1, empleado.getIdEmpleado());
             preparedStatement.execute();
             try ( ResultSet resultSet = preparedStatement.getResultSet()) {
+                
                 while (resultSet.next()) {
                     empleado.setUsuarioId(resultSet.getInt("ID_USUARIO"));
-                    System.out.println("ResultSet: " + resultSet.getInt("ID_USUARIO"));
                 }
-                return empleado.getUsuarioId() == 0;
+                
+                return Optional.ofNullable(empleado.getUsuarioId());//empleado.getUsuarioId() == 0;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

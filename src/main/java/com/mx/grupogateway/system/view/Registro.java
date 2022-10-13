@@ -6,6 +6,7 @@ package com.mx.grupogateway.system.view;
 
 import com.mx.grupogateway.system.controller.UsuarioController;
 import com.mx.grupogateway.system.modelo.Empleado;
+import java.util.Optional;
 import javax.swing.JOptionPane;
 
 /**
@@ -24,18 +25,45 @@ public class Registro extends javax.swing.JFrame {
         this.usuarioController = new UsuarioController();
     }
 
+    /**
+     * Método que realiza el registro de un usuario que no posea una cuenta.
+     *
+     * Recibe un Optional con el valor del usuarioId en el objeto Empleado.
+     *
+     * Si devuelve Optional.empty: El empleado no existe.
+     *
+     * Si esta presente un valor entero y sea diferente de 0: El empleado ya
+     * tiene un usuario asignado.
+     *
+     * Si esta presente un valor entero y sea igual a 0: Se procede a registrar
+     * el usuario asociandolo a ese empleadoID.
+     */
     private void registrarUsuario() {
         int empleadoId = Integer.valueOf(campoIdEmpleado.getText());
         if (sonCamposValidosRegistro() && empleadoId > 0) {
             Empleado empleado = new Empleado(empleadoId);
-            if (this.usuarioController.estaRegistrado(empleado)) {
-                
-            } else {
+            Optional id = this.usuarioController.estaRegistrado(empleado);
+            if (id.equals(Optional.empty())) {
+                System.out.println(id);
+                JOptionPane.showMessageDialog(
+                        null,
+                        "El ID Empleado " + empleadoId + " no existe en la BD.",
+                        "Empleado inexistente.",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+
+            if (id.isPresent() && !id.get().equals(0)) {
+                System.out.println(id);
                 JOptionPane.showMessageDialog(
                         null, "El usuario asociado al ID Empleado " + empleadoId
                         + " ya existe.", "Usuario ya existe",
                         JOptionPane.WARNING_MESSAGE
                 );
+            }
+
+            if (id.isPresent() && id.get().equals(0)) {
+                System.out.println(id);
+                System.out.println("Registrando....");
             }
         } else {
             JOptionPane.showMessageDialog(

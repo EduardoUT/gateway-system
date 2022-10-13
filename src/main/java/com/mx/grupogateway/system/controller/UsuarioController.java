@@ -9,6 +9,7 @@ import com.mx.grupogateway.system.factory.ConnectionFactory;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Usuario;
 import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -39,8 +40,8 @@ public class UsuarioController {
      * @param empleado
      * @return
      */
-    public boolean estaRegistrado(Empleado empleado) {
-        return this.usuarioDAO.estaRegistrado(empleado);
+    public Optional estaRegistrado(Empleado empleado) {
+        return this.usuarioDAO.consultarIdUsuario(empleado);
     }
 
     /**

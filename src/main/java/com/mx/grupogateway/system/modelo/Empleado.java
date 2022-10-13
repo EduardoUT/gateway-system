@@ -16,8 +16,10 @@ public class Empleado {
     private String apellidoMaterno;
     private Integer cargoId;
     private Integer usuarioId;
-    
-    private static final Integer DEFAULT_USUARIO_ID = 0;
+    /**
+     * El valor por defecto es 0.
+     */
+    public static final Integer DEFAULT_USUARIO_ID = 0;
 
     /**
      * Constructor para crear un Empleado.
