@@ -8,25 +8,24 @@ import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 
 /**
+ * Usando algoritmo hash Argon2 para encriptación de datos, este tipo de
+ * encriptación es irreversible, para comprobar que el dato sea valido es
+ * necesario comprobarlo con el método booleano assertData()
  *
  * @author Eduardo Reyes Hernández
  */
 public class ProtectorData {
 
-    private final int ITERACIONES_DEFAULT = 4;
+    private static final int ITERACIONES_DEFAULT = 4;
 
     /**
-     * Usando algoritmo hash Argon2 para encriptación de contraseñas, este tipo
-     * de encriptación es irreversible, para comprobar que la contraseña sea
-     * valida es necesario comprobarla con el método booleano assertData()
-     *
-     * Este método se utiliza para almacenar de forma segura la contraseña
-     * registrada por el usuario.
+     * Este método se utiliza para almacenar de forma segura el dato ingresado
+     * en versión String.
      *
      * @param data Dato asociado.
-     * @return Una cadena con el dato encriptado.
+     * @return Una cadena hash con el dato encriptado.
      */
-    public String encriptarString(String data) {
+    public static String encriptar(String data) {
         if (data == null || data.isEmpty()) {
             throw new NullPointerException("La clave "
                     + "ingresada está vacía.");
@@ -44,9 +43,9 @@ public class ProtectorData {
      * Versión alterna que encripta directamente un char[].
      *
      * @param data Dato asociado.
-     * @return Una cadena con el dato encriptado.
+     * @return Una cadena hash con el dato encriptado.
      */
-    public String encriptarArrayCharset(char[] data) {
+    public static String encriptar(char[] data) {
         if (data == null || data.length == 0) {
             throw new NullPointerException("La clave "
                     + "ingresada está vacía.");
@@ -63,11 +62,11 @@ public class ProtectorData {
     /**
      * Permite que la clave ingresada coincida con el hash.
      *
-     * @param hash La clave encriptada.
-     * @param data Dato asociado..
+     * @param hash Dato encriptado.
+     * @param data Dato asociado al hash.
      * @return Verifica si el dato ingresado coincide con el hash.
      */
-    public boolean assertData(String hash, String data) {
+    public static boolean assertData(String hash, String data) {
         Argon2 argon2 = Argon2Factory.create();
         return argon2.verify(hash, data.toCharArray());
     }
@@ -75,11 +74,11 @@ public class ProtectorData {
     /**
      * Permite que la clave ingresada coincida con el hash.
      *
-     * @param hash La clave encriptada.
-     * @param data Dato asociado.
+     * @param hash Dato encriptado.
+     * @param data Dato asociado al hash.
      * @return Verifica si el dato ingresado coincide con el hash.
      */
-    public boolean assertData(String hash, char[] data) {
+    public static boolean assertData(String hash, char[] data) {
         Argon2 argon2 = Argon2Factory.create();
         return argon2.verify(hash, data);
     }

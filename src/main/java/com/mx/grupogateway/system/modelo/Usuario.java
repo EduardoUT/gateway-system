@@ -4,6 +4,7 @@
  */
 package com.mx.grupogateway.system.modelo;
 
+import com.mx.grupogateway.system.security.ProtectorData;
 import java.util.UUID;
 
 /**
@@ -73,12 +74,14 @@ public class Usuario {
     }
 
     /**
-     * Genera una clave con los últimos 16 carácteres del UUID.
+     * Genera una clave de 16 carácteres encriptada.
      *
-     * @return Clave de 16 carácteres.
+     * @return Hash de la clave generada.
      */
     private String generarClaveSeguridad() {
-        return UUID.randomUUID().toString().substring(19, 35);
+        return ProtectorData.encriptar(
+                UUID.randomUUID()
+                        .toString().substring(19, 35));
     }
 
     @Override

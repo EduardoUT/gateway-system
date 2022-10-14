@@ -7,6 +7,7 @@ package com.mx.grupogateway.system.view;
 import com.mx.grupogateway.system.controller.UsuarioController;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Usuario;
+import com.mx.grupogateway.system.security.ProtectorData;
 import java.util.Optional;
 import javax.swing.JOptionPane;
 
@@ -63,7 +64,8 @@ public class Registro extends javax.swing.JFrame {
             if (id.isPresent() && id.get().equals(0)) {
                 Usuario usuario = new Usuario(
                         campoNombreUsuario.getText(),
-                        String.valueOf(campoPassword.getPassword())          
+                        ProtectorData.encriptar(
+                                campoPassword.getPassword())
                 );
                 this.usuarioController.guardar(usuario, empleadoId);
             }
