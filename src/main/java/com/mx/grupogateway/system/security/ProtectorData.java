@@ -11,7 +11,7 @@ import de.mkammerer.argon2.Argon2Factory;
  *
  * @author Eduardo Reyes Hernández
  */
-public class ProtectorKey {
+public class ProtectorData {
 
     private final int ITERACIONES_DEFAULT = 4;
 
