@@ -72,8 +72,13 @@ public class Usuario {
         return claveSeguridad;
     }
 
+    /**
+     * Genera una clave con los últimos 16 carácteres del UUID.
+     *
+     * @return Clave de 16 carácteres.
+     */
     private String generarClaveSeguridad() {
-        return UUID.randomUUID().toString();
+        return UUID.randomUUID().toString().substring(19, 35);
     }
 
     @Override
