@@ -11,60 +11,76 @@ import de.mkammerer.argon2.Argon2Factory;
  *
  * @author Eduardo Reyes Hernández
  */
-public class PasswordSegura {
+public class ProtectorKey {
 
-    private final String passwordUser;
     private final int ITERACIONES_DEFAULT = 4;
-
-    public PasswordSegura(String passwordUser) {
-        if (passwordUser == null || passwordUser.isEmpty()) {
-            throw new NullPointerException("La contraseña "
-                    + "ingresada está vacía.");
-        }
-
-        this.passwordUser = passwordUser;
-    }
-
-    /**
-     * Convirtiendo String a char array para buen funcionamiento en algoritmo
-     * Argon2.
-     *
-     * @return La contraseña en un char array.
-     */
-    private char[] passwordUserToCharArray() {
-        return this.passwordUser.toCharArray();
-    }
 
     /**
      * Usando algoritmo hash Argon2 para encriptación de contraseñas, este tipo
      * de encriptación es irreversible, para comprobar que la contraseña sea
-     * valida es necesario comprobarla con el método booleano
-     * verificarPassword()
+     * valida es necesario comprobarla con el método booleano assertData()
      *
      * Este método se utiliza para almacenar de forma segura la contraseña
      * registrada por el usuario.
      *
-     * @return Una cadena con la contraseña encriptada.
+     * @param data Dato asociado.
+     * @return Una cadena con el dato encriptado.
      */
-    public String encriptarPassword() {
+    public String encriptarString(String data) {
+        if (data == null || data.isEmpty()) {
+            throw new NullPointerException("La clave "
+                    + "ingresada está vacía.");
+        }
         Argon2 argon2 = Argon2Factory.create();
-        String hash = argon2.hash(
+        return argon2.hash(
                 ITERACIONES_DEFAULT,
                 65536,
                 1,
-                passwordUserToCharArray()
+                data.toCharArray()
         );
-        return hash;
     }
 
     /**
-     * Permite verificar que la contraseña del usuario coincida con el hash.
+     * Versión alterna que encripta directamente un char[].
      *
-     * @param hash La contraseña encriptada.
-     * @return Verifica si la contraseña ingresada es válida.
+     * @param data Dato asociado.
+     * @return Una cadena con el dato encriptado.
      */
-    public boolean verificarPassword(String hash) {
+    public String encriptarArrayCharset(char[] data) {
+        if (data == null || data.length == 0) {
+            throw new NullPointerException("La clave "
+                    + "ingresada está vacía.");
+        }
         Argon2 argon2 = Argon2Factory.create();
-        return argon2.verify(hash, passwordUserToCharArray());
+        return argon2.hash(
+                ITERACIONES_DEFAULT,
+                65536,
+                1,
+                data
+        );
+    }
+
+    /**
+     * Permite que la clave ingresada coincida con el hash.
+     *
+     * @param hash La clave encriptada.
+     * @param data Dato asociado..
+     * @return Verifica si el dato ingresado coincide con el hash.
+     */
+    public boolean assertData(String hash, String data) {
+        Argon2 argon2 = Argon2Factory.create();
+        return argon2.verify(hash, data.toCharArray());
+    }
+
+    /**
+     * Permite que la clave ingresada coincida con el hash.
+     *
+     * @param hash La clave encriptada.
+     * @param data Dato asociado.
+     * @return Verifica si el dato ingresado coincide con el hash.
+     */
+    public boolean assertData(String hash, char[] data) {
+        Argon2 argon2 = Argon2Factory.create();
+        return argon2.verify(hash, data);
     }
 }
