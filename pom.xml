@@ -67,16 +67,5 @@
                 </configuration>
             </plugin>
         </plugins>
-        
-        <resources>
-            <resource>
-                <!--<directory>C:\Users\mcore\Documents\GatewaySystem\gateway-system\src\main\imagenes</directory>-->
-                <directory>src/main/java/com/mx/grupogateway/system/imagenes</directory>
-                <includes>
-                    <include>*.png</include>
-                </includes>
-            </resource>
-        </resources>
-        
     </build>
 </project>

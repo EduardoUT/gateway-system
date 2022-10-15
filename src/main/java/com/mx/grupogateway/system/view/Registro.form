@@ -26,7 +26,7 @@
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace min="-2" pref="116" max="-2" attributes="0"/>
               <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace pref="18" max="32767" attributes="0"/>
               <Component id="jButton1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -72,21 +72,23 @@
                               <Component id="jLabel3" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="campoVerPassword" min="-2" max="-2" attributes="0"/>
+                          <Component id="checkBoxVerPassword" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Component id="campoIdEmpleado" alignment="0" min="-2" pref="208" max="-2" attributes="0"/>
                       <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
                           <Component id="jLabel2" alignment="0" pref="208" max="32767" attributes="0"/>
                           <Component id="campoNombreUsuario" alignment="0" max="32767" attributes="0"/>
                       </Group>
-                      <Component id="passwordStatusLabel" min="-2" max="-2" attributes="0"/>
-                      <Component id="jLabel4" alignment="0" min="-2" pref="196" max="-2" attributes="0"/>
+                      <Component id="jLabel6" alignment="0" min="-2" pref="208" max="-2" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="campoCheckPassword" min="-2" pref="208" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                              <Component id="passwordStatusLabel" alignment="0" max="32767" attributes="0"/>
+                              <Component id="jLabel4" alignment="0" max="32767" attributes="0"/>
+                              <Component id="campoCheckPassword" alignment="0" pref="208" max="32767" attributes="0"/>
+                          </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="jButton3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="jLabel6" alignment="0" min="-2" pref="208" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace pref="12" max="32767" attributes="0"/>
               </Group>
@@ -109,13 +111,11 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="campoNombreUsuario" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="1" attributes="0">
-                      <Group type="102" attributes="0">
-                          <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="campoPassword" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <Component id="campoVerPassword" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Component id="checkBoxVerPassword" max="32767" attributes="0"/>
+                      <Component id="campoPassword" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="passwordStatusLabel" min="-2" max="-2" attributes="0"/>
@@ -185,7 +185,7 @@
             <Property name="text" type="java.lang.String" value="Status"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="campoVerPassword">
+        <Component class="javax.swing.JCheckBox" name="checkBoxVerPassword">
           <Properties>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="null"/>
@@ -195,12 +195,16 @@
               <Color id="Cursor de Mano"/>
             </Property>
             <Property name="focusPainted" type="boolean" value="false"/>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="new javax.swing.ImageIcon(getClass().getResource(&quot;../../../../../ojoCerrado.png&quot;))" type="code"/>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/imagenes/ojoCerrado.png"/>
+            </Property>
+            <Property name="rolloverEnabled" type="boolean" value="false"/>
+            <Property name="selectedIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/imagenes/ojoAbierto.png"/>
             </Property>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="campoVerPasswordActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkBoxVerPasswordActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JButton" name="jButton3">
