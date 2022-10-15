@@ -8,15 +8,13 @@ import com.mx.grupogateway.system.controller.UsuarioController;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Usuario;
 import com.mx.grupogateway.system.security.ProtectorData;
-import com.mx.grupogateway.system.security.Validaciones;
 import com.mx.grupogateway.system.view.util.CamposCommonMethods;
-import java.awt.Color;
-import java.net.URL;
 import java.util.Optional;
 import javax.swing.JOptionPane;
 
 /**
- *
+ * TODO: Hacer validación que valide que los campos password coincidan.
+ * 
  * @author Eduardo Reyes Hernández
  */
 public class Registro extends javax.swing.JFrame {
