@@ -80,8 +80,7 @@ public class Usuario {
      */
     private String generarClaveSeguridad() {
         return ProtectorData.encriptar(
-                UUID.randomUUID()
-                        .toString().substring(19, 35));
+                UUID.randomUUID().toString().substring(19, 35));
     }
 
     @Override

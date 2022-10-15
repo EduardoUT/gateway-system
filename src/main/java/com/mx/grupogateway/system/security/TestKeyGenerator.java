@@ -5,6 +5,7 @@
 package com.mx.grupogateway.system.security;
 
 import com.mx.grupogateway.system.modelo.Usuario;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -35,5 +36,6 @@ public class TestKeyGenerator {
         System.out.println(passwordSegura3.encriptarString());
          */
 
+        
     }
 }
