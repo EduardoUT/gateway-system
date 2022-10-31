@@ -40,17 +40,10 @@ de las hojas de cálculo con grandes cantidades de información y mantenerlas en
     
         - El sistema debía contar debidamente con un inicio de sesión.
   
-  ![Ventana de Inicio de Sesión](https://raw.githubusercontent.com/EduardoUT/CRUD-Gateway-Telecomunicaciones/master/assets/Capturas-GatewaySW/Login/Login.PNG)
-  
   **2) Administrador:** 
        
        - Se encargará de gestionar a los usuarios del sistema y administradores o jefes de área, asignando y controlando los inicios de sesión y 
        recuperación de contraseñas por medio de categorías de usuarios acorde a sus áreas o roles en la empresa.
-       
-  ![]()
-  ![Ventana del Administrador de Usuarios: Administradores](https://raw.githubusercontent.com/EduardoUT/CRUD-Gateway-Telecomunicaciones/master/assets/Capturas-GatewaySW/Administrador/Gesti%C3%B3nAdministradores.PNG)
-  ![Ventana del Administrador de Usuarios: Operadores](https://raw.githubusercontent.com/EduardoUT/CRUD-Gateway-Telecomunicaciones/master/assets/Capturas-GatewaySW/Administrador/Gesti%C3%B3nUsuarios.PNG)
-  
      
   **3) Administrador Facturación:** 
     
@@ -60,27 +53,12 @@ de las hojas de cálculo con grandes cantidades de información y mantenerlas en
     - Puede eliminar registro u actualizar o ingresar manualmente por medio de un formulario.
     - Realiza también la facturación de los proyectos.
   
-  ![Ventana del Administrador de Facturación: Asignación de Proyectos](https://raw.githubusercontent.com/EduardoUT/CRUD-Gateway-Telecomunicaciones/master/assets/Capturas-GatewaySW/Admin-Facturaci%C3%B3n/Gesti%C3%B3nAsignaciones.PNG)
-  ![Ventana del Administrador de Facturación: Historial de Asignaciones](https://raw.githubusercontent.com/EduardoUT/CRUD-Gateway-Telecomunicaciones/master/assets/Capturas-GatewaySW/Admin-Facturaci%C3%B3n/HistorialAsignaciones.PNG)
-  ![Ventana del Administrador de Facturación: Gestión de Facturas (Proyectos)](https://raw.githubusercontent.com/EduardoUT/CRUD-Gateway-Telecomunicaciones/master/assets/Capturas-GatewaySW/Admin-Facturaci%C3%B3n/Gesti%C3%B3nFacturas.PNG)
-  ![Ventana del Administrador de Facturación: Principal](https://raw.githubusercontent.com/EduardoUT/CRUD-Gateway-Telecomunicaciones/master/assets/Capturas-GatewaySW/Admin-Facturaci%C3%B3n/Principal.PNG)
-  
   **4) Administrador Cierre de Proyectos:**
   
     - Realiza el ajuste de precios del proyecto al ser finalizado, su interfaz es similar al del Administrador de Facturación, a excepción de
       la limitación de editar información de Facturación.
       
-  ![Ventana del Administrador de Cierre de Proyectos](https://raw.githubusercontent.com/EduardoUT/CRUD-Gateway-Telecomunicaciones/master/assets/Capturas-GatewaySW/Admin-CierreProyectos/Principal.PNG)
-  
-      
   **5)Administrador Almacén:**
   
     - Registrar los productos e insumos tanto entradas como salidas de los mismos en una Base de Datos con fecha, usando mi sistema para el control
       de gastos, permitiendo editar, ingresar, eliminar y actualizar los insumos.
-     
-  ![Ventana del Administrador de Almacén](https://raw.githubusercontent.com/EduardoUT/CRUD-Gateway-Telecomunicaciones/master/assets/Capturas-GatewaySW/Admin-Almac%C3%A9n/Principal.PNG)
-   
-
-
-
-
