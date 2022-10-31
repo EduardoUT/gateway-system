@@ -1,3 +1,4 @@
+![Refactorizando](https://img.shields.io/badge/Status-Refactorizando-yellow)
 # CRUD-Gateway-Telecomunicaciones
 Oficialmente titulado Sistema Interno de Gestión de información para Gateway Telecomunicaciones S.A. de C.V.
 
