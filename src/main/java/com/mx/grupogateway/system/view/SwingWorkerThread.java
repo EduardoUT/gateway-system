@@ -43,7 +43,7 @@ public class SwingWorkerThread extends SwingWorker<Void, Integer> {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
+        /*SwingUtilities.invokeLater(() -> {
             JProgressBar progressBar1 = new JProgressBar(0, 100); // Rango de 0 a 10
             JFrame frame = new JFrame("Ejemplo de SwingWorker con Progress Bar");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -52,7 +52,9 @@ public class SwingWorkerThread extends SwingWorker<Void, Integer> {
             frame.setVisible(true);
             SwingWorkerThread worker = new SwingWorkerThread(progressBar1);
             worker.execute();
-        });
+        });*/
+        int maxInt = Integer.MAX_VALUE;
+        System.out.println(maxInt);
     }
 
 }

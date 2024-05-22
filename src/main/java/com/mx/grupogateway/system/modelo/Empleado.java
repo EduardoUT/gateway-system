@@ -61,6 +61,14 @@ public class Empleado {
         this.usuarioId = usuarioId;
     }
 
+    public Empleado(String nombre, String apellidoPaterno,
+            String apellidoMaterno, Integer usuarioId) {
+        this.nombre = nombre;
+        this.apellidoPaterno = apellidoPaterno;
+        this.apellidoMaterno = apellidoMaterno;
+        this.usuarioId = usuarioId;
+    }
+
     /**
      * Constructor para asignar el empleadoId.
      *
@@ -146,10 +154,11 @@ public class Empleado {
 
     /**
      * Método que generá el identificador único de los empleados creados.
+     *
      * @return Cadena aleatoria de 18 carácteres de formato UUID.
      */
     private String generarId() {
-            return UUID.randomUUID().toString().substring(0, 18);
+        return UUID.randomUUID().toString().substring(0, 18);
     }
 
     @Override
