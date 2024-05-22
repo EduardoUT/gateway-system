@@ -84,6 +84,11 @@ public class Facturacion extends javax.swing.JFrame {
         jLabel1.setText("Seleccione el archivo Excel:");
 
         jButton2.setText("Examinar...");
+        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton2MouseClicked(evt);
+            }
+        });
 
         jLabel2.setText("Archivo Cargado:");
 
@@ -394,6 +399,10 @@ public class Facturacion extends javax.swing.JFrame {
         //limpiarSeleccionTabla(modeloTablaUsuario, tablaUsuario);
         seccionActualizarPassword.setVisible(false);
     }//GEN-LAST:event_jButton7MouseClicked
+
+    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2MouseClicked
 
     /**
      * @param args the command line arguments
