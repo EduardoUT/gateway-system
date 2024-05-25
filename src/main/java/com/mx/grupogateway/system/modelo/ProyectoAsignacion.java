@@ -17,10 +17,11 @@ public class ProyectoAsignacion extends Proyecto {
     private String ordenCompraDt;
     private BigDecimal importe;
     private BigDecimal totalPagar;
+    private Boolean status; //<------
     private final Empleado empleado;
 
     public ProyectoAsignacion(Date fechaAsignacion, String ordenCompraDt,
-            BigDecimal importe, BigDecimal totalPagar, Proyecto proyecto,
+            BigDecimal importe, BigDecimal totalPagar, Boolean status, Proyecto proyecto,
             Empleado empleado) {
         super(proyecto.getIdProyecto(), proyecto.getProjectCode(),
                 proyecto.getProjectName(), proyecto.getCustomer(),
@@ -37,6 +38,7 @@ public class ProyectoAsignacion extends Proyecto {
         this.ordenCompraDt = ordenCompraDt;
         this.importe = importe;
         this.totalPagar = totalPagar;
+        this.status = status;
         this.empleado = empleado;
     }
 
@@ -101,5 +103,31 @@ public class ProyectoAsignacion extends Proyecto {
      */
     public void setTotalPagar(BigDecimal totalPagar) {
         this.totalPagar = totalPagar;
+    }
+
+    /**
+     * @return the status
+     */
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public String getStatusAsBinary() {
+        return (this.status ? "0" : "1");
+    }
+
+    @Override
+    public String toString() {
+        //yyyy-MM-dd HH:mm:ss
+        return String.format("[ID_Empleado: %s | ID_Proyecto: %d | "
+                + "Fecha Asignación: %s | Orden Compra DT: %s | "
+                + "Importe: %d | Total Pagar: %d | Status: %s]",
+                this.empleado.getIdEmpleado(),
+                this.getIdProyecto(),
+                this.fechaAsignacion,
+                this.ordenCompraDt,
+                this.importe,
+                this.totalPagar,
+                this.status);
     }
 }
