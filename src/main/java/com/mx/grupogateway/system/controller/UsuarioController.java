@@ -30,10 +30,10 @@ public class UsuarioController {
      * empleado asociado.
      *
      * @param usuario
-     * @param empleadoId
+     * @param idEmpleado
      */
-    public void guardar(Usuario usuario, String empleadoId) {
-        this.usuarioDAO.guardar(usuario, empleadoId);
+    public void guardar(Usuario usuario, String idEmpleado) {
+        this.usuarioDAO.guardar(usuario, idEmpleado);
     }
     
     /**
@@ -58,10 +58,10 @@ public class UsuarioController {
     /**
      * Obtiene el identificador de usuario como referencia de la tablaUsuario.
      *
-     * @param usuarioId
+     * @param idUsuario
      * @return
      */
-    public int eliminar(Integer usuarioId) {
-        return this.usuarioDAO.eliminar(usuarioId);
+    public int eliminar(String idUsuario) {
+        return this.usuarioDAO.eliminar(idUsuario);
     }
 }
