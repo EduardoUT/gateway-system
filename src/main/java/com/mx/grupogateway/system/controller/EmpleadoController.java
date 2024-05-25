@@ -29,10 +29,10 @@ public class EmpleadoController {
      * id de la categoría a la que pertenece.
      *
      * @param empleado Objeto de tipo Empleado.
-     * @param cargoId El id de la categoría correspondiente.
+     * @param idCategoria El id de la categoría correspondiente.
      */
-    public void guardar(Empleado empleado, Integer cargoId) {
-        empleado.setCargoId(cargoId);
+    public void guardar(Empleado empleado, String idCategoria) {
+        empleado.setEmpleadoCategoriaId(idCategoria);
         empleadoDAO.guardar(empleado);
     }
 
@@ -52,13 +52,13 @@ public class EmpleadoController {
      * @param nombre
      * @param apellidoP
      * @param apellidoM
-     * @param cargoId
+     * @param idCategoria
      * @return Cantidad de registros actualizados.
      */
     public int modificar(String empleadoId, String nombre,
-            String apellidoP, String apellidoM, Integer cargoId) {
+            String apellidoP, String apellidoM, String idCategoria) {
         return this.empleadoDAO.modificar(empleadoId, nombre,
-                apellidoP, apellidoM, cargoId);
+                apellidoP, apellidoM, idCategoria);
 
     }
 
