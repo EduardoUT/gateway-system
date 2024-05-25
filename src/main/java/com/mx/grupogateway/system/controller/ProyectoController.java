@@ -4,20 +4,30 @@
  */
 package com.mx.grupogateway.system.controller;
 
-import com.mx.grupogateway.system.dao.ProjectDataDAO;
+import com.mx.grupogateway.system.dao.ProyectoDAO;
 import com.mx.grupogateway.system.factory.ConnectionFactory;
+import com.mx.grupogateway.system.modelo.Proyecto;
+import java.util.List;
 
 /**
  *
  * @author eduar
  */
-public class ProjectDataController {
+public class ProyectoController {
 
-    private final ProjectDataDAO projectDataDAO;
+    private final ProyectoDAO proyectoDAO;
 
-    public ProjectDataController() {
-        this.projectDataDAO = new ProjectDataDAO(
+    public ProyectoController() {
+        this.proyectoDAO = new ProyectoDAO(
                 new ConnectionFactory().realizarConexion()
         );
+    }
+    
+    public void guardar(Proyecto proyecto) {
+        this.proyectoDAO.guardar(proyecto);
+    }
+    
+    public List<Proyecto> listar() {
+        return this.proyectoDAO.listar();
     }
 }
