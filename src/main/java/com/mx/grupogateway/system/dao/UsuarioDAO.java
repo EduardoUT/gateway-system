@@ -40,31 +40,30 @@ public class UsuarioDAO {
      * TODO Encriptar contraseña al almacenar.
      *
      * @param usuario
-     * @param empleadoId
+     * @param idEmpleado
      */
-    public void guardar(Usuario usuario, String empleadoId) {
-        Integer usuarioIdGenerado = 0;
-        String sql = "INSERT INTO USUARIO (NOMBRE, PASSWORD, CLAVE_SEGURIDAD)"
-                + "VALUES (?, ?, ?)";
-        try ( PreparedStatement preparedStatement = con.prepareStatement(sql,
+    public void guardar(Usuario usuario, String idEmpleado) {
+        String idUsuarioGenerado = "";
+        String sql = "INSERT INTO USUARIOS (NOMBRE_USUARIO, PASSWORD)"
+                + "VALUES (?, ?)";
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1, usuario.getNombreUsuario());
             preparedStatement.setString(2, usuario.getPassword());
-            preparedStatement.setString(3, usuario.getClaveSeguridad());
             preparedStatement.execute();
-            try ( ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
                 while (resultSet.next()) {
                     System.out.println(
                             String.format("Fue guardado el usuaro %s ",
                                     usuario)
                     );
-                    usuarioIdGenerado = resultSet.getInt(1);
+                    idUsuarioGenerado = resultSet.getString(1);
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        modificarUsuarioIdOnTablaEmpleado(usuarioIdGenerado, empleadoId);
+        modificarUsuarioIdEnTablaEmpleado(idUsuarioGenerado, idEmpleado);
     }
 
     /**
@@ -73,16 +72,15 @@ public class UsuarioDAO {
      */
     public List<Usuario> listar() {
         List<Usuario> resultado = new ArrayList<>();
-        String sql = "SELECT ID_USUARIO, NOMBRE, CLAVE_SEGURIDAD FROM USUARIO";
+        String sql = "SELECT ID_USUARIO, NOMBRE_USUARIO FROM USUARIOS";
 
-        try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
             preparedStatement.execute();
-            try ( ResultSet resultSet = preparedStatement.getResultSet();) {
+            try (ResultSet resultSet = preparedStatement.getResultSet();) {
                 while (resultSet.next()) {
                     Usuario fila = new Usuario(
-                            resultSet.getInt("ID_USUARIO"),
-                            resultSet.getString("NOMBRE"),
-                            resultSet.getString("CLAVE_SEGURIDAD")
+                            resultSet.getString("ID_USUARIO"),
+                            resultSet.getString("NOMBRE_USUARIO")
                     );
                     resultado.add(fila);
                 }
@@ -104,15 +102,15 @@ public class UsuarioDAO {
      * empleado.
      */
     public Optional consultarIdUsuario(Empleado empleado) {
-        String sql = "SELECT ID_USUARIO FROM EMPLEADO WHERE ID_EMPLEADO = ?";
-        try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+        String sql = "SELECT ID_USUARIO FROM EMPLEADOS WHERE ID_EMPLEADO = ?";
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
             preparedStatement.setString(1, empleado.getIdEmpleado());
             preparedStatement.execute();
-            try ( ResultSet resultSet = preparedStatement.getResultSet()) {
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    empleado.setUsuarioId(resultSet.getInt("ID_USUARIO"));
+                    empleado.setUsuarioId(resultSet.getString("ID_USUARIO"));
                 }
-                return Optional.ofNullable(empleado.getUsuarioId());
+                return Optional.ofNullable(empleado.getUsuario().getIdUsuario());
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -120,16 +118,16 @@ public class UsuarioDAO {
     }
 
     /**
-     * Actializa el id_usuario en la tabla empleado.
+     * Actualiza el id_usuario en la tabla empleado.
      *
-     * @param usuarioId
-     * @param empleadoId
+     * @param idUsuario
+     * @param idEmpleado
      */
-    public void modificarUsuarioIdOnTablaEmpleado(Integer usuarioId, String empleadoId) {
-        String sql = "UPDATE EMPLEADO SET ID_USUARIO = ? WHERE ID_EMPLEADO = ?";
-        try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
-            preparedStatement.setInt(1, usuarioId);
-            preparedStatement.setString(2, empleadoId);
+    public void modificarUsuarioIdEnTablaEmpleado(String idUsuario, String idEmpleado) {
+        String sql = "UPDATE EMPLEADOS SET ID_USUARIO = ? WHERE ID_EMPLEADO = ?";
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+            preparedStatement.setString(1, idUsuario);
+            preparedStatement.setString(2, idEmpleado);
             preparedStatement.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -140,14 +138,14 @@ public class UsuarioDAO {
      * Realiza la eliminación de un usuario en la BD tomando como referencia el
      * ID.
      *
-     * @param usuarioId
+     * @param idUsuario
      * @return
      */
-    public int eliminar(Integer usuarioId) {
-        eliminarAsociacionEmpleadoUsuario(usuarioId);
-        String sql = "DELETE FROM USUARIO WHERE ID_USUARIO = ?";
-        try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
-            preparedStatement.setInt(1, usuarioId);
+    public int eliminar(String idUsuario) {
+        eliminarRelacionEmpleadoUsuario(idUsuario);
+        String sql = "DELETE FROM USUARIOS WHERE ID_USUARIO = ?";
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+            preparedStatement.setString(1, idUsuario);
             preparedStatement.execute();
             int updateCount = preparedStatement.getUpdateCount();
             return updateCount;
@@ -160,13 +158,13 @@ public class UsuarioDAO {
      * Actualiza el id_usuario en la tabla empleado asociada a la tabla de
      * usuario a fin de poder eliminarlo.
      *
-     * @param usuarioId
+     * @param idUsuario
      */
-    private void eliminarAsociacionEmpleadoUsuario(Integer usuarioId) {
-        String sql = "UPDATE EMPLEADO SET ID_USUARIO = ? WHERE ID_USUARIO = ?";
-        try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
-            preparedStatement.setNull(1, usuarioId);
-            preparedStatement.setInt(2, usuarioId);
+    private void eliminarRelacionEmpleadoUsuario(String idUsuario) {
+        String sql = "UPDATE EMPLEADOS SET ID_USUARIO = ? WHERE ID_USUARIO = ?";
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+            preparedStatement.setString(1, "NULL");
+            preparedStatement.setString(2, idUsuario);
             preparedStatement.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
