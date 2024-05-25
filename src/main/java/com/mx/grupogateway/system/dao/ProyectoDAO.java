@@ -5,7 +5,7 @@
 package com.mx.grupogateway.system.dao;
 
 import com.mx.grupogateway.system.modelo.Empleado;
-import com.mx.grupogateway.system.modelo.ProjectData;
+import com.mx.grupogateway.system.modelo.Proyecto;
 import com.mx.grupogateway.system.modelo.Usuario;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -22,54 +22,54 @@ import java.util.List;
  *
  * @author eduar
  */
-public class ProjectDataDAO {
+public class ProyectoDAO {
 
     private final Connection con;
 
-    public ProjectDataDAO(Connection con) {
+    public ProyectoDAO(Connection con) {
         this.con = con;
     }
 
-    public void guardar(ProjectData projectData) throws SQLException {
-        String sql = "INSERT INTO FACTURACION "
-                + "(ID, PROJECT_CODE, PROJECT_NAME, CUSTOMER, "
+    public void guardar(Proyecto proyecto) throws SQLException {
+        String sql = "INSERT INTO PROJECTS "
+                + "(ID_PROJECT, PROJECT_CODE, PROJECT_NAME, CUSTOMER, "
                 + "PO_STATUS, PO_NO, PO_LINE_NO, SHIPMENT_NO, "
                 + "SITE_CODE, SITE_NAME, ITEM_CODE, ITEM_DESC, "
                 + "REQUESTED_QTY, DUE_QTY, BILLED_QTY, "
                 + "UNIT_PRICE, LINE_AMOUNT, UNIT, PAYMENT_TERMS, "
                 + "CATEGORY, BIDDING_AREA, PUBLISH_DATE) "
-                + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
         try (PreparedStatement preparedStatement = con.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS);) {
-            preparedStatement.setString(1, projectData.getProjectId());
-            preparedStatement.setString(2, projectData.getProjectCode());
-            preparedStatement.setString(3, projectData.getProjectName());
-            preparedStatement.setString(4, projectData.getCustomer());
-            preparedStatement.setString(5, projectData.getPoStatus());
-            preparedStatement.setString(6, projectData.getPoNo());
-            preparedStatement.setInt(7, projectData.getPoLineNo());
-            preparedStatement.setInt(8, projectData.getShipmentNo());
-            preparedStatement.setString(9, projectData.getSiteCode());
-            preparedStatement.setString(10, projectData.getSiteName());
-            preparedStatement.setString(11, projectData.getItemCode());
-            preparedStatement.setString(12, projectData.getItemDesc());
-            preparedStatement.setInt(13, projectData.getRequestedQty());
-            preparedStatement.setDouble(14, projectData.getDueQty());
-            preparedStatement.setDouble(15, projectData.getBilledQty());
-            preparedStatement.setBigDecimal(16, projectData.getUnitPrice());
-            preparedStatement.setBigDecimal(17, projectData.getLineAmount());
-            preparedStatement.setString(18, projectData.getUnit());
-            preparedStatement.setString(19, projectData.getPaymentTerms());
-            preparedStatement.setString(20, projectData.getCategory());
-            preparedStatement.setString(21, projectData.getBiddingArea());
-            preparedStatement.setDate(22, projectData.getPublishDate());
+            preparedStatement.setInt(1, proyecto.getIdProyecto());
+            preparedStatement.setString(2, proyecto.getProjectCode());
+            preparedStatement.setString(3, proyecto.getProjectName());
+            preparedStatement.setString(4, proyecto.getCustomer());
+            preparedStatement.setString(5, proyecto.getPoStatus());
+            preparedStatement.setString(6, proyecto.getPoNo());
+            preparedStatement.setInt(7, proyecto.getPoLineNo());
+            preparedStatement.setInt(8, proyecto.getShipmentNo());
+            preparedStatement.setString(9, proyecto.getSiteCode());
+            preparedStatement.setString(10, proyecto.getSiteName());
+            preparedStatement.setInt(11, proyecto.getItemCode());
+            preparedStatement.setString(12, proyecto.getItemDesc());
+            preparedStatement.setDouble(13, proyecto.getRequestedQty());
+            preparedStatement.setBigDecimal(14, proyecto.getDueQty());
+            preparedStatement.setBigDecimal(15, proyecto.getBilledQty());
+            preparedStatement.setBigDecimal(16, proyecto.getUnitPrice());
+            preparedStatement.setBigDecimal(17, proyecto.getLineAmount());
+            preparedStatement.setString(18, proyecto.getUnit());
+            preparedStatement.setString(19, proyecto.getPaymentTerms());
+            preparedStatement.setString(20, proyecto.getCategory());
+            preparedStatement.setString(21, proyecto.getBiddingArea());
+            preparedStatement.setDate(22, proyecto.getPublishDate());
             preparedStatement.execute();
 
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
                 while (resultSet.next()) {
                     System.out.println(String.format("Fue guardado "
-                            + "el proyecto %s", projectData));
+                            + "el proyecto %s", proyecto));
                 }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
@@ -77,35 +77,15 @@ public class ProjectDataDAO {
         }
     }
 
-    public List<ProjectData> listar() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<ProjectData> resultado = new ArrayList<>();
-        String sql = "SELECT FACTURACION.ID, FACTURACION.PROJECT_CODE, "
-                + "FACTURACION.PROJECT_NAME, FACTURACION.CUSTOMER, "
-                + "FACTURACION.PO_STATUS, FACTURACION.PO_NO, "
-                + "FACTURACION.PO_LINE_NO, FACTURACION.SHIPMENT_NO, "
-                + "FACTURACION.SITE_CODE, FACTURACION.SITE_NAME, "
-                + "FACTURACION.ITEM_CODE, FACTURACION.ITEM_DESC, "
-                + "FACTURACION.REQUESTED_QTY, FACTURACION.DUE_QTY, "
-                + "FACTURACION.BILLED_QTY, FACTURACION.UNIT_PRICE, "
-                + "FACTURACION.LINE_AMOUNT, FACTURACION.UNIT, "
-                + "FACTURACION.PAYMENT_TERMS, FACTURACION.CATEGORY, "
-                + "FACTURACION.BIDDING_AREA, FACTURACION.PUBLISH_DATE, "
-                + "FACTURACION.STATUS_CIERRE, "
-                + "ASIGNACIONES.ID_USUARIO, USUARIOS.NOMBRE, USUARIOS.APE_PAT, "
-                + "USUARIOS.APE_MAT, ASIGNACIONES.ORDEN_COMPRA_DT, "
-                + "ASIGNACIONES.IMPORTE, ASIGNACIONES.TOTAL_PAGAR, "
-                + "ASIGNACIONES.STATUS_FACTURACION "
-                + "FROM FACTURACION, ASIGNACIONES, USUARIOS "
-                + "WHERE ASIGNACIONES.ID_USUARIO = USUARIOS.ID_USUARIO "
-                + "&& FACTURACION.ID = ASIGNACIONES.ID";
-
+    public List<Proyecto> listar() {
+        List<Proyecto> resultado = new ArrayList<>();
+        String sql = "SELECT * FROM PROJECTS";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet();) {
                 while (resultSet.next()) {
-                    ProjectData fila = new ProjectData(
-                            resultSet.getInt("ID"),
+                    Proyecto fila = new Proyecto(
+                            resultSet.getInt("ID_PROJECT"),
                             resultSet.getString("PROJECT_CODE"),
                             resultSet.getString("PROJECT_NAME"),
                             resultSet.getString("CUSTOMER"),
@@ -126,23 +106,14 @@ public class ProjectDataDAO {
                             resultSet.getString("PAYMENT_TERMS"),
                             resultSet.getString("CATEGORY"),
                             resultSet.getString("BIDDING_AREA"),
-                            resultSet.getString(simpleDateFormat.format("PUBLISH_DATE")),
-                            resultSet.getString("STATUS_CIERRE"),
-                            new Empleado(
-                                    resultSet.getString("NOMBRE"),
-                                    resultSet.getString("APE_PAT"),
-                                    resultSet.getString("APE_MAT"),
-                                    resultSet.getInt("ID_USUARIO")),
-                            resultSet.getString("ORDEN_COMPRA_DT"),
-                            resultSet.getBigDecimal("IMPORTE"),
-                            resultSet.getBigDecimal("TOTAL_PAGAR"),
-                            resultSet.getString("STATUS_FACTURACION"),
+                            resultSet.getDate("PUBLISH_DATE")
                     );
-
                     resultado.add(fila);
                 }
+                return resultado;
             }
-            return resultado;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 }
