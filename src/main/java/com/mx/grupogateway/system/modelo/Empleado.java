@@ -136,7 +136,7 @@ public class Empleado {
                 this.apellidoPaterno,
                 this.apellidoMaterno,
                 this.getEmpleadoCategoria().getCategoriaId(),
-                this.getUsuario().getUsuarioId());
+                this.getUsuario().getIdUsuario());
     }
 
     /**
@@ -151,6 +151,14 @@ public class Empleado {
      */
     public EmpleadoCategoria getEmpleadoCategoria() {
         return empleadoCategoria;
+    }
+
+    public void setEmpleadoCategoriaId(String idCategoria) {
+        this.empleadoCategoria.setIdCategoria(idCategoria);
+    }
+
+    public void setUsuarioId(String idUsuario) {
+        this.usuario.setUsuarioId(idUsuario);
     }
 
 }
