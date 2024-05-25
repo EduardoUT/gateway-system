@@ -4,7 +4,7 @@
  */
 package com.mx.grupogateway.system.modelo;
 
-import java.util.UUID;
+import com.mx.grupogateway.system.util.UUIDOperations;
 
 /**
  *
@@ -16,8 +16,9 @@ public class Empleado {
     private String nombre;
     private String apellidoPaterno;
     private String apellidoMaterno;
-    private EmpleadoCategoria empleadoCategoria;
     private Usuario usuario;
+    private EmpleadoCategoria empleadoCategoria;
+    
 
     /**
      * El valor por defecto es 0.
@@ -34,7 +35,7 @@ public class Empleado {
     public Empleado(String nombre, String apellidoPaterno,
             String apellidoMaterno) {
         validarEmpleado(nombre, apellidoPaterno, apellidoMaterno);
-        this.empleadoId = generarId();
+        this.empleadoId = UUIDOperations.generarIdentificador();
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
@@ -52,14 +53,14 @@ public class Empleado {
      * @param usuario
      */
     public Empleado(String empleadoId, String nombre, String apellidoPaterno,
-            String apellidoMaterno, EmpleadoCategoria empleadoCategoria, 
-            Usuario usuario) {
+            String apellidoMaterno, Usuario usuario, 
+            EmpleadoCategoria empleadoCategoria) {
         this.empleadoId = empleadoId;
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
-        this.empleadoCategoria = empleadoCategoria;
         this.usuario = usuario;
+        this.empleadoCategoria = empleadoCategoria;
     }
 
     public Empleado(String nombre, String apellidoPaterno,
@@ -126,25 +127,30 @@ public class Empleado {
         }
     }
 
-    /**
-     * Método que generá el identificador único de los empleados creados.
-     *
-     * @return Cadena aleatoria de 18 carácteres de formato UUID.
-     */
-    private String generarId() {
-        return UUID.randomUUID().toString().substring(0, 18);
-    }
-
     @Override
     public String toString() {
         return String.format("[ID: %s | Nombre: %s | Apellido P: %s "
-                + "| Apellido M: %s | ID Categoría: %d | ID Usuario: %d]",
+                + "| Apellido M: %s | ID Categoría: %s | ID Usuario: %s]",
                 this.empleadoId,
                 this.nombre,
                 this.apellidoPaterno,
                 this.apellidoMaterno,
-                this.empleadoCategoria.getCategoriaId(),
-                this.usuario.getUsuarioId());
+                this.getEmpleadoCategoria().getCategoriaId(),
+                this.getUsuario().getUsuarioId());
+    }
+
+    /**
+     * @return the usuario
+     */
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    /**
+     * @return the empleadoCategoria
+     */
+    public EmpleadoCategoria getEmpleadoCategoria() {
+        return empleadoCategoria;
     }
 
 }
