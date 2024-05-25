@@ -5,6 +5,8 @@
 package com.mx.grupogateway.system.dao;
 
 import com.mx.grupogateway.system.modelo.Empleado;
+import com.mx.grupogateway.system.modelo.EmpleadoCategoria;
+import com.mx.grupogateway.system.modelo.Usuario;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,22 +33,22 @@ public class EmpleadoDAO {
      * @param empleado
      */
     public void guardar(Empleado empleado) {
-        String sql = "INSERT INTO EMPLEADO "
-                + "(ID_EMPLEADO, NOMBRE, APELLIDO_P, "
-                + "APELLIDO_M, ID_CATEGORIA, ID_USUARIO) "
+        String sql = "INSERT INTO EMPLEADOS "
+                + "(ID_EMPLEADO, NOMBRE, APE_PAT, "
+                + "APE_MAT, ID_USUARIO, ID_CATEGORIA_EMPLEADO) "
                 + "VALUES (?, ?, ?, ?, ?, ?)";
 
-        try ( PreparedStatement preparedStatement = con.prepareStatement(sql,
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1, empleado.getIdEmpleado());
             preparedStatement.setString(2, empleado.getNombre());
             preparedStatement.setString(3, empleado.getApellidoPaterno());
             preparedStatement.setString(4, empleado.getApellidoMaterno());
-            preparedStatement.setInt(5, empleado.getCargoId());
-            preparedStatement.setNull(6, empleado.getUsuarioId());
+            preparedStatement.setString(5, empleado.getUsuario().getIdUsuario());
+            preparedStatement.setString(6, empleado.getEmpleadoCategoria().getCategoriaId());
             preparedStatement.execute();
 
-            try ( ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
                 while (resultSet.next()) {
                     System.out.println(
                             String.format("Fue guardado el empleado %s",
@@ -66,20 +68,20 @@ public class EmpleadoDAO {
      */
     public List<Empleado> listar() {
         List<Empleado> resultado = new ArrayList<>();
-        String sql = "SELECT ID_EMPLEADO, NOMBRE, APELLIDO_P, "
-                + "APELLIDO_M, ID_CATEGORIA, ID_USUARIO FROM EMPLEADO";
+        String sql = "SELECT ID_EMPLEADO, NOMBRE, APE_PAT, "
+                + "APE_MAT, ID_USUARIO, ID_CATEGORIA_EMPLEADO FROM EMPLEADOS";
 
-        try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
             preparedStatement.execute();
-            try ( ResultSet resultSet = preparedStatement.getResultSet();) {
+            try (ResultSet resultSet = preparedStatement.getResultSet();) {
                 while (resultSet.next()) {
                     Empleado fila = new Empleado(
                             resultSet.getString("ID_EMPLEADO"),
                             resultSet.getString("NOMBRE"),
                             resultSet.getString("APELLIDO_P"),
                             resultSet.getString("APELLIDO_M"),
-                            resultSet.getInt("ID_CATEGORIA"),
-                            resultSet.getInt("ID_USUARIO")
+                            new Usuario(resultSet.getString("ID_USUARIO")),
+                            new EmpleadoCategoria(resultSet.getString("ID_CATEGORIA_EMPLEADO"))
                     );
                     resultado.add(fila);
                 }
@@ -94,24 +96,25 @@ public class EmpleadoDAO {
      * Realiza la actualización de los registros del empleado acorde a su
      * empleadoId.
      *
-     * @param empleadoId
+     * @param idEmpleado
      * @param nombre
      * @param apellidoP
      * @param apellidoM
-     * @param cargoId
+     * @param idCategoria
      * @return
      */
-    public int modificar(String empleadoId, String nombre, String apellidoP, String apellidoM, Integer cargoId) {
-        String sql = "UPDATE EMPLEADO "
-                + "SET NOMBRE = ?, APELLIDO_P = ?, APELLIDO_M = ?, "
-                + "ID_CATEGORIA = ? "
+    public int modificar(String idEmpleado, String nombre, String apellidoP,
+            String apellidoM, String idCategoria) {
+        String sql = "UPDATE EMPLEADOS "
+                + "SET NOMBRE = ?, APE_PAT = ?, APE_MAT = ?, "
+                + "ID_CATEGORIA_EMPLEADO = ? "
                 + "WHERE ID_EMPLEADO = ?";
-        try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
             preparedStatement.setString(1, nombre);
             preparedStatement.setString(2, apellidoP);
             preparedStatement.setString(3, apellidoM);
-            preparedStatement.setInt(4, cargoId);
-            preparedStatement.setString(5, empleadoId);
+            preparedStatement.setString(4, idCategoria);
+            preparedStatement.setString(5, idEmpleado);
             preparedStatement.execute();
             int updateCount = preparedStatement.getUpdateCount();
             return updateCount;
@@ -123,13 +126,13 @@ public class EmpleadoDAO {
     /**
      * Realiza la eliminación del registro en la BD, acorde al empleadoId.
      *
-     * @param empleadoId
+     * @param idEmpleado
      * @return
      */
-    public int eliminar(String empleadoId) {
-        String sql = "DELETE FROM EMPLEADO WHERE ID_EMPLEADO = ?";
-        try ( PreparedStatement preparedStatement = con.prepareStatement(sql);) {
-            preparedStatement.setString(1, empleadoId);
+    public int eliminar(String idEmpleado) {
+        String sql = "DELETE FROM EMPLEADOS WHERE ID_EMPLEADO = ?";
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+            preparedStatement.setString(1, idEmpleado);
             preparedStatement.execute();
             int updateCount = preparedStatement.getUpdateCount();
             return updateCount;
