@@ -11,40 +11,33 @@ import java.sql.Date;
  *
  * @author eduar
  */
-public class ProjectAssignations extends ProjectData {
+public class ProyectoAsignacion extends Proyecto {
 
-    private Integer idAsignacion;
     private Date fechaAsignacion;
-    private Integer id;
-    private Empleado empleado;
     private String ordenCompraDt;
     private BigDecimal importe;
     private BigDecimal totalPagar;
-    private String statusFacturacion;
+    private final Empleado empleado;
 
-    public ProjectAssignations(Integer Id, String projectCode,
-            String projectName, String customer, String poStatus, String poNo,
-            Integer poLineNo, Integer shipmentNo, String siteCode,
-            String siteName, Integer itemCode, String itemDesc,
-            Double requestedQty, BigDecimal dueQty, BigDecimal billedQty,
-            BigDecimal unitPrice, BigDecimal lineAmount, String unit,
-            String paymentTerms, String category, String biddingArea,
-            Date publishDate, Empleado empleado) {
-       
-    }
-
-    /**
-     * @return the idAsignacion
-     */
-    public Integer getIdAsignacion() {
-        return idAsignacion;
-    }
-
-    /**
-     * @param idAsignacion the idAsignacion to set
-     */
-    public void setIdAsignacion(Integer idAsignacion) {
-        this.idAsignacion = idAsignacion;
+    public ProyectoAsignacion(Date fechaAsignacion, String ordenCompraDt,
+            BigDecimal importe, BigDecimal totalPagar, Proyecto proyecto,
+            Empleado empleado) {
+        super(proyecto.getIdProyecto(), proyecto.getProjectCode(),
+                proyecto.getProjectName(), proyecto.getCustomer(),
+                proyecto.getPoStatus(), proyecto.getPoNo(),
+                proyecto.getPoLineNo(), proyecto.getShipmentNo(),
+                proyecto.getSiteCode(), proyecto.getSiteName(),
+                proyecto.getItemCode(), proyecto.getItemDesc(),
+                proyecto.getRequestedQty(), proyecto.getDueQty(),
+                proyecto.getBilledQty(), proyecto.getUnitPrice(),
+                proyecto.getLineAmount(), proyecto.getUnit(),
+                proyecto.getPaymentTerms(), proyecto.getCategory(),
+                proyecto.getBiddingArea(), proyecto.getPublishDate());
+        this.fechaAsignacion = fechaAsignacion;
+        this.ordenCompraDt = ordenCompraDt;
+        this.importe = importe;
+        this.totalPagar = totalPagar;
+        this.empleado = empleado;
     }
 
     /**
@@ -62,31 +55,10 @@ public class ProjectAssignations extends ProjectData {
     }
 
     /**
-     * @return the id
-     */
-    public Integer getId() {
-        return id;
-    }
-
-    /**
-     * @param id the id to set
-     */
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    /**
      * @return the usuario
      */
     public Empleado getEmpleado() {
         return empleado;
-    }
-
-    /**
-     * @param usuario the usuario to set
-     */
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
     }
 
     /**
@@ -130,19 +102,4 @@ public class ProjectAssignations extends ProjectData {
     public void setTotalPagar(BigDecimal totalPagar) {
         this.totalPagar = totalPagar;
     }
-
-    /**
-     * @return the statusFacturacion
-     */
-    public String getStatusFacturacion() {
-        return statusFacturacion;
-    }
-
-    /**
-     * @param statusFacturacion the statusFacturacion to set
-     */
-    public void setStatusFacturacion(String statusFacturacion) {
-        this.statusFacturacion = statusFacturacion;
-    }
-
 }

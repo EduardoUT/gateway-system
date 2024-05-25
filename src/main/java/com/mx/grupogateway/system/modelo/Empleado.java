@@ -16,8 +16,8 @@ public class Empleado {
     private String nombre;
     private String apellidoPaterno;
     private String apellidoMaterno;
-    private Integer cargoId;
-    private Integer usuarioId;
+    private EmpleadoCategoria empleadoCategoria;
+    private Usuario usuario;
 
     /**
      * El valor por defecto es 0.
@@ -38,7 +38,7 @@ public class Empleado {
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
-        this.usuarioId = DEFAULT_USUARIO_ID;
+        //this.usuarioId = DEFAULT_USUARIO_ID;
     }
 
     /**
@@ -48,25 +48,27 @@ public class Empleado {
      * @param nombre
      * @param apellidoPaterno
      * @param apellidoMaterno
-     * @param categoriaId
-     * @param usuarioId
+     * @param empleadoCategoria
+     * @param usuario
      */
     public Empleado(String empleadoId, String nombre, String apellidoPaterno,
-            String apellidoMaterno, Integer categoriaId, Integer usuarioId) {
+            String apellidoMaterno, EmpleadoCategoria empleadoCategoria, 
+            Usuario usuario) {
         this.empleadoId = empleadoId;
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
-        this.cargoId = categoriaId;
-        this.usuarioId = usuarioId;
+        this.empleadoCategoria = empleadoCategoria;
+        this.usuario = usuario;
     }
 
     public Empleado(String nombre, String apellidoPaterno,
-            String apellidoMaterno, Integer usuarioId) {
+            String apellidoMaterno, Usuario usuario) {
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
-        this.usuarioId = usuarioId;
+        this.usuario = usuario;
+        //this.usuarioId = usuarioId;
     }
 
     /**
@@ -106,34 +108,6 @@ public class Empleado {
         return apellidoMaterno;
     }
 
-    /**
-     * @return the cargoId
-     */
-    public int getCargoId() {
-        return cargoId;
-    }
-
-    /**
-     * @param cargoId the cargoId to set
-     */
-    public void setCargoId(Integer cargoId) {
-        this.cargoId = cargoId;
-    }
-
-    /**
-     * @return the usuarioId
-     */
-    public Integer getUsuarioId() {
-        return usuarioId;
-    }
-
-    /**
-     * @param usuarioId the usuarioId to set
-     */
-    public void setUsuarioId(Integer usuarioId) {
-        this.usuarioId = usuarioId;
-    }
-
     private void validarEmpleado(String nombre, String apellidoPaterno,
             String apellidoMaterno) {
         if (nombre == null || nombre.isEmpty()) {
@@ -169,8 +143,8 @@ public class Empleado {
                 this.nombre,
                 this.apellidoPaterno,
                 this.apellidoMaterno,
-                this.cargoId,
-                this.usuarioId);
+                this.empleadoCategoria.getCategoriaId(),
+                this.usuario.getUsuarioId());
     }
 
 }

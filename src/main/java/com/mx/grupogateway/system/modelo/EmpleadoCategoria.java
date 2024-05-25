@@ -8,29 +8,29 @@ package com.mx.grupogateway.system.modelo;
  *
  * @author Eduardo Reyes Hernández
  */
-public class EmpleadoCargo {
+public class EmpleadoCategoria {
 
-    private final Integer cargoId;
-    private final String nombreCargo;
+    private final Integer idCategoria;
+    private final String nombreCategoria;
 
-    public EmpleadoCargo(Integer cargoId, String nombreCargo) {
+    public EmpleadoCategoria(Integer cargoId, String nombreCargo) {
         validarCategoriaEmpleado(cargoId, nombreCargo);
-        this.cargoId = cargoId;
-        this.nombreCargo = nombreCargo;
+        this.idCategoria = cargoId;
+        this.nombreCategoria = nombreCargo;
     }
 
     /**
      * @return the categoriaId
      */
-    public int getCargoId() {
-        return cargoId;
+    public int getCategoriaId() {
+        return idCategoria;
     }
 
     /**
      * @return the nombreCargo
      */
-    public String getNombreCargo() {
-        return nombreCargo;
+    public String getNombreCategoria() {
+        return nombreCategoria;
     }
 
     private void validarCategoriaEmpleado(Integer cargoId,
@@ -48,7 +48,7 @@ public class EmpleadoCargo {
 
     @Override
     public String toString() {
-        return this.nombreCargo;
+        return this.nombreCategoria;
     }
 
 }

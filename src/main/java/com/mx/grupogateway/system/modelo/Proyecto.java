@@ -11,9 +11,9 @@ import java.sql.Date;
  *
  * @author eduar
  */
-public class ProjectData {
+public class Proyecto {
 
-    private String projectId;
+    private Integer idProyecto;
     private String projectCode;
     private String projectName;
     private String customer;
@@ -23,9 +23,9 @@ public class ProjectData {
     private Integer shipmentNo;
     private String siteCode;
     private String siteName;
-    private String itemCode;
+    private Integer itemCode;
     private String itemDesc;
-    private Integer requestedQty;
+    private Double requestedQty;
     private BigDecimal dueQty;
     private BigDecimal billedQty;
     private BigDecimal unitPrice;
@@ -35,32 +35,50 @@ public class ProjectData {
     private String category;
     private String biddingArea;
     private Date publishDate;
-    private Empleado empleado;
-    private ProjectAssignations projectAssignations;
 
-    public ProjectData(Integer Id, String projectCode, String projectName,
+    public Proyecto(Integer idProyecto, String projectCode, String projectName,
             String customer, String poStatus, String poNo, Integer poLineNo,
             Integer shipmentNo, String siteCode, String siteName,
             Integer itemCode, String itemDesc, Double requestedQty,
             BigDecimal dueQty, BigDecimal billedQty, BigDecimal unitPrice,
             BigDecimal lineAmount, String unit, String paymentTerms,
-            String category, String biddingArea, Date publishDate,
-            Empleado empleado, ProjectAssignations projectAssignations) {
-        
+            String category, String biddingArea, Date publishDate) {
+        this.idProyecto = idProyecto;
+        this.projectCode = projectCode;
+        this.projectName = projectName;
+        this.customer = customer;
+        this.poStatus = poStatus;
+        this.poNo = poNo;
+        this.poLineNo = poLineNo;
+        this.shipmentNo = shipmentNo;
+        this.siteCode = siteCode;
+        this.siteName = siteName;
+        this.itemCode = itemCode;
+        this.itemDesc = itemDesc;
+        this.requestedQty = requestedQty;
+        this.dueQty = dueQty;
+        this.billedQty = billedQty;
+        this.unitPrice = unitPrice;
+        this.lineAmount = lineAmount;
+        this.unit = unit;
+        this.paymentTerms = paymentTerms;
+        this.category = category;
+        this.biddingArea = biddingArea;
+        this.publishDate = publishDate;
     }
 
     /**
      * @return the projectId
      */
-    public String getProjectId() {
-        return projectId;
+    public Integer getIdProyecto() {
+        return idProyecto;
     }
 
     /**
      * @param projectId the projectId to set
      */
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
+    public void setIdProyecto(Integer projectId) {
+        this.idProyecto = projectId;
     }
 
     /**
@@ -192,14 +210,14 @@ public class ProjectData {
     /**
      * @return the itemCode
      */
-    public String getItemCode() {
+    public Integer getItemCode() {
         return itemCode;
     }
 
     /**
      * @param itemCode the itemCode to set
      */
-    public void setItemCode(String itemCode) {
+    public void setItemCode(Integer itemCode) {
         this.itemCode = itemCode;
     }
 
@@ -220,14 +238,14 @@ public class ProjectData {
     /**
      * @return the requestedQty
      */
-    public Integer getRequestedQty() {
+    public Double getRequestedQty() {
         return requestedQty;
     }
 
     /**
      * @param requestedQty the requestedQty to set
      */
-    public void setRequestedQty(Integer requestedQty) {
+    public void setRequestedQty(Double requestedQty) {
         this.requestedQty = requestedQty;
     }
 
@@ -355,33 +373,5 @@ public class ProjectData {
      */
     public void setPublishDate(Date publishDate) {
         this.publishDate = publishDate;
-    }
-
-    /**
-     * @return the usuario
-     */
-    public Empleado getUsuario() {
-        return empleado;
-    }
-
-    /**
-     * @return the projectAssignations
-     */
-    public ProjectAssignations getProjectAssignations() {
-        return projectAssignations;
-    }
-
-    /**
-     * @return the statusFacturacion
-     */
-    public String getStatusFacturacion() {
-        return statusFacturacion;
-    }
-
-    /**
-     * @param statusFacturacion the statusFacturacion to set
-     */
-    public void setStatusFacturacion(String statusFacturacion) {
-        this.statusFacturacion = statusFacturacion;
     }
 }
