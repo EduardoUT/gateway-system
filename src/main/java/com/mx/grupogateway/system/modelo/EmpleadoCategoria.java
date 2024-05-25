@@ -10,19 +10,23 @@ package com.mx.grupogateway.system.modelo;
  */
 public class EmpleadoCategoria {
 
-    private final Integer idCategoria;
-    private final String nombreCategoria;
+    private String idCategoria;
+    private String nombreCategoria;
 
-    public EmpleadoCategoria(Integer cargoId, String nombreCargo) {
-        validarCategoriaEmpleado(cargoId, nombreCargo);
-        this.idCategoria = cargoId;
-        this.nombreCategoria = nombreCargo;
+    public EmpleadoCategoria(String idCategoria, String nombreCategoria) {
+        validarCategoriaEmpleado(idCategoria, nombreCategoria);
+        this.idCategoria = idCategoria;
+        this.nombreCategoria = nombreCategoria;
+    }
+
+    public EmpleadoCategoria(String idCategoria) {
+        this.idCategoria = idCategoria;
     }
 
     /**
      * @return the categoriaId
      */
-    public int getCategoriaId() {
+    public String getCategoriaId() {
         return idCategoria;
     }
 
@@ -33,11 +37,11 @@ public class EmpleadoCategoria {
         return nombreCategoria;
     }
 
-    private void validarCategoriaEmpleado(Integer cargoId,
+    private void validarCategoriaEmpleado(String idCategoria,
             String nombreCargo) {
-        if (cargoId < 0) {
-            throw new IllegalArgumentException("El campo " + cargoId
-                    + " es negativo");
+        if (idCategoria.equals("") || idCategoria.isEmpty()) {
+            throw new IllegalArgumentException("El campo " + idCategoria
+                    + " está vacío");
         }
 
         if (nombreCargo == null || nombreCargo.isEmpty()) {
@@ -48,7 +52,16 @@ public class EmpleadoCategoria {
 
     @Override
     public String toString() {
-        return this.nombreCategoria;
+        return String.format("[ID Categoria: %s | Nombre: %s]",
+                this.idCategoria,
+                this.nombreCategoria);
+    }
+
+    /**
+     * @param idCategoria the idCategoria to set
+     */
+    public void setIdCategoria(String idCategoria) {
+        this.idCategoria = idCategoria;
     }
 
 }
