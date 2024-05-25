@@ -30,7 +30,7 @@ public class ProyectoDAO {
         this.con = con;
     }
 
-    public void guardar(Proyecto proyecto) throws SQLException {
+    public void guardar(Proyecto proyecto) {
         String sql = "INSERT INTO PROJECTS "
                 + "(ID_PROJECT, PROJECT_CODE, PROJECT_NAME, CUSTOMER, "
                 + "PO_STATUS, PO_NO, PO_LINE_NO, SHIPMENT_NO, "
@@ -71,9 +71,9 @@ public class ProyectoDAO {
                     System.out.println(String.format("Fue guardado "
                             + "el proyecto %s", proyecto));
                 }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -115,5 +115,5 @@ public class ProyectoDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
+    } 
 }
