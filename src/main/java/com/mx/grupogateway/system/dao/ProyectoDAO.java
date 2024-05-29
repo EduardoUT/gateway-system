@@ -42,7 +42,7 @@ public class ProyectoDAO {
 
         try (PreparedStatement preparedStatement = con.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS);) {
-            preparedStatement.setInt(1, proyecto.getIdProyecto());
+            preparedStatement.setLong(1, proyecto.getIdProyecto());
             preparedStatement.setString(2, proyecto.getProjectCode());
             preparedStatement.setString(3, proyecto.getProjectName());
             preparedStatement.setString(4, proyecto.getCustomer());
@@ -85,7 +85,7 @@ public class ProyectoDAO {
             try (ResultSet resultSet = preparedStatement.getResultSet();) {
                 while (resultSet.next()) {
                     Proyecto fila = new Proyecto(
-                            resultSet.getInt("ID_PROJECT"),
+                            resultSet.getLong("ID_PROJECT"),
                             resultSet.getString("PROJECT_CODE"),
                             resultSet.getString("PROJECT_NAME"),
                             resultSet.getString("CUSTOMER"),
