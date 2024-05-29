@@ -13,7 +13,7 @@ import java.sql.Date;
  */
 public class Proyecto {
 
-    private Integer idProyecto;
+    private Long idProyecto;
     private String projectCode;
     private String projectName;
     private String customer;
@@ -36,7 +36,7 @@ public class Proyecto {
     private String biddingArea;
     private Date publishDate;
 
-    public Proyecto(Integer idProyecto, String projectCode, String projectName,
+    public Proyecto(Long idProyecto, String projectCode, String projectName,
             String customer, String poStatus, String poNo, Integer poLineNo,
             Integer shipmentNo, String siteCode, String siteName,
             Integer itemCode, String itemDesc, Double requestedQty,
@@ -70,14 +70,14 @@ public class Proyecto {
     /**
      * @return the projectId
      */
-    public Integer getIdProyecto() {
+    public Long getIdProyecto() {
         return idProyecto;
     }
 
     /**
      * @param projectId the projectId to set
      */
-    public void setIdProyecto(Integer projectId) {
+    public void setIdProyecto(Long projectId) {
         this.idProyecto = projectId;
     }
 
