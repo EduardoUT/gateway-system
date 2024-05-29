@@ -38,7 +38,7 @@ public class ProyectoAsignacionDAO {
         try (PreparedStatement preparedStatement = con.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1, proyectoAsignacion.getEmpleado().getIdEmpleado());
-            preparedStatement.setInt(2, proyectoAsignacion.getIdProyecto());
+            preparedStatement.setLong(2, proyectoAsignacion.getIdProyecto());
             preparedStatement.setString(4, proyectoAsignacion.getOrdenCompraDt());
             preparedStatement.setBigDecimal(5, proyectoAsignacion.getImporte());
             preparedStatement.setBigDecimal(6, proyectoAsignacion.getTotalPagar());
