@@ -52,9 +52,9 @@ public class ProyectoDAO {
             preparedStatement.setInt(8, proyecto.getShipmentNo());
             preparedStatement.setString(9, proyecto.getSiteCode());
             preparedStatement.setString(10, proyecto.getSiteName());
-            preparedStatement.setInt(11, proyecto.getItemCode());
+            preparedStatement.setLong(11, proyecto.getItemCode());
             preparedStatement.setString(12, proyecto.getItemDesc());
-            preparedStatement.setDouble(13, proyecto.getRequestedQty());
+            preparedStatement.setBigDecimal(13, proyecto.getRequestedQty());
             preparedStatement.setBigDecimal(14, proyecto.getDueQty());
             preparedStatement.setBigDecimal(15, proyecto.getBilledQty());
             preparedStatement.setBigDecimal(16, proyecto.getUnitPrice());
@@ -63,7 +63,7 @@ public class ProyectoDAO {
             preparedStatement.setString(19, proyecto.getPaymentTerms());
             preparedStatement.setString(20, proyecto.getCategory());
             preparedStatement.setString(21, proyecto.getBiddingArea());
-            preparedStatement.setDate(22, proyecto.getPublishDate());
+            preparedStatement.setTimestamp(22, proyecto.getPublishDate());
             preparedStatement.execute();
 
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
@@ -95,9 +95,9 @@ public class ProyectoDAO {
                             resultSet.getInt("SHIPMENT_NO"),
                             resultSet.getString("SITE_CODE"),
                             resultSet.getString("SITE_NAME"),
-                            resultSet.getInt("ITEM_CODE"),
+                            resultSet.getLong("ITEM_CODE"),
                             resultSet.getString("ITEM_DESC"),
-                            resultSet.getDouble("REQUESTED_QTY"),
+                            resultSet.getBigDecimal("REQUESTED_QTY"),
                             resultSet.getBigDecimal("DUE_QTY"),
                             resultSet.getBigDecimal("BILLED_QTY"),
                             resultSet.getBigDecimal("UNIT_PRICE"),
@@ -106,7 +106,7 @@ public class ProyectoDAO {
                             resultSet.getString("PAYMENT_TERMS"),
                             resultSet.getString("CATEGORY"),
                             resultSet.getString("BIDDING_AREA"),
-                            resultSet.getDate("PUBLISH_DATE")
+                            resultSet.getTimestamp("PUBLISH_DATE")
                     );
                     resultado.add(fila);
                 }
