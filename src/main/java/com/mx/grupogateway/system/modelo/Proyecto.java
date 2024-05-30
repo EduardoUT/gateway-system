@@ -6,6 +6,7 @@ package com.mx.grupogateway.system.modelo;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.Timestamp;
 
 /**
  *
@@ -23,9 +24,9 @@ public class Proyecto {
     private Integer shipmentNo;
     private String siteCode;
     private String siteName;
-    private Integer itemCode;
+    private Long itemCode;
     private String itemDesc;
-    private Double requestedQty;
+    private BigDecimal requestedQty;
     private BigDecimal dueQty;
     private BigDecimal billedQty;
     private BigDecimal unitPrice;
@@ -34,15 +35,15 @@ public class Proyecto {
     private String paymentTerms;
     private String category;
     private String biddingArea;
-    private Date publishDate;
+    private Timestamp publishDate;
 
     public Proyecto(Long idProyecto, String projectCode, String projectName,
             String customer, String poStatus, String poNo, Integer poLineNo,
             Integer shipmentNo, String siteCode, String siteName,
-            Integer itemCode, String itemDesc, Double requestedQty,
+            Long itemCode, String itemDesc, BigDecimal requestedQty,
             BigDecimal dueQty, BigDecimal billedQty, BigDecimal unitPrice,
             BigDecimal lineAmount, String unit, String paymentTerms,
-            String category, String biddingArea, Date publishDate) {
+            String category, String biddingArea, Timestamp publishDate) {
         this.idProyecto = idProyecto;
         this.projectCode = projectCode;
         this.projectName = projectName;
@@ -210,14 +211,14 @@ public class Proyecto {
     /**
      * @return the itemCode
      */
-    public Integer getItemCode() {
+    public Long getItemCode() {
         return itemCode;
     }
 
     /**
      * @param itemCode the itemCode to set
      */
-    public void setItemCode(Integer itemCode) {
+    public void setItemCode(Long itemCode) {
         this.itemCode = itemCode;
     }
 
@@ -238,14 +239,14 @@ public class Proyecto {
     /**
      * @return the requestedQty
      */
-    public Double getRequestedQty() {
+    public BigDecimal getRequestedQty() {
         return requestedQty;
     }
 
     /**
      * @param requestedQty the requestedQty to set
      */
-    public void setRequestedQty(Double requestedQty) {
+    public void setRequestedQty(BigDecimal requestedQty) {
         this.requestedQty = requestedQty;
     }
 
@@ -364,14 +365,32 @@ public class Proyecto {
     /**
      * @return the publishDate
      */
-    public Date getPublishDate() {
+    public Timestamp getPublishDate() {
         return publishDate;
     }
 
     /**
      * @param publishDate the publishDate to set
      */
-    public void setPublishDate(Date publishDate) {
+    public void setPublishDate(Timestamp publishDate) {
         this.publishDate = publishDate;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("ID Proyecto %d | "
+                + "Project Code: %s | Project Name: %s | Customer: %s | "
+                + "PO Status: %s | PO No: %s | Po Line No: %d | "
+                + "Shipment No: %d | Site Code: %s | Site Name: %s | "
+                + "Item Code: %d | Item Desc: %s | Requested Qty: %s | "
+                + "Due Qty: %s | Billed Qty: %s | Unit Price: %s | "
+                + "Line Amount: %s | Unit: %s | Payment Terms: %s | "
+                + "Category: %s | Bidding Area: %s | Publish Date: %s",
+                idProyecto, projectCode, projectName, customer,
+                poStatus, poNo, poLineNo, shipmentNo,
+                siteCode, siteName, itemCode, itemDesc,
+                requestedQty, dueQty, billedQty, unitPrice,
+                lineAmount, unit, paymentTerms, category,
+                biddingArea, publishDate);
     }
 }
