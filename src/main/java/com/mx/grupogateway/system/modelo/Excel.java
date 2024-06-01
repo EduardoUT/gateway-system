@@ -62,7 +62,6 @@ public class Excel extends SwingWorker<Void, Integer> {
                 int numLastRow = hoja.getLastRowNum();
                 numRows = numLastRow;
                 for (int i = 1; i <= numLastRow; i++) {
-                    publish(i);
                     Row row = hoja.getRow(i);
                     datosExcel.add(
                             new Proyecto(
@@ -78,9 +77,9 @@ public class Excel extends SwingWorker<Void, Integer> {
                                     getCellValueString(row, 16),
                                     getCellValueLong(row, 17),
                                     getCellValueString(row, 18),
-                                    getCellValueBigDecimal(row, 19),
-                                    getCellValueBigDecimal(row, 20),
-                                    getCellValueBigDecimal(row, 21),
+                                    getCellValueString(row, 19),
+                                    getCellValueString(row, 20),
+                                    getCellValueString(row, 21),
                                     getCellValueBigDecimal(row, 22),
                                     getCellValueBigDecimal(row, 23),
                                     getCellValueString(row, 24),
@@ -91,6 +90,8 @@ public class Excel extends SwingWorker<Void, Integer> {
                                     getCellValueTimestamp(row, 41)
                             )
                     );
+                    int progress = i * 100 / numLastRow;
+                    publish(progress);
                 }
             } catch (InvalidFormatException | IOException e) {
                 throw new RuntimeException("Error al leer archivo: ", e);
