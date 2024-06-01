@@ -28,7 +28,7 @@ public class ConnectionFactory {
         comboPooledDataSource.setJdbcUrl("jdbc:mysql://localhost/gateway?"
                 + "useTimeZone=true&serverTimeZone=UTC");
         comboPooledDataSource.setUser("root");
-        comboPooledDataSource.setPassword("root");
+        comboPooledDataSource.setPassword("12345");
         comboPooledDataSource.setMaxPoolSize(10);
         this.dataSource = comboPooledDataSource;
     }
@@ -37,6 +37,7 @@ public class ConnectionFactory {
         try {
             return this.dataSource.getConnection();
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
