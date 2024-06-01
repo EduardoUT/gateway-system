@@ -4,18 +4,13 @@
  */
 package com.mx.grupogateway.system.dao;
 
-import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Proyecto;
-import com.mx.grupogateway.system.modelo.Usuario;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,9 +49,9 @@ public class ProyectoDAO {
             preparedStatement.setString(10, proyecto.getSiteName());
             preparedStatement.setLong(11, proyecto.getItemCode());
             preparedStatement.setString(12, proyecto.getItemDesc());
-            preparedStatement.setBigDecimal(13, proyecto.getRequestedQty());
-            preparedStatement.setBigDecimal(14, proyecto.getDueQty());
-            preparedStatement.setBigDecimal(15, proyecto.getBilledQty());
+            preparedStatement.setString(13, proyecto.getRequestedQty());
+            preparedStatement.setString(14, proyecto.getDueQty());
+            preparedStatement.setString(15, proyecto.getBilledQty());
             preparedStatement.setBigDecimal(16, proyecto.getUnitPrice());
             preparedStatement.setBigDecimal(17, proyecto.getLineAmount());
             preparedStatement.setString(18, proyecto.getUnit());
@@ -97,9 +92,9 @@ public class ProyectoDAO {
                             resultSet.getString("SITE_NAME"),
                             resultSet.getLong("ITEM_CODE"),
                             resultSet.getString("ITEM_DESC"),
-                            resultSet.getBigDecimal("REQUESTED_QTY"),
-                            resultSet.getBigDecimal("DUE_QTY"),
-                            resultSet.getBigDecimal("BILLED_QTY"),
+                            resultSet.getString("REQUESTED_QTY"),
+                            resultSet.getString("DUE_QTY"),
+                            resultSet.getString("BILLED_QTY"),
                             resultSet.getBigDecimal("UNIT_PRICE"),
                             resultSet.getBigDecimal("LINE_AMOUNT"),
                             resultSet.getString("UNIT"),
