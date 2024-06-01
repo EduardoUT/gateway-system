@@ -5,7 +5,6 @@
 package com.mx.grupogateway.system.modelo;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.Timestamp;
 
 /**
@@ -26,9 +25,9 @@ public class Proyecto {
     private String siteName;
     private Long itemCode;
     private String itemDesc;
-    private BigDecimal requestedQty;
-    private BigDecimal dueQty;
-    private BigDecimal billedQty;
+    private String requestedQty;
+    private String dueQty;
+    private String billedQty;
     private BigDecimal unitPrice;
     private BigDecimal lineAmount;
     private String unit;
@@ -40,8 +39,8 @@ public class Proyecto {
     public Proyecto(Long idProyecto, String projectCode, String projectName,
             String customer, String poStatus, String poNo, Integer poLineNo,
             Integer shipmentNo, String siteCode, String siteName,
-            Long itemCode, String itemDesc, BigDecimal requestedQty,
-            BigDecimal dueQty, BigDecimal billedQty, BigDecimal unitPrice,
+            Long itemCode, String itemDesc, String requestedQty,
+            String dueQty, String billedQty, BigDecimal unitPrice,
             BigDecimal lineAmount, String unit, String paymentTerms,
             String category, String biddingArea, Timestamp publishDate) {
         this.idProyecto = idProyecto;
@@ -239,42 +238,42 @@ public class Proyecto {
     /**
      * @return the requestedQty
      */
-    public BigDecimal getRequestedQty() {
+    public String getRequestedQty() {
         return requestedQty;
     }
 
     /**
      * @param requestedQty the requestedQty to set
      */
-    public void setRequestedQty(BigDecimal requestedQty) {
+    public void setRequestedQty(String requestedQty) {
         this.requestedQty = requestedQty;
     }
 
     /**
      * @return the dueQty
      */
-    public BigDecimal getDueQty() {
+    public String getDueQty() {
         return dueQty;
     }
 
     /**
      * @param dueQty the dueQty to set
      */
-    public void setDueQty(BigDecimal dueQty) {
+    public void setDueQty(String dueQty) {
         this.dueQty = dueQty;
     }
 
     /**
      * @return the billedQty
      */
-    public BigDecimal getBilledQty() {
+    public String getBilledQty() {
         return billedQty;
     }
 
     /**
      * @param billedQty the billedQty to set
      */
-    public void setBilledQty(BigDecimal billedQty) {
+    public void setBilledQty(String billedQty) {
         this.billedQty = billedQty;
     }
 
