@@ -4,11 +4,23 @@
  */
 package com.mx.grupogateway.system.view;
 
+import com.mx.grupogateway.system.controller.ExcelController;
+import com.mx.grupogateway.system.modelo.Excel;
+import com.mx.grupogateway.system.modelo.Proyecto;
+import com.mx.grupogateway.system.view.util.ExcelFileChooser;
+import java.awt.event.MouseEvent;
+import java.util.LinkedList;
+import javax.swing.JFileChooser;
+
 /**
  *
  * @author Eduardo Reyes Hernández
  */
 public class Facturacion extends javax.swing.JFrame {
+
+    private static Excel excel;
+    private ExcelController excelController;
+    private static LinkedList<Proyecto> listaProyectos;
 
     /**
      * Creates new form Facturacion
@@ -28,17 +40,14 @@ public class Facturacion extends javax.swing.JFrame {
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        tituloSeleccionArchivo = new javax.swing.JLabel();
+        botonExaminarArchivo = new javax.swing.JButton();
+        indicadorArchivo = new javax.swing.JLabel();
+        nombreArchivo = new javax.swing.JLabel();
+        botonImportarExcel = new javax.swing.JButton();
+        statusProgreso = new javax.swing.JLabel();
         progressBar = new javax.swing.JProgressBar();
-        progressStatus = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
@@ -67,78 +76,78 @@ public class Facturacion extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane1.setViewportView(jTable1);
+        tituloSeleccionArchivo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        tituloSeleccionArchivo.setText("Seleccione el archivo Excel:");
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Seleccione el archivo Excel:");
-
-        jButton2.setText("Examinar...");
-        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+        botonExaminarArchivo.setText("Examinar...");
+        botonExaminarArchivo.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton2MouseClicked(evt);
+                botonExaminarArchivoMouseClicked(evt);
             }
         });
 
-        jLabel2.setText("Archivo Cargado:");
+        indicadorArchivo.setText("Archivo Seleccionado:");
 
-        jLabel3.setText("excel.xlsx");
+        nombreArchivo.setText("excel.xlsx");
 
-        jButton1.setText("Importar a la tabla(Test)");
+        botonImportarExcel.setText("Importar a la Base de Datos");
+        botonImportarExcel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                botonImportarExcelMouseClicked(evt);
+            }
+        });
 
-        jButton3.setText("Importar a la Base de Datos");
+        statusProgreso.setText("Status:");
+
+        progressBar.setStringPainted(true);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(tituloSeleccionArchivo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(botonExaminarArchivo)
+                .addGap(319, 319, 319))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3)))
+                        .addComponent(indicadorArchivo)
+                        .addGap(18, 18, 18)
+                        .addComponent(nombreArchivo))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(47, 47, 47)
-                        .addComponent(jButton2))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(262, 262, 262)
+                        .addComponent(botonImportarExcel))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jButton3)))
-                .addContainerGap(19, Short.MAX_VALUE))
+                        .addComponent(statusProgreso)))
+                .addContainerGap(263, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton3)
-                .addGap(0, 20, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(tituloSeleccionArchivo)
+                .addGap(18, 18, 18)
+                .addComponent(botonExaminarArchivo)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(indicadorArchivo)
+                    .addComponent(nombreArchivo))
+                .addGap(18, 18, 18)
+                .addComponent(botonImportarExcel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 91, Short.MAX_VALUE)
+                .addComponent(statusProgreso)
+                .addGap(18, 18, 18)
+                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
-
-        progressStatus.setText("jLabel4");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -146,28 +155,14 @@ public class Facturacion extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(progressBar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(progressStatus)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(10, 10, 10))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
-                        .addComponent(progressStatus)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -400,9 +395,31 @@ public class Facturacion extends javax.swing.JFrame {
         seccionActualizarPassword.setVisible(false);
     }//GEN-LAST:event_jButton7MouseClicked
 
-    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2MouseClicked
+    private void botonExaminarArchivoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonExaminarArchivoMouseClicked
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            ExcelFileChooser excelFileChooser = new ExcelFileChooser(
+                    new JFileChooser(".")
+            );
+            if (!excelFileChooser.getRutaArchivo().isEmpty()) {
+                excel = new Excel(excelFileChooser.getRutaArchivo(),
+                        excelFileChooser.getOptionValueSelected(),
+                        progressBar
+                );
+                excel.execute();
+                listaProyectos = excel.getDatos();
+            }
+        }
+    }//GEN-LAST:event_botonExaminarArchivoMouseClicked
+
+    private void botonImportarExcelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonImportarExcelMouseClicked
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            if (listaProyectos != null) {
+                excelController = new ExcelController(progressBar,
+                        listaProyectos);
+                excelController.getExecuteSwingWorker();
+            }
+        }
+    }//GEN-LAST:event_botonImportarExcelMouseClicked
 
     /**
      * @param args the command line arguments
@@ -432,29 +449,24 @@ public class Facturacion extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Facturacion().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new Facturacion().setVisible(true);
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonAyuda;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton botonExaminarArchivo;
+    private static javax.swing.JButton botonImportarExcel;
+    private javax.swing.JLabel indicadorArchivo;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
@@ -466,17 +478,17 @@ public class Facturacion extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JPasswordField jPasswordField2;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField7;
-    private javax.swing.JProgressBar progressBar;
-    private javax.swing.JLabel progressStatus;
+    private javax.swing.JLabel nombreArchivo;
+    private static javax.swing.JProgressBar progressBar;
     private javax.swing.JPanel seccionActualizarPassword;
+    private javax.swing.JLabel statusProgreso;
+    private javax.swing.JLabel tituloSeleccionArchivo;
     // End of variables declaration//GEN-END:variables
 }
