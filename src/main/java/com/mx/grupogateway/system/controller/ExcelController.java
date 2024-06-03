@@ -9,7 +9,6 @@ import com.mx.grupogateway.system.factory.ConnectionFactory;
 import com.mx.grupogateway.system.modelo.Proyecto;
 import java.util.LinkedList;
 import javax.swing.JProgressBar;
-
 /**
  *
  * @author eduar
