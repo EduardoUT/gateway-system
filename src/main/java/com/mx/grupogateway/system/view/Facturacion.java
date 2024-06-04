@@ -5,6 +5,7 @@
  */
 package com.mx.grupogateway.system.view;
 
+import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.ProyectoController;
 import com.mx.grupogateway.system.modelo.Proyecto;
 import java.awt.*;
@@ -17,21 +18,21 @@ import java.util.List;
 
 /**
  *
- * @author EDOMEX
+ * @author edu
  */
-public final class Fact extends javax.swing.JFrame {
+public final class Facturacion extends javax.swing.JFrame {
 
     /**
      * Creates new form formulario
      */
-    int xMouse;
-    int yMouse;
     private DefaultTableModel modeloTablaProyectos;
     private final ProyectoController proyectoController;
+    private ImportarExcel importarExcel;
 
-    public Fact() {
+    public Facturacion() {
         initComponents();
         this.proyectoController = new ProyectoController();
+
         cargarTablaProyectos();
 
         //LlenarTabla();
@@ -47,15 +48,21 @@ public final class Fact extends javax.swing.JFrame {
         return retValue;
 
     }*/
-
     private void cargarTablaProyectos() {
+
+        modeloTablaProyectos = (DefaultTableModel) tablaFacturacion.getModel();
+
         String[] titulos = {"ID", "Project Code", "Project Name", "Customer", "PO Status", "PO NO", "PO Line NO",
             "Shipment NO", "Site Code", "Site Name", "Item Code",
             "Item Description", "Requested Qty", "Due Qty", "Billed Quantity",
             "Unit Price", "Line Amount", "Unit", "Payment Terms", "Category",
             "Bidding Area", "Publish Date", "Status Cierre", "ID_Usuario", "Nombre", "Apellido Paterno", "Apellido Materno",
             "Orden de Compra DT", "Importe", "Total", "Status Facturación"};
-        modeloTablaProyectos = (DefaultTableModel) tablaFacturacion.getModel();
+
+        for (String titulo : titulos) {
+            modeloTablaProyectos.addColumn(titulo);
+        }
+
         List<Proyecto> listaProyecto = this.proyectoController.listar();
         listaProyecto.forEach((proyecto) -> {
             modeloTablaProyectos.addRow(
@@ -171,8 +178,6 @@ public final class Fact extends javax.swing.JFrame {
         Nombre_UsuarioAdmin = new javax.swing.JLabel();
         jLabel33 = new javax.swing.JLabel();
         ID_Usuario = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         TipBusqueda = new javax.swing.JLabel();
         update = new javax.swing.JButton();
@@ -241,11 +246,10 @@ public final class Fact extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(0, 0, 0));
         setIconImage(getIconImage());
         setLocationByPlatform(true);
-        setUndecorated(true);
         setResizable(false);
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
@@ -253,10 +257,9 @@ public final class Fact extends javax.swing.JFrame {
             }
         });
 
-        jPanel1.setBackground(new java.awt.Color(0, 102, 102));
+        jPanel1.setBackground(new java.awt.Color(60, 59, 89));
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        jLabel28.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         jLabel28.setForeground(new java.awt.Color(255, 255, 255));
         jLabel28.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel28.setText("Bienvenido(a):");
@@ -268,7 +271,6 @@ public final class Fact extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 5);
         jPanel1.add(jLabel28, gridBagConstraints);
 
-        Nombre_UsuarioAdmin.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         Nombre_UsuarioAdmin.setForeground(new java.awt.Color(255, 255, 255));
         Nombre_UsuarioAdmin.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         Nombre_UsuarioAdmin.setText("Nombre");
@@ -280,7 +282,6 @@ public final class Fact extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
         jPanel1.add(Nombre_UsuarioAdmin, gridBagConstraints);
 
-        jLabel33.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         jLabel33.setForeground(new java.awt.Color(255, 255, 255));
         jLabel33.setText("ID:");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -291,7 +292,6 @@ public final class Fact extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 5);
         jPanel1.add(jLabel33, gridBagConstraints);
 
-        ID_Usuario.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         ID_Usuario.setForeground(new java.awt.Color(255, 255, 255));
         ID_Usuario.setText("ID");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -302,42 +302,7 @@ public final class Fact extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
         jPanel1.add(ID_Usuario, gridBagConstraints);
 
-        jButton2.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jButton2.setText("-");
-        jButton2.setToolTipText("Minimizar");
-        jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = java.awt.GridBagConstraints.RELATIVE;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 10, 0);
-        jPanel1.add(jButton2, gridBagConstraints);
-
-        jButton3.setBackground(new java.awt.Color(169, 7, 6));
-        jButton3.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jButton3.setText("x");
-        jButton3.setToolTipText("Cerrar");
-        jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 6;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = java.awt.GridBagConstraints.RELATIVE;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 5);
-        jPanel1.add(jButton3, gridBagConstraints);
-
-        jLabel2.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 24)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Administrador Facturación");
@@ -353,34 +318,29 @@ public final class Fact extends javax.swing.JFrame {
         TipBusqueda.setForeground(new java.awt.Color(255, 255, 255));
         TipBusqueda.setText("Busque el registro deseado en la tabla aquí:");
 
-        update.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
-        update.setText("ACTUALIZAR");
+        update.setText("Actualizar");
         update.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 updateActionPerformed(evt);
             }
         });
 
-        delete.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
-        delete.setText("BORRAR");
+        delete.setText("Borrar");
         delete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteActionPerformed(evt);
             }
         });
 
-        jButton1.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
-        jButton1.setText("BUSCAR P.O:");
+        jButton1.setText("Buscar P.O:");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
 
-        buscarPO.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         buscarPO.setBorder(javax.swing.BorderFactory.createTitledBorder("Buscar"));
 
-        jButton5.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
         jButton5.setText("Cerrar Sesión");
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -389,26 +349,15 @@ public final class Fact extends javax.swing.JFrame {
         });
 
         tablaFacturacion.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        tablaFacturacion.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        tablaFacturacion.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
         tablaFacturacion.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false
-            };
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
             }
-        });
+        ));
         tablaFacturacion.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         tablaFacturacion.setColumnSelectionAllowed(true);
         tablaFacturacion.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -430,7 +379,7 @@ public final class Fact extends javax.swing.JFrame {
         Fecha_PO.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         Fecha_PO.setOpaque(false);
 
-        jPanel2.setBackground(new java.awt.Color(0, 153, 153));
+        jPanel2.setBackground(new java.awt.Color(60, 59, 89));
         jPanel2.setMaximumSize(new java.awt.Dimension(316, 338));
         jPanel2.setMinimumSize(new java.awt.Dimension(316, 338));
         jPanel2.setLayout(new java.awt.GridBagLayout());
@@ -564,7 +513,7 @@ public final class Fact extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Información Proyecto", jPanel2);
 
-        jPanel3.setBackground(new java.awt.Color(0, 153, 153));
+        jPanel3.setBackground(new java.awt.Color(60, 59, 89));
         jPanel3.setMaximumSize(new java.awt.Dimension(317, 338));
         jPanel3.setMinimumSize(new java.awt.Dimension(317, 338));
         jPanel3.setPreferredSize(new java.awt.Dimension(317, 338));
@@ -685,7 +634,7 @@ public final class Fact extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Detalle Proyecto", jPanel3);
 
-        jPanel4.setBackground(new java.awt.Color(0, 153, 153));
+        jPanel4.setBackground(new java.awt.Color(60, 59, 89));
         jPanel4.setPreferredSize(new java.awt.Dimension(326, 336));
         jPanel4.setLayout(new java.awt.GridBagLayout());
 
@@ -803,7 +752,7 @@ public final class Fact extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Información Financiera", jPanel4);
 
-        jPanel5.setBackground(new java.awt.Color(0, 153, 153));
+        jPanel5.setBackground(new java.awt.Color(60, 59, 89));
 
         jLabel24.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
         jLabel24.setForeground(new java.awt.Color(255, 255, 255));
@@ -979,6 +928,11 @@ public final class Fact extends javax.swing.JFrame {
         jMenu2.setText("Archivo");
 
         jMenuItem2.setText("Importar archivo Excel");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
         jMenu2.add(jMenuItem2);
 
         jMenuBar1.add(jMenu2);
@@ -996,7 +950,7 @@ public final class Fact extends javax.swing.JFrame {
                         .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 536, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 773, Short.MAX_VALUE)
+                            .addComponent(jScrollPane9)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
@@ -1007,7 +961,7 @@ public final class Fact extends javax.swing.JFrame {
                                         .addComponent(update)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addComponent(delete, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(0, 0, Short.MAX_VALUE))))
+                                .addGap(0, 419, Short.MAX_VALUE))))
                     .addComponent(jButton5)
                     .addComponent(TipBusqueda)
                     .addComponent(Fecha_PO, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -1048,14 +1002,6 @@ public final class Fact extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_formComponentResized
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        this.setExtendedState(ICONIFIED);
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        System.exit(0);
-    }//GEN-LAST:event_jButton3ActionPerformed
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         Buscar();
         ColumnasAutoajustadas(tablaFacturacion, margin);
@@ -1077,9 +1023,8 @@ public final class Fact extends javax.swing.JFrame {
     }//GEN-LAST:event_deleteActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        dispose();
-        //Login log = new Login();
-        //log.setVisible(true);
+        this.dispose();
+        new Login().setVisible(true);
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void tablaFacturacionMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaFacturacionMousePressed
@@ -1163,32 +1108,20 @@ public final class Fact extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_amountKeyTyped
 
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        importarExcel = new ImportarExcel();
+        importarExcel.setVisible(true);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Fact.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
+        FlatDarkLaf.setup();
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Fact().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new Facturacion().setVisible(true);
         });
     }
 
@@ -1211,8 +1144,6 @@ public final class Fact extends javax.swing.JFrame {
     private javax.swing.JTextField itemcode;
     private javax.swing.JTextArea itemdsc;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel23;
