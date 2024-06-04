@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class ProyectoDAO {
             preparedStatement.setString(19, proyecto.getPaymentTerms());
             preparedStatement.setString(20, proyecto.getCategory());
             preparedStatement.setString(21, proyecto.getBiddingArea());
-            preparedStatement.setTimestamp(22, proyecto.getPublishDate());
+            preparedStatement.setTimestamp(22, Timestamp.valueOf(proyecto.getPublishDate()));
             preparedStatement.execute();
 
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
@@ -101,7 +102,7 @@ public class ProyectoDAO {
                             resultSet.getString("PAYMENT_TERMS"),
                             resultSet.getString("CATEGORY"),
                             resultSet.getString("BIDDING_AREA"),
-                            resultSet.getTimestamp("PUBLISH_DATE")
+                            resultSet.getTimestamp("PUBLISH_DATE").toLocalDateTime()
                     );
                     resultado.add(fila);
                 }
