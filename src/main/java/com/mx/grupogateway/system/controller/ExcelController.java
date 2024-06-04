@@ -8,7 +8,9 @@ import com.mx.grupogateway.system.dao.ExcelDAO;
 import com.mx.grupogateway.system.factory.ConnectionFactory;
 import com.mx.grupogateway.system.modelo.Proyecto;
 import java.util.LinkedList;
+import javax.swing.JLabel;
 import javax.swing.JProgressBar;
+
 /**
  *
  * @author eduar
@@ -17,12 +19,11 @@ public class ExcelController {
 
     private final ExcelDAO excelSwingWorker;
 
-    public ExcelController(JProgressBar jProgressBar,
-            LinkedList<Proyecto> proyectos) {
+    public ExcelController(LinkedList<Proyecto> proyectos, 
+            JProgressBar jProgressBar, JLabel jLabel) {
         this.excelSwingWorker = new ExcelDAO(
                 new ConnectionFactory().realizarConexion(),
-                jProgressBar,
-                proyectos
+                proyectos, jProgressBar, jLabel
         );
     }
 
