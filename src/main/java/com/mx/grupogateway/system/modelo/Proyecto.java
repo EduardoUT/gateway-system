@@ -5,7 +5,7 @@
 package com.mx.grupogateway.system.modelo;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -34,7 +34,7 @@ public class Proyecto {
     private String paymentTerms;
     private String category;
     private String biddingArea;
-    private Timestamp publishDate;
+    private LocalDateTime publishDate;
 
     public Proyecto(Long idProyecto, String projectCode, String projectName,
             String customer, String poStatus, String poNo, Integer poLineNo,
@@ -42,7 +42,7 @@ public class Proyecto {
             Long itemCode, String itemDesc, String requestedQty,
             String dueQty, String billedQty, BigDecimal unitPrice,
             BigDecimal lineAmount, String unit, String paymentTerms,
-            String category, String biddingArea, Timestamp publishDate) {
+            String category, String biddingArea, LocalDateTime publishDate) {
         this.idProyecto = idProyecto;
         this.projectCode = projectCode;
         this.projectName = projectName;
@@ -364,14 +364,14 @@ public class Proyecto {
     /**
      * @return the publishDate
      */
-    public Timestamp getPublishDate() {
+    public LocalDateTime getPublishDate() {
         return publishDate;
     }
 
     /**
      * @param publishDate the publishDate to set
      */
-    public void setPublishDate(Timestamp publishDate) {
+    public void setPublishDate(LocalDateTime publishDate) {
         this.publishDate = publishDate;
     }
 
