@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -29,14 +30,16 @@ public class Excel extends SwingWorker<Void, Integer> {
     private final String rutaArchivoExcel;
     private int optionFileChooser = 0;
     private final JProgressBar jProgressBar;
+    private final JLabel jLabel;
 
     private final LinkedList<Proyecto> datosExcel;
 
     public Excel(String rutaArchivoExcel, int optionFileChooser,
-            JProgressBar jProgressBar) {
+            JProgressBar jProgressBar, JLabel jLabel) {
         this.rutaArchivoExcel = rutaArchivoExcel;
         this.optionFileChooser = optionFileChooser;
         this.jProgressBar = jProgressBar;
+        this.jLabel = jLabel;
         this.datosExcel = new LinkedList<>();
     }
 
@@ -45,6 +48,10 @@ public class Excel extends SwingWorker<Void, Integer> {
      */
     public LinkedList<Proyecto> getDatos() {
         return datosExcel == null ? null : datosExcel;
+    }
+
+    public boolean isDataProcessed() {
+        return (datosExcel.isEmpty());
     }
 
     /**
@@ -160,12 +167,13 @@ public class Excel extends SwingWorker<Void, Integer> {
     protected void process(List<Integer> chunks) {
         int latestProgress = chunks.get(chunks.size() - 1);
         jProgressBar.setValue(latestProgress);
+        jLabel.setText("Procesando datos de la hoja de Excel.");
     }
 
     @Override
     protected void done() {
-        System.out.println("Importación finalizada.");
         jProgressBar.setValue(0);
+        jLabel.setText("Procesamiento de datos finalizado.");
     }
 
 }
