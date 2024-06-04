@@ -29,7 +29,7 @@ public class Usuario {
     public Usuario(String nombreUsuario, String password) {
         this.usuarioId = UUIDOperations.generarIdentificador();
         this.nombreUsuario = nombreUsuario;
-        this.password = password;
+        this.password = encriptarPass(password);
         this.claveSeguridad = generarClaveSeguridad();
     }
 
@@ -95,6 +95,10 @@ public class Usuario {
         return ProtectorData.encriptar(
                 UUID.randomUUID().toString()
                         .substring(19, 35));
+    }
+
+    private String encriptarPass(String password) {
+        return ProtectorData.encriptar(password);
     }
 
     @Override
