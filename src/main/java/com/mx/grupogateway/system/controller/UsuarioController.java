@@ -8,6 +8,8 @@ import com.mx.grupogateway.system.dao.UsuarioDAO;
 import com.mx.grupogateway.system.factory.ConnectionFactory;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Usuario;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +37,7 @@ public class UsuarioController {
     public void guardar(Usuario usuario, String idEmpleado) {
         this.usuarioDAO.guardar(usuario, idEmpleado);
     }
-    
+
     /**
      *
      * @return List de tipo Usuario.
@@ -53,6 +55,11 @@ public class UsuarioController {
      */
     public Optional consultarIdUsuario(Empleado empleado) {
         return this.usuarioDAO.consultarIdUsuario(empleado);
+    }
+
+    public ArrayList<String> consultarPerfilUsuario(
+            String nombreUsuario, String password) {
+        return this.usuarioDAO.consultarUsuario(nombreUsuario, password);
     }
 
     /**
