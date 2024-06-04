@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -149,12 +150,13 @@ public class Excel extends SwingWorker<Void, Integer> {
         return new BigDecimal(optionalToString);
     }
 
-    private Timestamp getCellValueTimestamp(Row row, int numCell) {
+    private LocalDateTime getCellValueTimestamp(Row row, int numCell) {
         String optionalToString;
-        optionalToString = Optional.ofNullable(row.getCell(numCell).getStringCellValue())
+        optionalToString = Optional.
+                ofNullable(row.getCell(numCell).getStringCellValue())
                 .map(Object::toString)
                 .orElse("NULL");
-        return Timestamp.valueOf(optionalToString);
+        return Timestamp.valueOf(optionalToString).toLocalDateTime();
     }
 
     @Override
