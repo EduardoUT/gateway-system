@@ -9,8 +9,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
@@ -23,12 +25,14 @@ public class ExcelDAO extends SwingWorker<Void, Integer> {
 
     private final Connection con;
     private final JProgressBar jProgressBar;
+    private final JLabel jLabel;
     private final LinkedList<Proyecto> listaProyectos;
 
-    public ExcelDAO(Connection con, JProgressBar jProgressBar,
-            LinkedList<Proyecto> listaProyectos) {
+    public ExcelDAO(Connection con, LinkedList<Proyecto> listaProyectos,
+            JProgressBar jProgressBar, JLabel jLabel) {
         this.listaProyectos = listaProyectos;
         this.jProgressBar = jProgressBar;
+        this.jLabel = jLabel;
         this.con = con;
 
     }
@@ -70,7 +74,9 @@ public class ExcelDAO extends SwingWorker<Void, Integer> {
                 preparedStatement.setString(19, proyecto.getPaymentTerms());
                 preparedStatement.setString(20, proyecto.getCategory());
                 preparedStatement.setString(21, proyecto.getBiddingArea());
-                preparedStatement.setTimestamp(22, proyecto.getPublishDate());
+                preparedStatement.setTimestamp(22,
+                        Timestamp.valueOf(proyecto.getPublishDate())
+                );
                 preparedStatement.addBatch();
                 progressCounter++;
                 int progress = progressCounter * 100 / listaSize;
@@ -78,7 +84,7 @@ public class ExcelDAO extends SwingWorker<Void, Integer> {
             }
             preparedStatement.executeBatch();
         } catch (SQLException e) {
-            System.err.println("Error en la inserción de datos: " + e.getMessage());
+            //System.err.println("Error en la inserción de datos: " + e.getMessage());
             throw new RuntimeException(e);
 
         }
@@ -89,10 +95,11 @@ public class ExcelDAO extends SwingWorker<Void, Integer> {
     protected void process(List<Integer> chunks) {
         int latestProgress = chunks.get(chunks.size() - 1);
         jProgressBar.setValue(latestProgress);
+        jLabel.setText("Importando a la Base da Datos.");
     }
 
     @Override
     protected void done() {
-        System.out.println("Registros almacenados.");
+        jLabel.setText("Importación de datos finalizada.");
     }
 }
