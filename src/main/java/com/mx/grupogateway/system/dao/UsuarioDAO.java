@@ -6,14 +6,18 @@ package com.mx.grupogateway.system.dao;
 
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Usuario;
+import com.mx.grupogateway.system.security.ProtectorData;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import org.apache.poi.hssf.record.ProtectRecord;
 
 /**
  *
@@ -89,6 +93,58 @@ public class UsuarioDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean esPasswordValida(String password) {
+        ArrayList<String> claves = new ArrayList<>();
+        String sql = "SELECT PASSWORD FROM USUARIOS";
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+            preparedStatement.execute();
+            try (ResultSet resultSet = preparedStatement.getResultSet();) {
+                while (resultSet.next()) {
+                    claves.add(resultSet.getString("PASSWORD"));
+                }
+
+                for (String clave : claves) {
+                    if (ProtectorData.assertData(clave, password)) {
+                        System.out.println("Clave encontrada");
+                        return true;
+                    }
+                }
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<String> consultarUsuario(String nombreUsuario,
+            String password) {
+        ArrayList<String> datosObtenidos = new ArrayList<>();
+        if (esPasswordValida(password)) {
+            String sql = "SELECT NOMBRE_USUARIO, ID_CATEGORIA_EMPLEADO "
+                    + "FROM EMPLEADOS "
+                    + "INNER JOIN USUARIOS "
+                    + "ON EMPLEADOS.ID_USUARIO = USUARIOS.ID_USUARIO "
+                    + "WHERE USUARIOS.NOMBRE_USUARIO = ?";
+            try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+                preparedStatement.setString(1, nombreUsuario);
+                preparedStatement.execute();
+                try (ResultSet resultSet = preparedStatement.getResultSet();) {
+                    while (resultSet.next()) {
+                        datosObtenidos = new ArrayList<>();
+                        datosObtenidos.add(resultSet.getString("NOMBRE_USUARIO"));
+                        datosObtenidos.add(resultSet.getString("ID_CATEGORIA_EMPLEADO"));
+                    }
+                    return datosObtenidos;
+                }
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
+        return datosObtenidos;
     }
 
     /**
