@@ -30,9 +30,9 @@ public class ImportarExcel extends javax.swing.JFrame {
         initComponents();
         lockButtonImportExcel();
     }
-    
+
     private void lockButtonImportExcel() {
-        if(listaProyectos == null) {
+        if (listaProyectos == null) {
             botonImportarExcel.setVisible(false);
         } else {
             botonImportarExcel.setVisible(true);
@@ -164,8 +164,9 @@ public class ImportarExcel extends javax.swing.JFrame {
     private void botonImportarExcelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonImportarExcelMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1) {
             if (listaProyectos != null) {
-                excelController = new ExcelController(progressBar,
-                        listaProyectos);
+                excelController = new ExcelController(listaProyectos,
+                        progressBar, textoProgreso
+                );
                 excelController.getExecuteSwingWorker();
                 listaProyectos = null;
                 lockButtonImportExcel();
