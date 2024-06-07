@@ -3,19 +3,23 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package VentanasAdministradores;
+package com.mx.grupogateway.system.view;
 
-import Conexion.ConexionBD;
-import Login.Login;
-import java.awt.*;
-import java.sql.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.*;
-import javax.swing.table.DefaultTableColumnModel;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.mx.grupogateway.system.controller.EmpleadoController;
+import com.mx.grupogateway.system.controller.ProyectoAsignacionController;
+import com.mx.grupogateway.system.controller.ProyectoController;
+import com.mx.grupogateway.system.modelo.Empleado;
+import com.mx.grupogateway.system.modelo.Proyecto;
+import com.mx.grupogateway.system.modelo.ProyectoAsignacion;
+import com.mx.grupogateway.system.util.IdentificadoresEmpleado;
+import com.mx.grupogateway.system.view.util.TablaColumnasAutoajustables;
+import com.mx.grupogateway.system.view.util.TableDataModelEmpleado;
+import com.mx.grupogateway.system.view.util.TableDataModelProyecto;
+import java.awt.event.MouseEvent;
+import java.util.LinkedList;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
+import java.util.List;
 
 /**
  *
@@ -26,144 +30,29 @@ public final class Asignaciones extends javax.swing.JFrame {
     /**
      * Creates new form Asignaciones
      */
-    private Statement sent = null;
-    private Connection cc = null;
-    private ResultSet rs = null;
-    private PreparedStatement p = null;
-    private DefaultTableModel model1;
-    private int xMouse;
-    private int yMouse;
+    private DefaultTableModel modeloTabla;
+    private final ProyectoController proyectoController;
+    private final EmpleadoController empleadoController;
+    private ProyectoAsignacionController proyectoAsignacionController;
+    private TableDataModelProyecto tableDataModelProyecto;
+    private TableDataModelEmpleado tableDataModelEmpleado;
+    private List<ProyectoAsignacion> listaAsignacionesSeleccionadas;
 
     public Asignaciones() {
         initComponents();
-        setBackground(new Color(0, 0, 0, 0));
-        LlenarTablaUsuarios();
-        LlenarTablaProyectos();
-        LlenarTablaAsignaciones();
-        LlenarTablaHistorialAsignaciones();
-        tablaProyectos.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
-    }
-    /*
-    Código para Autoajustar las Columnas acorde al resultado del dato más largo de una tabla SQL
-    en un JTable
-     */
-    int vColIndex = 1;
-    int margin = 2;
+        this.proyectoController = new ProyectoController();
+        this.empleadoController = new EmpleadoController();
+        cargarTablaEmpleados();
+        cargarTablaProyectos();
+        //LlenarTablaAsignaciones();
+        //cargarTablaHistorialAsignaciones();
+        selectionRowListener();
 
-    public void ColumnasAutoajustadas(JTable Tabla_Usuarios, JTable Tabla_Proyectos, JTable Tabla_Asignaciones, JTable Tabla_Historial, int margin) {
-        for (int c = 0; c < Tabla_Usuarios.getColumnCount(); c++) {
-            packColumnTablaUsuarios(Tabla_Usuarios, c, 2);
-        }
-        for (int c = 0; c < Tabla_Proyectos.getColumnCount(); c++) {
-            packColumnTablaProyectos(Tabla_Proyectos, c, 2);
-        }
-        for (int c = 0; c < Tabla_Asignaciones.getColumnCount(); c++) {
-            packColumnTablaAsignaciones(Tabla_Asignaciones, c, 2);
-        }
-        for (int c = 0; c < Tabla_Historial.getColumnCount(); c++) {
-            packColumnTablaHistorial(Tabla_Asignaciones, c, 2);
-        }
+        TablaColumnasAutoajustables.autoajustarColumnas(tablaAsignaciones);
+        TablaColumnasAutoajustables.autoajustarColumnas(Tabla_Historial);
     }
 
-    public void packColumnTablaUsuarios(JTable Tabla_Usuarios, int vColIndex, int margin) {
-        //model1 = (DefaultTableModel) jTable1.getModel();
-        DefaultTableColumnModel colModel = (DefaultTableColumnModel) Tabla_Usuarios.getColumnModel();
-
-        TableColumn col = colModel.getColumn(vColIndex);
-        int width;
-        TableCellRenderer renderer = col.getHeaderRenderer();
-        if (renderer == null) {
-            renderer = Tabla_Usuarios.getTableHeader().getDefaultRenderer();
-        }
-        Component comp = renderer.getTableCellRendererComponent(Tabla_Usuarios, col.getHeaderValue(), false, false, 0, 0);
-        width = comp.getPreferredSize().width;
-        for (int r = 0; r < Tabla_Usuarios.getRowCount(); r++) {
-            renderer = Tabla_Usuarios.getCellRenderer(r, vColIndex);
-            comp = renderer.getTableCellRendererComponent(Tabla_Usuarios, Tabla_Usuarios.getValueAt(r, vColIndex), false, false, r, vColIndex);
-            width = Math.max(width, comp.getPreferredSize().width);
-        }
-        width += 2 * margin;
-        col.setPreferredWidth(width);
-    }
-
-    public void packColumnTablaProyectos(JTable Tabla_Proyectos, int vColIndex, int margin) {
-        //model1 = (DefaultTableModel) jTable1.getModel();
-        DefaultTableColumnModel colModel = (DefaultTableColumnModel) Tabla_Proyectos.getColumnModel();
-
-        TableColumn col = colModel.getColumn(vColIndex);
-        int width;
-        TableCellRenderer renderer = col.getHeaderRenderer();
-        if (renderer == null) {
-            renderer = Tabla_Proyectos.getTableHeader().getDefaultRenderer();
-        }
-        Component comp = renderer.getTableCellRendererComponent(Tabla_Proyectos, col.getHeaderValue(), false, false, 0, 0);
-        width = comp.getPreferredSize().width;
-        for (int r = 0; r < Tabla_Proyectos.getRowCount(); r++) {
-            renderer = Tabla_Proyectos.getCellRenderer(r, vColIndex);
-            comp = renderer.getTableCellRendererComponent(Tabla_Proyectos, Tabla_Proyectos.getValueAt(r, vColIndex), false, false, r, vColIndex);
-            width = Math.max(width, comp.getPreferredSize().width);
-        }
-        width += 2 * margin;
-        col.setPreferredWidth(width);
-    }
-
-    public void packColumnTablaAsignaciones(JTable Tabla_Asignaciones, int vColIndex, int margin) {
-        DefaultTableColumnModel colModel = (DefaultTableColumnModel) Tabla_Asignaciones.getColumnModel();
-
-        TableColumn col = colModel.getColumn(vColIndex);
-        int width;
-        TableCellRenderer renderer = col.getHeaderRenderer();
-        if (renderer == null) {
-            renderer = Tabla_Asignaciones.getTableHeader().getDefaultRenderer();
-        }
-        Component comp = renderer.getTableCellRendererComponent(Tabla_Asignaciones, col.getHeaderValue(), false, false, 0, 0);
-        width = comp.getPreferredSize().width;
-        for (int r = 0; r < Tabla_Asignaciones.getRowCount(); r++) {
-            renderer = Tabla_Asignaciones.getCellRenderer(r, vColIndex);
-            comp = renderer.getTableCellRendererComponent(Tabla_Asignaciones, Tabla_Asignaciones.getValueAt(r, vColIndex), false, false, r, vColIndex);
-            width = Math.max(width, comp.getPreferredSize().width);
-        }
-        width += 2 * margin;
-        col.setPreferredWidth(width);
-    }
-
-    public void packColumnTablaHistorial(JTable Tabla_Historial, int vColIndex, int margin) {
-        DefaultTableColumnModel colModel = (DefaultTableColumnModel) Tabla_Historial.getColumnModel();
-        TableColumn col = colModel.getColumn(vColIndex);
-        int width;
-        TableCellRenderer renderer = col.getHeaderRenderer();
-        if (renderer == null) {
-            renderer = Tabla_Historial.getTableHeader().getDefaultRenderer();
-        }
-        Component comp = renderer.getTableCellRendererComponent(Tabla_Historial, col.getHeaderValue(), false, false, 0, 0);
-        width = comp.getPreferredSize().width;
-        for (int r = 0; r < Tabla_Historial.getRowCount(); r++) {
-            renderer = Tabla_Historial.getCellRenderer(r, vColIndex);
-            comp = renderer.getTableCellRendererComponent(Tabla_Historial, Tabla_Historial.getValueAt(r, vColIndex), false, false, r, vColIndex);
-            width = Math.max(width, comp.getPreferredSize().width);
-        }
-        width += 2 * margin;
-        col.setPreferredWidth(width);
-    }
-
-    public boolean DatosLlenosAsignacion() {
-
-        return !id_user.getText().equals("") && !nombre.getText().equals("")
-                && !ape_p.getText().equals("") && !ape_m.getText().equals("") && !id_line.getText().equals("");
-    }
-
-    public void LimpiarDatosUser() {
-        id_asignacion.setText("");
-        datestamp.setCalendar(null);
-        id_user.setText("");
-        name_user.setText("");
-        nombre.setText("");
-        ape_p.setText("");
-        ape_m.setText("");
-    }
-
-    public void LimpiarDatosProyecto() {
+    private void LimpiarDatosProyecto() {
         id_line.setText("");
         po_no.setText("");
         importe.setText("");
@@ -171,60 +60,46 @@ public final class Asignaciones extends javax.swing.JFrame {
         status_fact.setText("");
     }
 
-    public void LlenarTablaUsuarios() {
-        try {
-            cc = ConexionBD.getcon();
-            String[] titulos = {"ID Usuario", "Nombre Usuario", "Nombre", "Apellido Paterno", "Apellido Materno"};
-            String SQL = "SELECT * FROM usuarios WHERE cat_usuario='Administrador Facturacion' or cat_usuario='Operador Facturacion'";
-            model1 = new DefaultTableModel(null, titulos);
-            sent = cc.createStatement();
-            rs = sent.executeQuery(SQL);
-            String[] fila = new String[5];
-            while (rs.next()) {
-                fila[0] = rs.getString("id_usuario");
-                fila[1] = rs.getString("nombre_usuario");
-                fila[2] = rs.getString("nombre");
-                fila[3] = rs.getString("ape_pat");
-                fila[4] = rs.getString("ape_mat");
-                model1.addRow(fila);
-            }
-            tablaProyectos.setModel(model1);
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al Llenar Tabla: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                    rs = null;
-                } catch (SQLException ex) {
-                    Logger.getLogger(Asignaciones.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            if (sent != null) {
-                try {
-                    sent.close();
-                    sent = null;
-                } catch (SQLException ex) {
-                    Logger.getLogger(Asignaciones.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            if (cc != null) {
-                try {
-                    cc.close();
-                    cc = null;
-                } catch (SQLException ex) {
-                    Logger.getLogger(Asignaciones.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
+    private void cargarTablaEmpleados() {
+        modeloTabla = (DefaultTableModel) tablaEmpleados.getModel();
+        List<Empleado> empleados = this.empleadoController.listar();
+        tableDataModelEmpleado = new TableDataModelEmpleado(
+                modeloTabla, tablaEmpleados, empleados
+        );
+        tableDataModelEmpleado.cargarTablaEmpleados();
+        TablaColumnasAutoajustables.autoajustarColumnas(tablaEmpleados);
     }
 
-    public void LlenarTablaHistorialAsignaciones() {
+    private void cargarTablaProyectos() {
+        modeloTabla = (DefaultTableModel) tablaProyectos.getModel();
+        List<Proyecto> proyectos = this.proyectoController.listar();
+        tableDataModelProyecto = new TableDataModelProyecto(
+                modeloTabla, tablaProyectos, proyectos
+        );
+        tableDataModelProyecto.cargarTablaProyectos();
+        TablaColumnasAutoajustables.autoajustarColumnas(tablaProyectos);
+    }
+
+    private void selectionRowListener() {
+        listaAsignacionesSeleccionadas = new LinkedList<>();
+        tablaProyectos.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int[] selectedRowIndices = tablaProyectos.getSelectedRows();
+                for (int rowIndex : selectedRowIndices) {
+                    Long idProyecto = Long.valueOf(tablaProyectos.getValueAt(rowIndex, 0).toString());
+                    listaAsignacionesSeleccionadas.add(new ProyectoAsignacion(idProyecto));
+                }
+            }
+        });
+    }
+
+    /*
+    public void cargarTablaHistorialAsignaciones() {
         try {
             cc = ConexionBD.getcon();
             String[] titulos = {"ID Historial", "ID Asignación", "Fecha Asignación", "ID", "ID Usuario", "Orden Compra DT", "Importe", "Total a Pagar", "Status Facturación"};
             String SQL = "SELECT * FROM historial_asignaciones";
-            model1 = new DefaultTableModel(null, titulos);
+            modeloTabla = new DefaultTableModel(null, titulos);
             sent = cc.createStatement();
             rs = sent.executeQuery(SQL);
             String[] fila = new String[9];
@@ -238,9 +113,9 @@ public final class Asignaciones extends javax.swing.JFrame {
                 fila[6] = rs.getString("importe");
                 fila[7] = rs.getString("total_pagar");
                 fila[8] = rs.getString("status_facturacion");
-                model1.addRow(fila);
+                modeloTabla.addRow(fila);
             }
-            Tabla_Historial.setModel(model1);
+            Tabla_Historial.setModel(modeloTabla);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al Llenar Tabla: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
@@ -277,7 +152,7 @@ public final class Asignaciones extends javax.swing.JFrame {
             String Fecha_Asignacion = ((JTextField) Fecha_AS.getDateEditor().getUiComponent()).getText();
             String[] titulos = {"ID Historial", "ID Asignación", "Fecha Asignación", "ID", "ID Usuario", "Orden Compra DT", "Importe", "Total a Pagar", "Status Facturación"};
             String SQL = "SELECT * FROM historial_asignaciones WHERE fecha_asignacion like '%" + Fecha_Asignacion + "%'";
-            model1 = new DefaultTableModel(null, titulos);
+            modeloTabla = new DefaultTableModel(null, titulos);
             sent = cc.createStatement();
             rs = sent.executeQuery(SQL);
             String[] fila = new String[9];
@@ -291,9 +166,9 @@ public final class Asignaciones extends javax.swing.JFrame {
                 fila[6] = rs.getString("importe");
                 fila[7] = rs.getString("total_pagar");
                 fila[8] = rs.getString("status_facturacion");
-                model1.addRow(fila);
+                modeloTabla.addRow(fila);
             }
-            Tabla_Historial.setModel(model1);
+            Tabla_Historial.setModel(modeloTabla);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al Llenar Tabla: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
@@ -330,7 +205,7 @@ public final class Asignaciones extends javax.swing.JFrame {
             String ID_Asignacion = String.valueOf(id_AS.getText());
             String[] titulos = {"ID Historial", "ID Asignación", "Fecha Asignación", "ID", "ID Usuario", "Orden Compra DT", "Importe", "Total a Pagar", "Status Facturación"};
             String SQL = "SELECT * FROM historial_asignaciones WHERE id_asignacion=" + ID_Asignacion + "";
-            model1 = new DefaultTableModel(null, titulos);
+            modeloTabla = new DefaultTableModel(null, titulos);
             sent = cc.createStatement();
             rs = sent.executeQuery(SQL);
             String[] fila = new String[9];
@@ -344,9 +219,9 @@ public final class Asignaciones extends javax.swing.JFrame {
                 fila[6] = rs.getString("importe");
                 fila[7] = rs.getString("total_pagar");
                 fila[8] = rs.getString("status_facturacion");
-                model1.addRow(fila);
+                modeloTabla.addRow(fila);
             }
-            Tabla_Historial.setModel(model1);
+            Tabla_Historial.setModel(modeloTabla);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al Llenar Tabla: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
@@ -384,7 +259,7 @@ public final class Asignaciones extends javax.swing.JFrame {
             String[] titulos = {"ID Historial", "ID Asignación", "Fecha Asignación", "ID", "ID Usuario", "Orden Compra DT", "Importe", "Total a Pagar", "Status Facturación"};
             String SQL = "SELECT * FROM historial_asignaciones WHERE id=" + ID_Proyecto + "";
             //tabla1.setModel(model);
-            model1 = new DefaultTableModel(null, titulos);
+            modeloTabla = new DefaultTableModel(null, titulos);
             sent = cc.createStatement();
             rs = sent.executeQuery(SQL);
             String[] fila = new String[9];
@@ -398,9 +273,9 @@ public final class Asignaciones extends javax.swing.JFrame {
                 fila[6] = rs.getString("importe");
                 fila[7] = rs.getString("total_pagar");
                 fila[8] = rs.getString("status_facturacion");
-                model1.addRow(fila);
+                modeloTabla.addRow(fila);
             }
-            Tabla_Historial.setModel(model1);
+            Tabla_Historial.setModel(modeloTabla);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al Llenar Tabla: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
@@ -437,7 +312,7 @@ public final class Asignaciones extends javax.swing.JFrame {
             String ID_Usuario = String.valueOf(ID_US.getText());
             String[] titulos = {"ID Historial", "ID Asignación", "Fecha Asignación", "ID", "ID Usuario", "Orden Compra DT", "Importe", "Total a Pagar", "Status Facturación"};
             String SQL = "SELECT * FROM historial_asignaciones WHERE id_usuario=" + ID_Usuario + "";
-            model1 = new DefaultTableModel(null, titulos);
+            modeloTabla = new DefaultTableModel(null, titulos);
             sent = cc.createStatement();
             rs = sent.executeQuery(SQL);
             String[] fila = new String[9];
@@ -451,9 +326,9 @@ public final class Asignaciones extends javax.swing.JFrame {
                 fila[6] = rs.getString("importe");
                 fila[7] = rs.getString("total_pagar");
                 fila[8] = rs.getString("status_facturacion");
-                model1.addRow(fila);
+                modeloTabla.addRow(fila);
             }
-            Tabla_Historial.setModel(model1);
+            Tabla_Historial.setModel(modeloTabla);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al Llenar Tabla: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
@@ -482,81 +357,9 @@ public final class Asignaciones extends javax.swing.JFrame {
                 }
             }
         }
-    }
+    }*/
 
-    public void LlenarTablaProyectos() {
-        try {
-            cc = ConexionBD.getcon();
-            String[] titulos = {"ID", "PO NO", "Publish Date", "Project Code", "Project Name", "Customer", "PO Status", "PO Line NO",
-                "Shipment NO", "Site Code", "Site Name", "Item Code",
-                "Item Description", "Requested Qty", "Due Qty", "Billed Quantity",
-                "Unit Price", "Line Amount", "Unit", "Payment Terms", "Category",
-                "Bidding Area"};
-            String SQL = "select id,PO_NO,publish_date,project_code,project_name,customer,PO_status,PO_Line_NO,"
-                    + "shipment_NO,site_code,site_name,item_code,item_desc,\n"
-                    + "requested_qty,due_qty,billed_qty,unit_price,line_amount,unit,payment_terms,category,bidding_area from facturacion \n"
-                    + "where PO_status like '%NEW%'";
-            //tabla1.setModel(model);
-            model1 = new DefaultTableModel(null, titulos);
-            sent = cc.createStatement();
-            rs = sent.executeQuery(SQL);
-            String[] fila = new String[22];
-            while (rs.next()) {
-                fila[0] = rs.getString("id");
-                fila[1] = rs.getString("PO_NO");
-                fila[2] = rs.getString("publish_date");
-                fila[3] = rs.getString("project_code");
-                fila[4] = rs.getString("project_name");
-                fila[5] = rs.getString("customer");
-                fila[6] = rs.getString("PO_status");
-                fila[7] = rs.getString("PO_Line_NO");
-                fila[8] = rs.getString("shipment_NO");
-                fila[9] = rs.getString("site_code");
-                fila[10] = rs.getString("site_name");
-                fila[11] = rs.getString("item_code");
-                fila[12] = rs.getString("item_desc");
-                fila[13] = rs.getString("requested_qty");
-                fila[14] = rs.getString("due_qty");
-                fila[15] = rs.getString("billed_qty");
-                fila[16] = rs.getString("unit_price");
-                fila[17] = rs.getString("line_amount");
-                fila[18] = rs.getString("unit");
-                fila[19] = rs.getString("payment_terms");
-                fila[20] = rs.getString("category");
-                fila[21] = rs.getString("bidding_area");
-                model1.addRow(fila);
-            }
-            tablaEmpleados.setModel(model1);
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al Llenar Tabla: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                    rs = null;
-                } catch (SQLException ex) {
-                    Logger.getLogger(Asignaciones.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            if (sent != null) {
-                try {
-                    sent.close();
-                    sent = null;
-                } catch (SQLException ex) {
-                    Logger.getLogger(Asignaciones.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            if (cc != null) {
-                try {
-                    cc.close();
-                    cc = null;
-                } catch (SQLException ex) {
-                    Logger.getLogger(Asignaciones.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-    }
-
+ /*
     public void BuscarTablaProyectosPO() {
         try {
             cc = ConexionBD.getcon();
@@ -571,7 +374,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                     + "bidding_area from facturacion \n"
                     + "where PO_NO='" + jTextField1.getText() + "'";
             //tabla1.setModel(model);
-            model1 = new DefaultTableModel(null, titulos);
+            modeloTabla = new DefaultTableModel(null, titulos);
             sent = cc.createStatement();
             rs = sent.executeQuery(SQL);
             String[] fila = new String[22];
@@ -598,9 +401,9 @@ public final class Asignaciones extends javax.swing.JFrame {
                 fila[19] = rs.getString("payment_terms");
                 fila[20] = rs.getString("category");
                 fila[21] = rs.getString("bidding_area");
-                model1.addRow(fila);
+                modeloTabla.addRow(fila);
             }
-            tablaEmpleados.setModel(model1);
+            tablaEmpleados.setModel(modeloTabla);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al Llenar Tabla: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
@@ -646,7 +449,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                     + "bidding_area from facturacion \n"
                     + "where PO_NO='" + jTextField1.getText() + "' && publish_date like '%" + fecha + "%'";
             //tabla1.setModel(model);
-            model1 = new DefaultTableModel(null, titulos);
+            modeloTabla = new DefaultTableModel(null, titulos);
             sent = cc.createStatement();
             rs = sent.executeQuery(SQL);
             String[] fila = new String[22];
@@ -673,9 +476,9 @@ public final class Asignaciones extends javax.swing.JFrame {
                 fila[19] = rs.getString("payment_terms");
                 fila[20] = rs.getString("category");
                 fila[21] = rs.getString("bidding_area");
-                model1.addRow(fila);
+                modeloTabla.addRow(fila);
             }
-            tablaEmpleados.setModel(model1);
+            tablaEmpleados.setModel(modeloTabla);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al Llenar Tabla: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
@@ -720,7 +523,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                     + "bidding_area from facturacion \n"
                     + "where id=" + jTextField2.getText() + "";
             //tabla1.setModel(model);
-            model1 = new DefaultTableModel(null, titulos);
+            modeloTabla = new DefaultTableModel(null, titulos);
             sent = cc.createStatement();
             rs = sent.executeQuery(SQL);
             String[] fila = new String[22];
@@ -747,9 +550,9 @@ public final class Asignaciones extends javax.swing.JFrame {
                 fila[19] = rs.getString("payment_terms");
                 fila[20] = rs.getString("category");
                 fila[21] = rs.getString("bidding_area");
-                model1.addRow(fila);
+                modeloTabla.addRow(fila);
             }
-            tablaEmpleados.setModel(model1);
+            tablaEmpleados.setModel(modeloTabla);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al Llenar Tabla: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
@@ -794,7 +597,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                 p.setString(2, campo);
                 int n = p.executeUpdate();
                 if (n > 0) {
-                    LlenarTablaProyectos();
+                    cargarTablaProyectos();
                     ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
                     JOptionPane.showMessageDialog(null, "Datos Actualizados Correctamente");
 
@@ -866,8 +669,9 @@ public final class Asignaciones extends javax.swing.JFrame {
                 }
             }
         }
-    }
+    }*/
 
+ /*
     public void LlenarTablaAsignaciones() {
         try {
             cc = ConexionBD.getcon();
@@ -891,7 +695,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                     + "asignaciones.id_usuario = usuarios.id_usuario && facturacion.id = asignaciones.id \n"
                     + "order by id_asignacion asc;";
             //tabla1.setModel(model);
-            model1 = new DefaultTableModel(null, titulos);
+            modeloTabla = new DefaultTableModel(null, titulos);
             sent = cc.createStatement();
             rs = sent.executeQuery(SQL);
             String[] fila = new String[31];
@@ -927,9 +731,9 @@ public final class Asignaciones extends javax.swing.JFrame {
                 fila[28] = rs.getString("category");
                 fila[29] = rs.getString("bidding_area");
                 fila[30] = rs.getString("publish_date");
-                model1.addRow(fila);
+                modeloTabla.addRow(fila);
             }
-            tablaAsignaciones.setModel(model1);
+            tablaAsignaciones.setModel(modeloTabla);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al Llenar Tabla: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
@@ -986,7 +790,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                     + "asignaciones.id_usuario = usuarios.id_usuario && facturacion.id = asignaciones.id \n"
                     + "order by id_asignacion asc;";
             //tabla1.setModel(model);
-            model1 = new DefaultTableModel(null, titulos);
+            modeloTabla = new DefaultTableModel(null, titulos);
             sent = cc.createStatement();
             rs = sent.executeQuery(SQL);
             String[] fila = new String[31];
@@ -1022,9 +826,9 @@ public final class Asignaciones extends javax.swing.JFrame {
                 fila[28] = rs.getString("category");
                 fila[29] = rs.getString("bidding_area");
                 fila[30] = rs.getString("publish_date");
-                model1.addRow(fila);
+                modeloTabla.addRow(fila);
             }
-            tablaAsignaciones.setModel(model1);
+            tablaAsignaciones.setModel(modeloTabla);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al Llenar Tabla: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
@@ -1082,7 +886,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                     + "asignaciones.id=" + id_proyecto + " \n"
                     + "order by id_asignacion asc;";
             //tabla1.setModel(model);
-            model1 = new DefaultTableModel(null, titulos);
+            modeloTabla = new DefaultTableModel(null, titulos);
             sent = cc.createStatement();
             rs = sent.executeQuery(SQL);
             String[] fila = new String[31];
@@ -1118,9 +922,9 @@ public final class Asignaciones extends javax.swing.JFrame {
                 fila[28] = rs.getString("category");
                 fila[29] = rs.getString("bidding_area");
                 fila[30] = rs.getString("publish_date");
-                model1.addRow(fila);
+                modeloTabla.addRow(fila);
             }
-            tablaAsignaciones.setModel(model1);
+            tablaAsignaciones.setModel(modeloTabla);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al Llenar Tabla: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
@@ -1177,7 +981,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                     + "asignaciones.id_usuario = usuarios.id_usuario && facturacion.id = asignaciones.id \n"
                     + "order by id_asignacion asc;";
             //tabla1.setModel(model);
-            model1 = new DefaultTableModel(null, titulos);
+            modeloTabla = new DefaultTableModel(null, titulos);
             sent = cc.createStatement();
             rs = sent.executeQuery(SQL);
             String[] fila = new String[31];
@@ -1213,9 +1017,9 @@ public final class Asignaciones extends javax.swing.JFrame {
                 fila[28] = rs.getString("category");
                 fila[29] = rs.getString("bidding_area");
                 fila[30] = rs.getString("publish_date");
-                model1.addRow(fila);
+                modeloTabla.addRow(fila);
             }
-            tablaAsignaciones.setModel(model1);
+            tablaAsignaciones.setModel(modeloTabla);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al Llenar Tabla: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } finally {
@@ -1244,8 +1048,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                 }
             }
         }
-    }
-
+    }*/
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -1258,7 +1061,7 @@ public final class Asignaciones extends javax.swing.JFrame {
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
         Asignaciones = new javax.swing.JPanel();
-        jPanel4 = new FondoPanelTitulo();
+        jPanel4 = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
         buscadorProyecto = new javax.swing.JTextField();
         filtroProyecto = new javax.swing.JComboBox<>();
@@ -1284,7 +1087,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tablaEmpleados = new javax.swing.JTable();
-        jPanel3 = new FondoPanelesCentrales();
+        jPanel3 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         po_no = new javax.swing.JTextField();
         importe = new javax.swing.JTextField();
@@ -1300,7 +1103,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         jLabel41 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         Historial = new javax.swing.JPanel();
-        jPanel5 = new FondoPanelTitulo();
+        jPanel5 = new javax.swing.JPanel();
         jLabel18 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         Tabla_Historial = new javax.swing.JTable();
@@ -1322,7 +1125,6 @@ public final class Asignaciones extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
         setMinimumSize(new java.awt.Dimension(1766, 910));
-        setUndecorated(true);
 
         jTabbedPane1.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         jTabbedPane1.setMinimumSize(new java.awt.Dimension(1651, 95));
@@ -1351,7 +1153,6 @@ public final class Asignaciones extends javax.swing.JFrame {
             .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, 60, Short.MAX_VALUE)
         );
 
-        buscadorProyecto.setBackground(new Color(0, 0, 0, 0));
         buscadorProyecto.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 15)); // NOI18N
         buscadorProyecto.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -1359,7 +1160,7 @@ public final class Asignaciones extends javax.swing.JFrame {
             }
         });
 
-        filtroProyecto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Id Proyecto", "PO", "Item Code" }));
+        filtroProyecto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Id Proyecto", "Po No" }));
         filtroProyecto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 filtroProyectoActionPerformed(evt);
@@ -1374,23 +1175,25 @@ public final class Asignaciones extends javax.swing.JFrame {
         });
 
         jLabel15.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel15.setText("Seleccione en la tabla el empleado que desee asignar");
+        jLabel15.setText("Seleccione en la tabla el proyecto que desee asignar");
 
         mostrarProyectos.setText("Mostrar todo");
 
         tablaProyectos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {},
-                {},
-                {},
-                {}
+
             },
             new String [] {
 
             }
         ));
+        tablaProyectos.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         tablaProyectos.getTableHeader().setResizingAllowed(false);
+        tablaProyectos.getTableHeader().setReorderingAllowed(false);
         tablaProyectos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaProyectosMouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 tablaProyectosMousePressed(evt);
             }
@@ -1402,7 +1205,6 @@ public final class Asignaciones extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tablaProyectos);
 
-        buscadorEmpleado.setBackground(new Color(0, 0, 0, 0));
         buscadorEmpleado.setToolTipText("Buscar Empleado");
         buscadorEmpleado.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -1410,13 +1212,13 @@ public final class Asignaciones extends javax.swing.JFrame {
             }
         });
 
-        filtroEmpleado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Id Empleado", "Nombre", "Cargo" }));
+        filtroEmpleado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Id Empleado", "Id Usuario", "Nombre", "Cargo" }));
 
         botonBuscarEmpleado.setText("Buscar");
 
         jLabel16.setForeground(new java.awt.Color(255, 255, 255));
         jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel16.setText("Seleccione en la tabla el proyecto que desee asignar.");
+        jLabel16.setText("Seleccione en la tabla el empleado que desee asignar.");
 
         mostrarEmpleados.setText("Mostrar Todo");
         mostrarEmpleados.addActionListener(new java.awt.event.ActionListener() {
@@ -1484,18 +1286,19 @@ public final class Asignaciones extends javax.swing.JFrame {
 
         tablaEmpleados.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {},
-                {},
-                {},
-                {}
+
             },
             new String [] {
 
             }
         ));
-        tablaEmpleados.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        tablaEmpleados.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tablaEmpleados.getTableHeader().setResizingAllowed(false);
+        tablaEmpleados.getTableHeader().setReorderingAllowed(false);
         tablaEmpleados.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaEmpleadosMouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 tablaEmpleadosMousePressed(evt);
             }
@@ -1616,7 +1419,6 @@ public final class Asignaciones extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 148, 0, 0);
         jPanel3.add(jLabel4, gridBagConstraints);
 
-        id_line.setText("asas");
         id_line.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
@@ -1648,36 +1450,6 @@ public final class Asignaciones extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(AsignacionesLayout.createSequentialGroup()
-                        .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(AsignacionesLayout.createSequentialGroup()
-                                .addComponent(buscadorProyecto, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(filtroProyecto, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(botonBuscarProyecto)
-                                .addGap(107, 107, 107)
-                                .addComponent(jButton3)
-                                .addGap(18, 18, 18)
-                                .addComponent(buscadorEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(filtroEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(botonBuscarEmpleado))
-                            .addComponent(jLabel15))
-                        .addContainerGap(423, Short.MAX_VALUE))
-                    .addGroup(AsignacionesLayout.createSequentialGroup()
-                        .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(mostrarProyectos)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 810, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(AsignacionesLayout.createSequentialGroup()
-                                .addComponent(jLabel16)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(mostrarEmpleados))
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap())
-                    .addGroup(AsignacionesLayout.createSequentialGroup()
                         .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jScrollPane4)
                             .addComponent(jLabel1)
@@ -1701,7 +1473,36 @@ public final class Asignaciones extends javax.swing.JFrame {
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(AsignacionesLayout.createSequentialGroup()
                                 .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addContainerGap())))))
+                                .addContainerGap())))
+                    .addGroup(AsignacionesLayout.createSequentialGroup()
+                        .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(mostrarProyectos)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 810, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel15)
+                            .addGroup(AsignacionesLayout.createSequentialGroup()
+                                .addComponent(buscadorProyecto, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(filtroProyecto, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(botonBuscarProyecto)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton3)))
+                        .addGap(18, 18, 18)
+                        .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(AsignacionesLayout.createSequentialGroup()
+                                .addComponent(buscadorEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(filtroEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(botonBuscarEmpleado)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(AsignacionesLayout.createSequentialGroup()
+                                .addComponent(jLabel16)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 438, Short.MAX_VALUE)
+                                .addComponent(mostrarEmpleados))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap())))
             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 1766, Short.MAX_VALUE)
         );
         AsignacionesLayout.setVerticalGroup(
@@ -1713,10 +1514,11 @@ public final class Asignaciones extends javax.swing.JFrame {
                     .addGroup(AsignacionesLayout.createSequentialGroup()
                         .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(buscadorEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(filtroEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(botonBuscarEmpleado)
+                            .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(filtroEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(botonBuscarEmpleado))
                             .addComponent(jButton3))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(mostrarProyectos)
                             .addComponent(jLabel16)))
@@ -1761,13 +1563,22 @@ public final class Asignaciones extends javax.swing.JFrame {
 
         jPanel5.setBackground(new java.awt.Color(0, 102, 102));
         jPanel5.setPreferredSize(new java.awt.Dimension(1329, 60));
-        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel18.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 24)); // NOI18N
         jLabel18.setForeground(new java.awt.Color(255, 255, 255));
         jLabel18.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel18.setText("Historial de Asignaciones");
-        jPanel5.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1650, 60));
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 1650, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
 
         Tabla_Historial.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         Tabla_Historial.setModel(new javax.swing.table.DefaultTableModel(
@@ -1904,7 +1715,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                             .addComponent(jButton5))
                         .addGap(0, 1370, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, 1766, Short.MAX_VALUE)
         );
         HistorialLayout.setVerticalGroup(
             HistorialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1966,7 +1777,7 @@ public final class Asignaciones extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tablaProyectosMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaProyectosMousePressed
-        int fila = tablaProyectos.getSelectedRow();
+        /*int fila = tablaProyectos.getSelectedRow();
         try {
             cc = ConexionBD.getcon();
             String SQL = "SELECT * FROM usuarios WHERE id_usuario='" + tablaProyectos.getValueAt(fila, 0) + "'";
@@ -2005,11 +1816,11 @@ public final class Asignaciones extends javax.swing.JFrame {
                     Logger.getLogger(Asignaciones.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        }
+        }*/
     }//GEN-LAST:event_tablaProyectosMousePressed
 
     private void tablaProyectosKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tablaProyectosKeyReleased
-        if ((evt.getKeyCode() == 38) || (evt.getKeyCode() == 40) || (evt.getKeyCode() == 33) || (evt.getKeyCode() == 34)) {
+        /* if ((evt.getKeyCode() == 38) || (evt.getKeyCode() == 40) || (evt.getKeyCode() == 33) || (evt.getKeyCode() == 34)) {
             int fila = tablaProyectos.getSelectedRow();
             try {
                 cc = ConexionBD.getcon();
@@ -2050,11 +1861,11 @@ public final class Asignaciones extends javax.swing.JFrame {
                     }
                 }
             }
-        }
+        }*/
     }//GEN-LAST:event_tablaProyectosKeyReleased
 
     private void tablaEmpleadosMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaEmpleadosMousePressed
-        int fila = tablaEmpleados.getSelectedRow();
+        /*int fila = tablaEmpleados.getSelectedRow();
         try {
             cc = ConexionBD.getcon();
             String SQL = "SELECT id, PO_NO, line_amount FROM facturacion WHERE id='" + tablaEmpleados.getValueAt(fila, 0) + "'";
@@ -2091,11 +1902,11 @@ public final class Asignaciones extends javax.swing.JFrame {
                     Logger.getLogger(Asignaciones.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        }
+        }*/
     }//GEN-LAST:event_tablaEmpleadosMousePressed
 
     private void tablaEmpleadosKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tablaEmpleadosKeyReleased
-        if ((evt.getKeyCode() == 38) || (evt.getKeyCode() == 40) || (evt.getKeyCode() == 33) || (evt.getKeyCode() == 34)) {
+        /* if ((evt.getKeyCode() == 38) || (evt.getKeyCode() == 40) || (evt.getKeyCode() == 33) || (evt.getKeyCode() == 34)) {
             int fila = tablaEmpleados.getSelectedRow();
             try {
                 cc = ConexionBD.getcon();
@@ -2133,11 +1944,11 @@ public final class Asignaciones extends javax.swing.JFrame {
                     }
                 }
             }
-        }
+        }*/
     }//GEN-LAST:event_tablaEmpleadosKeyReleased
 
     private void tablaAsignacionesMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaAsignacionesMousePressed
-        int fila = tablaAsignaciones.getSelectedRow();
+        /*int fila = tablaAsignaciones.getSelectedRow();
         try {
             cc = ConexionBD.getcon();
             String SQL = "select asignaciones.id_asignacion, asignaciones.fecha_asignacion, \n"
@@ -2192,11 +2003,11 @@ public final class Asignaciones extends javax.swing.JFrame {
                     Logger.getLogger(Asignaciones.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        }
+        }*/
     }//GEN-LAST:event_tablaAsignacionesMousePressed
 
     private void tablaAsignacionesKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tablaAsignacionesKeyReleased
-        if ((evt.getKeyCode() == 38) || (evt.getKeyCode() == 40) || (evt.getKeyCode() == 33) || (evt.getKeyCode() == 34)) {
+        /*if ((evt.getKeyCode() == 38) || (evt.getKeyCode() == 40) || (evt.getKeyCode() == 33) || (evt.getKeyCode() == 34)) {
             int fila = tablaAsignaciones.getSelectedRow();
             try {
                 cc = ConexionBD.getcon();
@@ -2253,12 +2064,12 @@ public final class Asignaciones extends javax.swing.JFrame {
                     }
                 }
             }
-        }
+        }*/
     }//GEN-LAST:event_tablaAsignacionesKeyReleased
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        BuscarIDAsignacion();
-        ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
+        //BuscarIDAsignacion();
+        //ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void id_ASActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_id_ASActionPerformed
@@ -2274,23 +2085,23 @@ public final class Asignaciones extends javax.swing.JFrame {
     }//GEN-LAST:event_Tabla_HistorialMousePressed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        BuscarTablaHistorialIDAsignacion();
-        ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
+        //BuscarTablaHistorialIDAsignacion();
+        //ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        BuscarFechaAsignacionHistorial();
-        ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
+        //BuscarFechaAsignacionHistorial();
+        //ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        BuscarIDUsuarioHistorial();
-        ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
+        //BuscarIDUsuarioHistorial();
+        //ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        BuscarIDProyecto();
-        ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
+        //BuscarIDProyecto();
+        //ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void ID_USActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ID_USActionPerformed
@@ -2298,13 +2109,13 @@ public final class Asignaciones extends javax.swing.JFrame {
     }//GEN-LAST:event_ID_USActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        LlenarTablaHistorialAsignaciones();
-        ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
+        //cargarTablaHistorialAsignaciones();
+        //ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void mostrarEmpleadosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mostrarEmpleadosActionPerformed
-        LlenarTablaProyectos();
-        ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
+        //cargarTablaProyectos();
+        //ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
     }//GEN-LAST:event_mostrarEmpleadosActionPerformed
 
     private void buscadorProyectoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buscadorProyectoKeyTyped
@@ -2330,36 +2141,30 @@ public final class Asignaciones extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    private void tablaProyectosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaProyectosMouseClicked
+
+    }//GEN-LAST:event_tablaProyectosMouseClicked
+
+    private void tablaEmpleadosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaEmpleadosMouseClicked
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            int fila = tablaEmpleados.getSelectedRow();
+            if (!listaAsignacionesSeleccionadas.isEmpty()) {
+                listaAsignacionesSeleccionadas.forEach((proyectoAsignacion) -> {
+                    
+                });
+            }
+        }
+    }//GEN-LAST:event_tablaEmpleadosMouseClicked
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Asignaciones.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        //</editor-fold>
-        //</editor-fold>
+        FlatDarkLaf.setup();
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Asignaciones().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new Asignaciones().setVisible(true);
         });
     }
 
@@ -2427,42 +2232,4 @@ public final class Asignaciones extends javax.swing.JFrame {
     private javax.swing.JTable tablaProyectos;
     private javax.swing.JTextField total;
     // End of variables declaration//GEN-END:variables
-class FondoPanelTitulo extends JPanel {
-
-        private Image imagen;
-
-        @Override
-        public void paint(Graphics g) {
-            imagen = new ImageIcon(getClass().getResource("/Imagenes/Clear Sky.jpg")).getImage();
-            g.drawImage(imagen, 0, 0, getWidth(), getHeight(), this);
-            setOpaque(false);
-            super.paint(g);
-        }
-    }
-
-    class FondoPanelPrincipal extends JLabel {
-
-        private Image imagen;
-
-        @Override
-        public void paint(Graphics g) {
-            imagen = new ImageIcon(getClass().getResource("/Imagenes/Background2.png")).getImage();
-            g.drawImage(imagen, 0, 0, getWidth(), getHeight(), this);
-            setOpaque(false);
-            super.paint(g);
-        }
-    }
-
-    class FondoPanelesCentrales extends JPanel {
-
-        private Image imagen;
-
-        @Override
-        public void paint(Graphics g) {
-            imagen = new ImageIcon(getClass().getResource("/Imagenes/Clear Sky.jpg")).getImage();
-            g.drawImage(imagen, 0, 0, getWidth(), getHeight(), this);
-            setOpaque(false);
-            super.paint(g);
-        }
-    }
 }
