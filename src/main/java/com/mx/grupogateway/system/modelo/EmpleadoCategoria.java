@@ -19,8 +19,8 @@ public class EmpleadoCategoria {
         this.nombreCategoria = nombreCategoria;
     }
 
-    public EmpleadoCategoria(String idCategoria) {
-        this.idCategoria = idCategoria;
+    public EmpleadoCategoria(String nombreCategoria) {
+        this.nombreCategoria = nombreCategoria;
     }
 
     /**
