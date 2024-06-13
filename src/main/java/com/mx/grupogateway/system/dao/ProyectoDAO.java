@@ -80,36 +80,37 @@ public class ProyectoDAO {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet();) {
                 while (resultSet.next()) {
-                    Proyecto fila = new Proyecto(
-                            resultSet.getLong("ID_PROJECT"),
-                            resultSet.getString("PROJECT_CODE"),
-                            resultSet.getString("PROJECT_NAME"),
-                            resultSet.getString("CUSTOMER"),
-                            resultSet.getString("PO_STATUS"),
-                            resultSet.getString("PO_NO"),
-                            resultSet.getInt("PO_LINE_NO"),
-                            resultSet.getInt("SHIPMENT_NO"),
-                            resultSet.getString("SITE_CODE"),
-                            resultSet.getString("SITE_NAME"),
-                            resultSet.getLong("ITEM_CODE"),
-                            resultSet.getString("ITEM_DESC"),
-                            resultSet.getString("REQUESTED_QTY"),
-                            resultSet.getString("DUE_QTY"),
-                            resultSet.getString("BILLED_QTY"),
-                            resultSet.getBigDecimal("UNIT_PRICE"),
-                            resultSet.getBigDecimal("LINE_AMOUNT"),
-                            resultSet.getString("UNIT"),
-                            resultSet.getString("PAYMENT_TERMS"),
-                            resultSet.getString("CATEGORY"),
-                            resultSet.getString("BIDDING_AREA"),
-                            resultSet.getTimestamp("PUBLISH_DATE").toLocalDateTime()
+                    resultado.add(
+                            new Proyecto(
+                                    resultSet.getLong("ID_PROJECT"),
+                                    resultSet.getString("PROJECT_CODE"),
+                                    resultSet.getString("PROJECT_NAME"),
+                                    resultSet.getString("CUSTOMER"),
+                                    resultSet.getString("PO_STATUS"),
+                                    resultSet.getString("PO_NO"),
+                                    resultSet.getInt("PO_LINE_NO"),
+                                    resultSet.getInt("SHIPMENT_NO"),
+                                    resultSet.getString("SITE_CODE"),
+                                    resultSet.getString("SITE_NAME"),
+                                    resultSet.getLong("ITEM_CODE"),
+                                    resultSet.getString("ITEM_DESC"),
+                                    resultSet.getString("REQUESTED_QTY"),
+                                    resultSet.getString("DUE_QTY"),
+                                    resultSet.getString("BILLED_QTY"),
+                                    resultSet.getBigDecimal("UNIT_PRICE"),
+                                    resultSet.getBigDecimal("LINE_AMOUNT"),
+                                    resultSet.getString("UNIT"),
+                                    resultSet.getString("PAYMENT_TERMS"),
+                                    resultSet.getString("CATEGORY"),
+                                    resultSet.getString("BIDDING_AREA"),
+                                    resultSet.getTimestamp("PUBLISH_DATE").toLocalDateTime()
+                            )
                     );
-                    resultado.add(fila);
                 }
                 return resultado;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    } 
+    }
 }
