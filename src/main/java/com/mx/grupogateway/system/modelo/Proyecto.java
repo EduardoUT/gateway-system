@@ -67,11 +67,12 @@ public class Proyecto {
         this.publishDate = publishDate;
     }
 
-    public Proyecto(String customer, String projectName, String poNo, 
+    public Proyecto(Long idProject, String customer, String projectName, String poNo, 
             String poStatus, Integer poLineNo, String siteCode, String siteName,
             String itemDesc, String requestedQty, String dueQty, String billedQty,
             BigDecimal unitPrice, BigDecimal lineAmount, String unit, 
             String paymentTerms, String category, LocalDateTime publishDate) {
+        this.idProyecto = idProject;
         this.customer = customer;
         this.projectName = projectName;
         this.poNo = poNo;
@@ -91,8 +92,9 @@ public class Proyecto {
         this.publishDate = publishDate;
     }
 
-    public Proyecto(Long idProyecto) {
+    public Proyecto(Long idProyecto, String poNo) {
         this.idProyecto = idProyecto;
+        this.poNo = poNo;
     }
 
     /**
