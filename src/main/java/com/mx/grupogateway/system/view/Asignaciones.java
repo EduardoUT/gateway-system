@@ -7,19 +7,27 @@ package com.mx.grupogateway.system.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.EmpleadoController;
-import com.mx.grupogateway.system.controller.ProyectoAsignacionController;
+import com.mx.grupogateway.system.controller.ProyectoAsignadoController;
 import com.mx.grupogateway.system.controller.ProyectoController;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Proyecto;
-import com.mx.grupogateway.system.modelo.ProyectoAsignacion;
-import com.mx.grupogateway.system.util.IdentificadoresEmpleado;
+import com.mx.grupogateway.system.modelo.ProyectoAsignado;
 import com.mx.grupogateway.system.view.util.TablaColumnasAutoajustables;
+import com.mx.grupogateway.system.view.util.TableDataModelAsignacion;
 import com.mx.grupogateway.system.view.util.TableDataModelEmpleado;
 import com.mx.grupogateway.system.view.util.TableDataModelProyecto;
-import java.awt.event.MouseEvent;
 import java.util.LinkedList;
-import javax.swing.table.DefaultTableModel;
 import java.util.List;
+import java.awt.event.MouseEvent;
+import javax.swing.JComboBox;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.RowFilter;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -30,67 +38,190 @@ public final class Asignaciones extends javax.swing.JFrame {
     /**
      * Creates new form Asignaciones
      */
-    private DefaultTableModel modeloTabla;
-    private final ProyectoController proyectoController;
-    private final EmpleadoController empleadoController;
-    private ProyectoAsignacionController proyectoAsignacionController;
+    private DefaultTableModel modeloTablaProyectos;
+    private DefaultTableModel modeloTablaEmpleados;
+    private DefaultTableModel modeloTablaAsignaciones;
     private TableDataModelProyecto tableDataModelProyecto;
     private TableDataModelEmpleado tableDataModelEmpleado;
-    private List<ProyectoAsignacion> listaAsignacionesSeleccionadas;
+    private TableDataModelAsignacion tableDataModelAsignacion;
+    private final ProyectoController proyectoController;
+    private final EmpleadoController empleadoController;
+    private final ProyectoAsignadoController proyectosAsignadosController;
+    private LinkedList<ProyectoAsignado> filtroProyectosAsignados;
+    private List<Proyecto> listaProyectos;
+    private int filaTablaProyectos;
+    private int filaTablaEmpleados;
+    private int filaTablaAsignaciones;
 
     public Asignaciones() {
         initComponents();
+        filaTablaProyectos = tablaProyectos.getSelectedRow();
+        filaTablaEmpleados = tablaEmpleados.getSelectedRow();
+        filaTablaAsignaciones = tablaAsignaciones.getSelectedRow();
         this.proyectoController = new ProyectoController();
         this.empleadoController = new EmpleadoController();
+        this.proyectosAsignadosController = new ProyectoAsignadoController();
         cargarTablaEmpleados();
         cargarTablaProyectos();
-        //LlenarTablaAsignaciones();
+        cargarTablaProyectosAsignados();
         //cargarTablaHistorialAsignaciones();
         selectionRowListener();
-
-        TablaColumnasAutoajustables.autoajustarColumnas(tablaAsignaciones);
-        TablaColumnasAutoajustables.autoajustarColumnas(Tabla_Historial);
-    }
-
-    private void LimpiarDatosProyecto() {
-        id_line.setText("");
-        po_no.setText("");
-        importe.setText("");
-        total.setText("");
-        status_fact.setText("");
+        filtrarResultados(tablaProyectos, buscadorProyecto, filtroProyecto);
+        filtrarResultados(tablaEmpleados, buscadorEmpleado, filtroEmpleado);
+        filtrarResultados(tablaAsignaciones, buscadorAsignacion, filtroAsignacion);
     }
 
     private void cargarTablaEmpleados() {
-        modeloTabla = (DefaultTableModel) tablaEmpleados.getModel();
+        modeloTablaEmpleados = (DefaultTableModel) tablaEmpleados.getModel();
         List<Empleado> empleados = this.empleadoController.listar();
         tableDataModelEmpleado = new TableDataModelEmpleado(
-                modeloTabla, tablaEmpleados, empleados
+                modeloTablaEmpleados, tablaEmpleados, empleados
         );
         tableDataModelEmpleado.cargarTablaEmpleados();
         TablaColumnasAutoajustables.autoajustarColumnas(tablaEmpleados);
     }
 
     private void cargarTablaProyectos() {
-        modeloTabla = (DefaultTableModel) tablaProyectos.getModel();
-        List<Proyecto> proyectos = this.proyectoController.listar();
+        modeloTablaProyectos = (DefaultTableModel) tablaProyectos.getModel();
+        listaProyectos = this.proyectoController.listar();
         tableDataModelProyecto = new TableDataModelProyecto(
-                modeloTabla, tablaProyectos, proyectos
+                modeloTablaProyectos, tablaProyectos, listaProyectos
         );
         tableDataModelProyecto.cargarTablaProyectos();
         TablaColumnasAutoajustables.autoajustarColumnas(tablaProyectos);
     }
 
+    private void cargarTablaProyectosAsignados() {
+        modeloTablaAsignaciones = (DefaultTableModel) tablaAsignaciones.getModel();
+        List<ProyectoAsignado> listaProyectosAsignados
+                = this.proyectosAsignadosController.listar();
+        tableDataModelAsignacion = new TableDataModelAsignacion(
+                modeloTablaAsignaciones, tablaAsignaciones, listaProyectosAsignados);
+        tableDataModelAsignacion.cargarTablaAsignaciones();
+        TablaColumnasAutoajustables.autoajustarColumnas(tablaAsignaciones);
+    }
+
     private void selectionRowListener() {
-        listaAsignacionesSeleccionadas = new LinkedList<>();
         tablaProyectos.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                int[] selectedRowIndices = tablaProyectos.getSelectedRows();
-                for (int rowIndex : selectedRowIndices) {
-                    Long idProyecto = Long.valueOf(tablaProyectos.getValueAt(rowIndex, 0).toString());
-                    listaAsignacionesSeleccionadas.add(new ProyectoAsignacion(idProyecto));
-                }
+                filaTablaProyectos = tablaProyectos.getSelectedRow();
             }
         });
+
+        tablaEmpleados.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                filaTablaEmpleados = tablaEmpleados.getSelectedRow();
+            }
+        });
+
+        tablaAsignaciones.getSelectionModel().addListSelectionListener(e -> {
+            filaTablaAsignaciones = tablaAsignaciones.getSelectedRow();
+        });
+    }
+
+    private void filtrarResultados(JTable tabla, JTextField campo,
+            JComboBox comboBox) {
+        TableRowSorter<TableModel> rowSorter
+                = new TableRowSorter<>(tabla.getModel());
+        campo.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                String text = campo.getText();
+                String seleccion = (String) comboBox.getSelectedItem();
+                comboBox.getSelectedIndex();
+                if (text.trim().length() == 0) {
+                    rowSorter.setRowFilter(null);
+                } else {
+                    rowSorter.setRowFilter(
+                            RowFilter.regexFilter(
+                                    "(?i)" + text,
+                                    tabla
+                                            .getColumnModel()
+                                            .getColumnIndex(
+                                                    seleccion
+                                            )
+                            )
+                    );
+                }
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                String text = campo.getText();
+                String seleccion = (String) comboBox.getSelectedItem();
+                comboBox.getSelectedIndex();
+                if (text.trim().length() == 0) {
+                    rowSorter.setRowFilter(null);
+                } else {
+                    rowSorter.setRowFilter(
+                            RowFilter.regexFilter(
+                                    "(?i)" + text,
+                                    tabla
+                                            .getColumnModel()
+                                            .getColumnIndex(
+                                                    seleccion
+                                            )
+                            )
+                    );
+                }
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+        });
+        tabla.setRowSorter(rowSorter);
+    }
+
+    private void guardarAsignacion() {
+        if (filaTablaProyectos == -1 || filaTablaEmpleados == -1) {
+            System.out.println("No se han seleccionado filas");
+        } else {
+            filtroProyectosAsignados = new LinkedList<>();
+            String poNo = tablaProyectos.getValueAt(
+                    filaTablaProyectos, 1)
+                    .toString();
+            String idEmpleado = tablaEmpleados.getValueAt(
+                    filaTablaEmpleados, 0)
+                    .toString();
+            listaProyectos.forEach((proyecto) -> {
+                Long idProyecto = proyecto.getIdProyecto();
+                if (proyecto.getPoNo().equals(poNo)) {
+                    filtroProyectosAsignados.add(
+                            new ProyectoAsignado(idProyecto, poNo,
+                                    new Empleado(idEmpleado))
+                    );
+                }
+            });
+            this.proyectosAsignadosController.guardar(filtroProyectosAsignados);
+            filtroProyectosAsignados = null;
+        }
+    }
+
+    private void actualizarAsignacion() {
+        if (filaTablaEmpleados == -1 || filaTablaAsignaciones == -1) {
+
+        } else {
+            String idEmpleadoAsignado = tablaAsignaciones.getValueAt(
+                    filaTablaAsignaciones, 0).toString();
+            String idEmpleado = tablaEmpleados.getValueAt(
+                    filaTablaEmpleados, 0)
+                    .toString();
+            String poNo = tablaAsignaciones.getValueAt(
+                    filaTablaAsignaciones, 6)
+                    .toString();
+            if (idEmpleadoAsignado.equals(idEmpleado)) {
+                System.out.println("Seleccione un usuario diferente.");
+            } else {
+                int filasActualizadas = this.proyectosAsignadosController.actualizar(
+                        idEmpleado, poNo, idEmpleadoAsignado
+                );
+                System.out.println(filasActualizadas);
+            }
+        }
     }
 
     /*
@@ -1061,68 +1192,40 @@ public final class Asignaciones extends javax.swing.JFrame {
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
         Asignaciones = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
-        jLabel11 = new javax.swing.JLabel();
         buscadorProyecto = new javax.swing.JTextField();
         filtroProyecto = new javax.swing.JComboBox<>();
-        botonBuscarProyecto = new javax.swing.JButton();
         jLabel15 = new javax.swing.JLabel();
-        mostrarProyectos = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaProyectos = new javax.swing.JTable();
         buscadorEmpleado = new javax.swing.JTextField();
         filtroEmpleado = new javax.swing.JComboBox<>();
-        botonBuscarEmpleado = new javax.swing.JButton();
         jLabel16 = new javax.swing.JLabel();
-        mostrarEmpleados = new javax.swing.JButton();
-        jButton10 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        botonGuardarAsignacion = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
         tablaAsignaciones = new javax.swing.JTable();
-        filtroBusquedaAsignacion = new javax.swing.JComboBox<>();
-        search_idasign = new javax.swing.JTextField();
-        search_dt = new com.toedter.calendar.JDateChooser();
-        jButton11 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        filtroAsignacion = new javax.swing.JComboBox<>();
+        buscadorAsignacion = new javax.swing.JTextField();
+        botonActualizarAsignacion = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tablaEmpleados = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        po_no = new javax.swing.JTextField();
+        poNoCampo = new javax.swing.JTextField();
         importe = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         total = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
-        status_fact = new javax.swing.JTextField();
+        statusFacturacion = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        orden_dt = new javax.swing.JTextField();
+        fechaAsignacion = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        id_line = new javax.swing.JTextField();
-        jLabel41 = new javax.swing.JLabel();
+        nombreEmpleado = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
-        Historial = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        jLabel18 = new javax.swing.JLabel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        Tabla_Historial = new javax.swing.JTable();
-        jLabel19 = new javax.swing.JLabel();
-        jLabel20 = new javax.swing.JLabel();
-        id_AS = new javax.swing.JTextField();
-        jButton6 = new javax.swing.JButton();
-        jLabel21 = new javax.swing.JLabel();
-        Fecha_AS = new com.toedter.calendar.JDateChooser();
-        jButton7 = new javax.swing.JButton();
-        jLabel22 = new javax.swing.JLabel();
-        ID_US = new javax.swing.JTextField();
-        jButton8 = new javax.swing.JButton();
-        jLabel38 = new javax.swing.JLabel();
-        ID_PR = new javax.swing.JTextField();
-        jButton9 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Facturación");
         setBackground(new java.awt.Color(255, 255, 255));
         setMinimumSize(new java.awt.Dimension(1766, 910));
 
@@ -1132,52 +1235,23 @@ public final class Asignaciones extends javax.swing.JFrame {
         Asignaciones.setMinimumSize(new java.awt.Dimension(1651, 854));
         Asignaciones.setName(""); // NOI18N
 
-        jPanel4.setBackground(new java.awt.Color(0, 102, 102));
-        jPanel4.setPreferredSize(new java.awt.Dimension(271, 60));
-
-        jLabel11.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 24)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel11.setText("Asignación de Proyectos");
-
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, 60, Short.MAX_VALUE)
-        );
-
         buscadorProyecto.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 15)); // NOI18N
+        buscadorProyecto.setToolTipText("Buscar proyecto");
         buscadorProyecto.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 buscadorProyectoKeyTyped(evt);
             }
         });
 
-        filtroProyecto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Id Proyecto", "Po No" }));
+        filtroProyecto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID", "PO_NO" }));
         filtroProyecto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 filtroProyectoActionPerformed(evt);
             }
         });
 
-        botonBuscarProyecto.setText("Buscar");
-        botonBuscarProyecto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botonBuscarProyectoActionPerformed(evt);
-            }
-        });
-
         jLabel15.setForeground(new java.awt.Color(255, 255, 255));
         jLabel15.setText("Seleccione en la tabla el proyecto que desee asignar");
-
-        mostrarProyectos.setText("Mostrar todo");
 
         tablaProyectos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -1190,14 +1264,6 @@ public final class Asignaciones extends javax.swing.JFrame {
         tablaProyectos.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         tablaProyectos.getTableHeader().setResizingAllowed(false);
         tablaProyectos.getTableHeader().setReorderingAllowed(false);
-        tablaProyectos.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tablaProyectosMouseClicked(evt);
-            }
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                tablaProyectosMousePressed(evt);
-            }
-        });
         tablaProyectos.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 tablaProyectosKeyReleased(evt);
@@ -1212,32 +1278,16 @@ public final class Asignaciones extends javax.swing.JFrame {
             }
         });
 
-        filtroEmpleado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Id Empleado", "Id Usuario", "Nombre", "Cargo" }));
-
-        botonBuscarEmpleado.setText("Buscar");
+        filtroEmpleado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID_EMPLEADO", "ID_USUARIO", "NOMBRE", "CARGO" }));
 
         jLabel16.setForeground(new java.awt.Color(255, 255, 255));
         jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel16.setText("Seleccione en la tabla el empleado que desee asignar.");
 
-        mostrarEmpleados.setText("Mostrar Todo");
-        mostrarEmpleados.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mostrarEmpleadosActionPerformed(evt);
-            }
-        });
-
-        jButton10.setText("Buscar");
-        jButton10.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton10ActionPerformed(evt);
-            }
-        });
-
-        jButton3.setText("Guardar Asignación");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+        botonGuardarAsignacion.setText("Guardar Asignación");
+        botonGuardarAsignacion.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                botonGuardarAsignacionMouseClicked(evt);
             }
         });
 
@@ -1246,10 +1296,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         tablaAsignaciones.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         tablaAsignaciones.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {},
-                {},
-                {},
-                {}
+
             },
             new String [] {
 
@@ -1258,8 +1305,8 @@ public final class Asignaciones extends javax.swing.JFrame {
         tablaAsignaciones.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         tablaAsignaciones.getTableHeader().setResizingAllowed(false);
         tablaAsignaciones.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                tablaAsignacionesMousePressed(evt);
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaAsignacionesMouseClicked(evt);
             }
         });
         tablaAsignaciones.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -1269,15 +1316,14 @@ public final class Asignaciones extends javax.swing.JFrame {
         });
         jScrollPane4.setViewportView(tablaAsignaciones);
 
-        filtroBusquedaAsignacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Id Proyecto", "Id Empleado", "Id PO", "Po No", "Fecha Asignación", "Fecha Publicación", " " }));
+        filtroAsignacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID_PROYECTO", "ID_EMPLEADO", "PO_NO" }));
 
-        search_dt.setToolTipText("2020-03-07 00:00:00");
-        search_dt.setDateFormatString("yyyy-MM-dd");
-        search_dt.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-
-        jButton11.setText("Eliminar");
-
-        jButton4.setText("Actualizar");
+        botonActualizarAsignacion.setText("Actualizar Asignación");
+        botonActualizarAsignacion.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                botonActualizarAsignacionMouseClicked(evt);
+            }
+        });
 
         jLabel1.setText("Asignaciones");
 
@@ -1295,14 +1341,6 @@ public final class Asignaciones extends javax.swing.JFrame {
         tablaEmpleados.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tablaEmpleados.getTableHeader().setResizingAllowed(false);
         tablaEmpleados.getTableHeader().setReorderingAllowed(false);
-        tablaEmpleados.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tablaEmpleadosMouseClicked(evt);
-            }
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                tablaEmpleadosMousePressed(evt);
-            }
-        });
         tablaEmpleados.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 tablaEmpleadosKeyReleased(evt);
@@ -1315,31 +1353,30 @@ public final class Asignaciones extends javax.swing.JFrame {
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("No.Orden Compra (PO_NO):");
+        jLabel3.setText("PO NO:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(16, 20, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 35, 5, 5);
         jPanel3.add(jLabel3, gridBagConstraints);
 
-        po_no.setEnabled(false);
+        poNoCampo.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 70);
-        jPanel3.add(po_no, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 35);
+        jPanel3.add(poNoCampo, gridBagConstraints);
 
         importe.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 70);
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 35);
         jPanel3.add(importe, gridBagConstraints);
 
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
@@ -1347,95 +1384,82 @@ public final class Asignaciones extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(20, 149, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 35, 5, 5);
         jPanel3.add(jLabel8, gridBagConstraints);
 
         total.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 70);
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 35);
         jPanel3.add(total, gridBagConstraints);
 
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Total:");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(16, 18, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 35, 5, 5);
         jPanel3.add(jLabel9, gridBagConstraints);
 
-        status_fact.setEnabled(false);
+        statusFacturacion.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 5;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 70);
-        jPanel3.add(status_fact, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 35);
+        jPanel3.add(statusFacturacion, gridBagConstraints);
 
         jLabel10.setForeground(new java.awt.Color(255, 255, 255));
         jLabel10.setText("Status Facturación:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
-        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(16, 82, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 35, 5, 5);
         jPanel3.add(jLabel10, gridBagConstraints);
 
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setText("Orden De Compra DT:");
+        jLabel6.setText("Fecha Asignacion:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(16, 58, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 35, 5, 5);
         jPanel3.add(jLabel6, gridBagConstraints);
 
-        orden_dt.setEnabled(false);
+        fechaAsignacion.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 70);
-        jPanel3.add(orden_dt, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 35);
+        jPanel3.add(fechaAsignacion, gridBagConstraints);
 
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("ID Linea:");
+        jLabel4.setText("Nombre Empleado:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(0, 148, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 35, 5, 5);
         jPanel3.add(jLabel4, gridBagConstraints);
 
-        id_line.setEnabled(false);
+        nombreEmpleado.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 70);
-        jPanel3.add(id_line, gridBagConstraints);
-
-        jLabel41.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel41.setText("(Line Amount)");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(16, 56, 0, 0);
-        jPanel3.add(jLabel41, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 35);
+        jPanel3.add(nombreEmpleado, gridBagConstraints);
 
         jLabel7.setBackground(new java.awt.Color(0, 0, 0));
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
@@ -1450,310 +1474,86 @@ public final class Asignaciones extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(AsignacionesLayout.createSequentialGroup()
-                        .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane4)
-                            .addComponent(jLabel1)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, AsignacionesLayout.createSequentialGroup()
-                                .addComponent(jButton4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 302, Short.MAX_VALUE)
-                                .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(search_dt, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(AsignacionesLayout.createSequentialGroup()
-                                        .addComponent(search_idasign, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(filtroBusquedaAsignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jButton10)))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, AsignacionesLayout.createSequentialGroup()
+                                .addComponent(botonActualizarAsignacion)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(buscadorAsignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(filtroAsignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(AsignacionesLayout.createSequentialGroup()
-                                .addComponent(jLabel7)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(AsignacionesLayout.createSequentialGroup()
-                                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addContainerGap())))
+                                .addComponent(jLabel1)
+                                .addGap(0, 1100, Short.MAX_VALUE))
+                            .addComponent(jScrollPane4))
+                        .addGap(18, 18, 18)
+                        .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel7)))
                     .addGroup(AsignacionesLayout.createSequentialGroup()
                         .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(mostrarProyectos)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 810, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 810, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel15)
                             .addGroup(AsignacionesLayout.createSequentialGroup()
                                 .addComponent(buscadorProyecto, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(filtroProyecto, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(botonBuscarProyecto)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton3)))
+                                .addComponent(botonGuardarAsignacion)))
                         .addGap(18, 18, 18)
                         .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(AsignacionesLayout.createSequentialGroup()
-                                .addComponent(buscadorEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(filtroEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(botonBuscarEmpleado)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(AsignacionesLayout.createSequentialGroup()
-                                .addComponent(jLabel16)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 438, Short.MAX_VALUE)
-                                .addComponent(mostrarEmpleados))
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap())))
-            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 1766, Short.MAX_VALUE)
+                                .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(AsignacionesLayout.createSequentialGroup()
+                                        .addComponent(buscadorEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(filtroEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jLabel16))
+                                .addGap(0, 0, Short.MAX_VALUE)))))
+                .addContainerGap())
         );
         AsignacionesLayout.setVerticalGroup(
             AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(AsignacionesLayout.createSequentialGroup()
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(15, 15, 15)
                 .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(AsignacionesLayout.createSequentialGroup()
-                        .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(buscadorEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(filtroEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(filtroEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(botonBuscarEmpleado))
-                            .addComponent(jButton3))
+                                .addComponent(buscadorEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(botonGuardarAsignacion)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(mostrarProyectos)
-                            .addComponent(jLabel16)))
+                        .addComponent(jLabel16))
                     .addGroup(AsignacionesLayout.createSequentialGroup()
                         .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(buscadorProyecto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(filtroProyecto, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(botonBuscarProyecto))
+                            .addComponent(filtroProyecto, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel15))
-                    .addComponent(mostrarEmpleados))
+                        .addComponent(jLabel15)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(AsignacionesLayout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(5, 5, 5)
                         .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton4)
-                            .addComponent(jButton11)
-                            .addComponent(jButton10)
-                            .addComponent(filtroBusquedaAsignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(search_idasign, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(search_dt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(botonActualizarAsignacion)
+                            .addComponent(filtroAsignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(buscadorAsignacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(AsignacionesLayout.createSequentialGroup()
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(47, 47, 47))
         );
 
-        jTabbedPane1.addTab("Asignaciones", Asignaciones);
-
-        Historial.setBackground(new java.awt.Color(0, 0, 0));
-        Historial.setMinimumSize(new java.awt.Dimension(1651, 854));
-
-        jPanel5.setBackground(new java.awt.Color(0, 102, 102));
-        jPanel5.setPreferredSize(new java.awt.Dimension(1329, 60));
-
-        jLabel18.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 24)); // NOI18N
-        jLabel18.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel18.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel18.setText("Historial de Asignaciones");
-
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 1650, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
-
-        Tabla_Historial.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        Tabla_Historial.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        Tabla_Historial.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                Tabla_HistorialMousePressed(evt);
-            }
-        });
-        jScrollPane3.setViewportView(Tabla_Historial);
-
-        jLabel19.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        jLabel19.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel19.setText("Panel de Búsqueda de Asignación de Proyectos");
-
-        jLabel20.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        jLabel20.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel20.setText("ID Asignación:");
-
-        id_AS.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        id_AS.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                id_ASActionPerformed(evt);
-            }
-        });
-
-        jButton6.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        jButton6.setText("Buscar");
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
-            }
-        });
-
-        jLabel21.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        jLabel21.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel21.setText("Fecha Asignación:");
-
-        Fecha_AS.setDateFormatString("yyyy-MM-dd");
-        Fecha_AS.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-
-        jButton7.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        jButton7.setText("Buscar");
-        jButton7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton7ActionPerformed(evt);
-            }
-        });
-
-        jLabel22.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        jLabel22.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel22.setText("ID Usuario:");
-
-        ID_US.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        ID_US.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ID_USActionPerformed(evt);
-            }
-        });
-
-        jButton8.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        jButton8.setText("Buscar");
-        jButton8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton8ActionPerformed(evt);
-            }
-        });
-
-        jLabel38.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        jLabel38.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel38.setText("ID Proyecto:");
-
-        ID_PR.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        ID_PR.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ID_PRActionPerformed(evt);
-            }
-        });
-
-        jButton9.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        jButton9.setText("Buscar");
-        jButton9.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton9ActionPerformed(evt);
-            }
-        });
-
-        jButton5.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        jButton5.setText("Mostrar Todo");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout HistorialLayout = new javax.swing.GroupLayout(Historial);
-        Historial.setLayout(HistorialLayout);
-        HistorialLayout.setHorizontalGroup(
-            HistorialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(HistorialLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(HistorialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 1754, Short.MAX_VALUE)
-                    .addGroup(HistorialLayout.createSequentialGroup()
-                        .addGroup(HistorialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel19)
-                            .addGroup(HistorialLayout.createSequentialGroup()
-                                .addGroup(HistorialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel21)
-                                    .addComponent(jLabel20, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel22, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel38, javax.swing.GroupLayout.Alignment.TRAILING))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(HistorialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(id_AS)
-                                    .addComponent(Fecha_AS, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
-                                    .addComponent(ID_US)
-                                    .addComponent(ID_PR))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(HistorialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButton7)
-                                    .addComponent(jButton8)
-                                    .addComponent(jButton9)
-                                    .addComponent(jButton6)))
-                            .addComponent(jButton5))
-                        .addGap(0, 1370, Short.MAX_VALUE)))
-                .addContainerGap())
-            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, 1766, Short.MAX_VALUE)
-        );
-        HistorialLayout.setVerticalGroup(
-            HistorialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(HistorialLayout.createSequentialGroup()
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel19)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(HistorialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(HistorialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(id_AS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton6))
-                    .addComponent(jLabel20))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(HistorialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(HistorialLayout.createSequentialGroup()
-                        .addGroup(HistorialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(Fecha_AS, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel21))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(HistorialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel22)
-                            .addComponent(ID_US, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton8)))
-                    .addComponent(jButton7))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(HistorialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel38)
-                    .addComponent(ID_PR, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton9))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton5)
-                .addContainerGap(306, Short.MAX_VALUE))
-        );
-
-        jTabbedPane1.addTab("Historial de Asignaciones", Historial);
+        jTabbedPane1.addTab("Asignacion de Proyectos", Asignaciones);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -1775,49 +1575,6 @@ public final class Asignaciones extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void tablaProyectosMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaProyectosMousePressed
-        /*int fila = tablaProyectos.getSelectedRow();
-        try {
-            cc = ConexionBD.getcon();
-            String SQL = "SELECT * FROM usuarios WHERE id_usuario='" + tablaProyectos.getValueAt(fila, 0) + "'";
-            sent = cc.createStatement();
-            rs = sent.executeQuery(SQL);
-            rs.next();
-            id_user.setText(rs.getString("id_usuario"));
-            name_user.setText(rs.getString("nombre_usuario"));
-            nombre.setText(rs.getString("nombre"));
-            ape_p.setText(rs.getString("ape_pat"));
-            ape_m.setText(rs.getString("ape_mat"));
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error en la selección de datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                    rs = null;
-                } catch (SQLException ex) {
-                    Logger.getLogger(Asignaciones.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            if (sent != null) {
-                try {
-                    sent.close();
-                    sent = null;
-                } catch (SQLException ex) {
-                    Logger.getLogger(Asignaciones.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            if (cc != null) {
-                try {
-                    cc.close();
-                    cc = null;
-                } catch (SQLException ex) {
-                    Logger.getLogger(Asignaciones.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }*/
-    }//GEN-LAST:event_tablaProyectosMousePressed
 
     private void tablaProyectosKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tablaProyectosKeyReleased
         /* if ((evt.getKeyCode() == 38) || (evt.getKeyCode() == 40) || (evt.getKeyCode() == 33) || (evt.getKeyCode() == 34)) {
@@ -1864,47 +1621,6 @@ public final class Asignaciones extends javax.swing.JFrame {
         }*/
     }//GEN-LAST:event_tablaProyectosKeyReleased
 
-    private void tablaEmpleadosMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaEmpleadosMousePressed
-        /*int fila = tablaEmpleados.getSelectedRow();
-        try {
-            cc = ConexionBD.getcon();
-            String SQL = "SELECT id, PO_NO, line_amount FROM facturacion WHERE id='" + tablaEmpleados.getValueAt(fila, 0) + "'";
-            sent = cc.createStatement();
-            rs = sent.executeQuery(SQL);
-            rs.next();
-            id_line.setText(rs.getString("id"));
-            po_no.setText(rs.getString("PO_NO"));
-            total.setText(rs.getString("line_amount"));
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error en la selección de datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                    rs = null;
-                } catch (SQLException ex) {
-                    Logger.getLogger(Asignaciones.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            if (sent != null) {
-                try {
-                    sent.close();
-                    sent = null;
-                } catch (SQLException ex) {
-                    Logger.getLogger(Asignaciones.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            if (cc != null) {
-                try {
-                    cc.close();
-                    cc = null;
-                } catch (SQLException ex) {
-                    Logger.getLogger(Asignaciones.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }*/
-    }//GEN-LAST:event_tablaEmpleadosMousePressed
-
     private void tablaEmpleadosKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tablaEmpleadosKeyReleased
         /* if ((evt.getKeyCode() == 38) || (evt.getKeyCode() == 40) || (evt.getKeyCode() == 33) || (evt.getKeyCode() == 34)) {
             int fila = tablaEmpleados.getSelectedRow();
@@ -1946,65 +1662,6 @@ public final class Asignaciones extends javax.swing.JFrame {
             }
         }*/
     }//GEN-LAST:event_tablaEmpleadosKeyReleased
-
-    private void tablaAsignacionesMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaAsignacionesMousePressed
-        /*int fila = tablaAsignaciones.getSelectedRow();
-        try {
-            cc = ConexionBD.getcon();
-            String SQL = "select asignaciones.id_asignacion, asignaciones.fecha_asignacion, \n"
-                    + "asignaciones.id_usuario, usuarios.nombre_usuario, usuarios.nombre, \n"
-                    + "usuarios.ape_pat, usuarios.ape_mat, asignaciones.id, facturacion.PO_NO, \n"
-                    + "asignaciones.orden_compra_dt, asignaciones.importe, asignaciones.total_pagar, \n"
-                    + "asignaciones.status_facturacion \n"
-                    + "from asignaciones, facturacion, usuarios \n"
-                    + "where id_asignacion='" + tablaAsignaciones.getValueAt(fila, 0) + "' \n"
-                    + "&& asignaciones.id_usuario = usuarios.id_usuario && \n"
-                    + "asignaciones.id = facturacion.id;";
-            sent = cc.createStatement();
-            rs = sent.executeQuery(SQL);
-            rs.next();
-            id_asignacion.setText(rs.getString("id_asignacion"));
-            datestamp.setDate(rs.getTimestamp("fecha_asignacion"));
-            id_user.setText(rs.getString("id_usuario"));
-            name_user.setText(rs.getString("nombre_usuario"));
-            nombre.setText(rs.getString("nombre"));
-            ape_p.setText(rs.getString("ape_pat"));
-            ape_m.setText(rs.getString("ape_mat"));
-            id_line.setText(rs.getString("id"));
-            po_no.setText(rs.getString("PO_NO"));
-            orden_dt.setText(rs.getString("orden_compra_dt"));
-            importe.setText(rs.getString("importe"));
-            total.setText(rs.getString("total_pagar"));
-            status_fact.setText(rs.getString("status_facturacion"));
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error en la selección de datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                    rs = null;
-                } catch (SQLException ex) {
-                    Logger.getLogger(Asignaciones.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            if (sent != null) {
-                try {
-                    sent.close();
-                    sent = null;
-                } catch (SQLException ex) {
-                    Logger.getLogger(Asignaciones.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            if (cc != null) {
-                try {
-                    cc.close();
-                    cc = null;
-                } catch (SQLException ex) {
-                    Logger.getLogger(Asignaciones.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }*/
-    }//GEN-LAST:event_tablaAsignacionesMousePressed
 
     private void tablaAsignacionesKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tablaAsignacionesKeyReleased
         /*if ((evt.getKeyCode() == 38) || (evt.getKeyCode() == 40) || (evt.getKeyCode() == 33) || (evt.getKeyCode() == 34)) {
@@ -2067,67 +1724,12 @@ public final class Asignaciones extends javax.swing.JFrame {
         }*/
     }//GEN-LAST:event_tablaAsignacionesKeyReleased
 
-    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        //BuscarIDAsignacion();
-        //ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
-    }//GEN-LAST:event_jButton10ActionPerformed
-
-    private void id_ASActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_id_ASActionPerformed
-        jButton6.doClick();
-    }//GEN-LAST:event_id_ASActionPerformed
-
-    private void ID_PRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ID_PRActionPerformed
-        jButton9.doClick();
-    }//GEN-LAST:event_ID_PRActionPerformed
-
-    private void Tabla_HistorialMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Tabla_HistorialMousePressed
-
-    }//GEN-LAST:event_Tabla_HistorialMousePressed
-
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        //BuscarTablaHistorialIDAsignacion();
-        //ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
-    }//GEN-LAST:event_jButton6ActionPerformed
-
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        //BuscarFechaAsignacionHistorial();
-        //ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
-    }//GEN-LAST:event_jButton7ActionPerformed
-
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        //BuscarIDUsuarioHistorial();
-        //ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
-    }//GEN-LAST:event_jButton8ActionPerformed
-
-    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        //BuscarIDProyecto();
-        //ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
-    }//GEN-LAST:event_jButton9ActionPerformed
-
-    private void ID_USActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ID_USActionPerformed
-        jButton8.doClick();
-    }//GEN-LAST:event_ID_USActionPerformed
-
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        //cargarTablaHistorialAsignaciones();
-        //ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
-    }//GEN-LAST:event_jButton5ActionPerformed
-
-    private void mostrarEmpleadosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mostrarEmpleadosActionPerformed
-        //cargarTablaProyectos();
-        //ColumnasAutoajustadas(tablaProyectos, tablaEmpleados, tablaAsignaciones, Tabla_Historial, margin);
-    }//GEN-LAST:event_mostrarEmpleadosActionPerformed
-
     private void buscadorProyectoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buscadorProyectoKeyTyped
         char car = evt.getKeyChar();
         if ((car < '0' || car > '9')) {
             evt.consume();
         }
     }//GEN-LAST:event_buscadorProyectoKeyTyped
-
-    private void botonBuscarProyectoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonBuscarProyectoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_botonBuscarProyectoActionPerformed
 
     private void buscadorEmpleadoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_buscadorEmpleadoKeyTyped
         // TODO add your handling code here:
@@ -2137,24 +1739,23 @@ public final class Asignaciones extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_filtroProyectoActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void tablaProyectosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaProyectosMouseClicked
-
-    }//GEN-LAST:event_tablaProyectosMouseClicked
-
-    private void tablaEmpleadosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaEmpleadosMouseClicked
+    private void botonGuardarAsignacionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonGuardarAsignacionMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1) {
-            int fila = tablaEmpleados.getSelectedRow();
-            if (!listaAsignacionesSeleccionadas.isEmpty()) {
-                listaAsignacionesSeleccionadas.forEach((proyectoAsignacion) -> {
-                    
-                });
-            }
+            guardarAsignacion();
+            cargarTablaProyectosAsignados();
         }
-    }//GEN-LAST:event_tablaEmpleadosMouseClicked
+    }//GEN-LAST:event_botonGuardarAsignacionMouseClicked
+
+    private void tablaAsignacionesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaAsignacionesMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tablaAsignacionesMouseClicked
+
+    private void botonActualizarAsignacionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonActualizarAsignacionMouseClicked
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            actualizarAsignacion();
+            cargarTablaProyectosAsignados();
+        }
+    }//GEN-LAST:event_botonActualizarAsignacionMouseClicked
 
     /**
      * @param args the command line arguments
@@ -2170,63 +1771,34 @@ public final class Asignaciones extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Asignaciones;
-    private com.toedter.calendar.JDateChooser Fecha_AS;
-    private javax.swing.JPanel Historial;
-    private javax.swing.JTextField ID_PR;
-    private javax.swing.JTextField ID_US;
-    private javax.swing.JTable Tabla_Historial;
-    private javax.swing.JButton botonBuscarEmpleado;
-    private javax.swing.JButton botonBuscarProyecto;
+    private javax.swing.JButton botonActualizarAsignacion;
+    private javax.swing.JButton botonGuardarAsignacion;
+    private javax.swing.JTextField buscadorAsignacion;
     private javax.swing.JTextField buscadorEmpleado;
     private javax.swing.JTextField buscadorProyecto;
-    private javax.swing.JComboBox<String> filtroBusquedaAsignacion;
+    private javax.swing.JTextField fechaAsignacion;
+    private javax.swing.JComboBox<String> filtroAsignacion;
     private javax.swing.JComboBox<String> filtroEmpleado;
     private javax.swing.JComboBox<String> filtroProyecto;
-    private javax.swing.JTextField id_AS;
-    private javax.swing.JTextField id_line;
     private javax.swing.JTextField importe;
-    private javax.swing.JButton jButton10;
-    private javax.swing.JButton jButton11;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
-    private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel21;
-    private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel38;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel41;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JButton mostrarEmpleados;
-    private javax.swing.JButton mostrarProyectos;
-    private javax.swing.JTextField orden_dt;
-    private javax.swing.JTextField po_no;
-    private com.toedter.calendar.JDateChooser search_dt;
-    private javax.swing.JTextField search_idasign;
-    private javax.swing.JTextField status_fact;
+    private javax.swing.JTextField nombreEmpleado;
+    private javax.swing.JTextField poNoCampo;
+    private javax.swing.JTextField statusFacturacion;
     private javax.swing.JTable tablaAsignaciones;
     private javax.swing.JTable tablaEmpleados;
     private javax.swing.JTable tablaProyectos;
