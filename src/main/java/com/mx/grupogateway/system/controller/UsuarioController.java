@@ -9,7 +9,6 @@ import com.mx.grupogateway.system.factory.ConnectionFactory;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Usuario;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
