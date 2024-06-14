@@ -25,6 +25,19 @@ public class TableCommonMethods {
     }
 
     /**
+     * Obtiene el valor de una tabla acorde a los índices de la fila y columnas
+     * seleccionadas.
+     *
+     * @param tabla Tabla a ser evaluada.
+     * @param fila Índice de la fila.
+     * @param columna Índice de la columna.
+     * @return Retorna un objeto con el valor.
+     */
+    public static Object obtenerValorTabla(JTable tabla, int fila, int columna) {
+        return tabla.getValueAt(fila, columna);
+    }
+
+    /**
      * Comprueba si una determinada tabla está seleccionada.
      *
      * @param tabla JTable a ser evaluada.
