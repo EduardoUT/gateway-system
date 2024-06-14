@@ -8,13 +8,16 @@ package com.mx.grupogateway.system.view;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.ProyectoController;
 import com.mx.grupogateway.system.modelo.Proyecto;
+import com.mx.grupogateway.system.view.util.TablaColumnasAutoajustables;
+import com.mx.grupogateway.system.view.util.TableMethods;
+import com.mx.grupogateway.system.view.util.TableDataModelProyecto;
 import java.awt.*;
-import javax.swing.*;
-import javax.swing.table.DefaultTableColumnModel;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.sql.Date;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 import java.util.List;
+import javax.swing.JTable;
 
 /**
  *
@@ -22,150 +25,72 @@ import java.util.List;
  */
 public final class Facturacion extends javax.swing.JFrame {
 
-    /**
-     * Creates new form formulario
-     */
     private DefaultTableModel modeloTablaProyectos;
+    private TableDataModelProyecto tableDataModelProyecto;
     private final ProyectoController proyectoController;
     private ImportarExcel importarExcel;
 
     public Facturacion() {
         initComponents();
         this.proyectoController = new ProyectoController();
-
         cargarTablaProyectos();
-
-        //LlenarTabla();
-        //setBackground(new Color(0, 0, 0, 0));
-        ColumnasAutoajustadas(tablaFacturacion, margin);
+        TableMethods.filtrarResultados(tablaFacturacion, buscadorProyecto, filtroProyecto);
     }
 
-    /*
+    
     @Override
     public Image getIconImage() {
         Image retValue = Toolkit.getDefaultToolkit().
                 getImage(ClassLoader.getSystemResource("Imagenes/Logo.png"));
         return retValue;
 
-    }*/
+    }
+    
     private void cargarTablaProyectos() {
-
         modeloTablaProyectos = (DefaultTableModel) tablaFacturacion.getModel();
-
-        String[] titulos = {"ID", "Project Code", "Project Name", "Customer", "PO Status", "PO NO", "PO Line NO",
-            "Shipment NO", "Site Code", "Site Name", "Item Code",
-            "Item Description", "Requested Qty", "Due Qty", "Billed Quantity",
-            "Unit Price", "Line Amount", "Unit", "Payment Terms", "Category",
-            "Bidding Area", "Publish Date", "Status Cierre", "ID_Usuario", "Nombre", "Apellido Paterno", "Apellido Materno",
-            "Orden de Compra DT", "Importe", "Total", "Status Facturación"};
-
-        for (String titulo : titulos) {
-            modeloTablaProyectos.addColumn(titulo);
-        }
-
         List<Proyecto> listaProyecto = this.proyectoController.listar();
-        listaProyecto.forEach((proyecto) -> {
-            modeloTablaProyectos.addRow(
-                    new Object[]{
-                        proyecto.getIdProyecto(),
-                        proyecto.getProjectCode(),
-                        proyecto.getProjectName(),
-                        proyecto.getCustomer(),
-                        proyecto.getPoStatus(),
-                        proyecto.getPoNo(),
-                        proyecto.getPoLineNo(),
-                        proyecto.getShipmentNo(),
-                        proyecto.getSiteCode(),
-                        proyecto.getSiteName(),
-                        proyecto.getItemCode(),
-                        proyecto.getItemDesc(),
-                        proyecto.getRequestedQty(),
-                        proyecto.getDueQty(),
-                        proyecto.getBilledQty(),
-                        proyecto.getUnitPrice(),
-                        proyecto.getLineAmount(),
-                        proyecto.getUnit(),
-                        proyecto.getPaymentTerms(),
-                        proyecto.getCategory(),
-                        proyecto.getBiddingArea(),
-                        proyecto.getPublishDate()
-                    }
-            );
-        });
+        tableDataModelProyecto = new TableDataModelProyecto(
+                modeloTablaProyectos, tablaFacturacion, listaProyecto
+        );
+        tableDataModelProyecto.cargarModeloTablaProyecto();
+        TablaColumnasAutoajustables.autoajustarColumnas(tablaFacturacion);
     }
 
-    int vColIndex = 1;
-    int margin = 2;
-
-    public void ColumnasAutoajustadas(JTable Tabla_Facturacion, int margin) {
-        for (int c = 0; c < Tabla_Facturacion.getColumnCount(); c++) {
-            packColumnTablaFacturas(Tabla_Facturacion, c, 2);
-        }
+    private Object obtenerValorTabla(int fila, int columna) {
+        return tablaFacturacion.getValueAt(fila, columna);
     }
 
-    public void packColumnTablaFacturas(JTable Tabla_Facturacion, int vColIndex, int margin) {
-        //model1 = (DefaultTableModel) jTable1.getModel();
-        DefaultTableColumnModel colModel = (DefaultTableColumnModel) Tabla_Facturacion.getColumnModel();
-
-        TableColumn col = colModel.getColumn(vColIndex);
-        int width;
-        TableCellRenderer renderer = col.getHeaderRenderer();
-        if (renderer == null) {
-            renderer = Tabla_Facturacion.getTableHeader().getDefaultRenderer();
-        }
-        Component comp = renderer.getTableCellRendererComponent(Tabla_Facturacion, col.getHeaderValue(), false, false, 0, 0);
-        width = comp.getPreferredSize().width;
-        for (int r = 0; r < Tabla_Facturacion.getRowCount(); r++) {
-            renderer = Tabla_Facturacion.getCellRenderer(r, vColIndex);
-            comp = renderer.getTableCellRendererComponent(Tabla_Facturacion, Tabla_Facturacion.getValueAt(r, vColIndex), false, false, r, vColIndex);
-            width = Math.max(width, comp.getPreferredSize().width);
-        }
-        width += 2 * margin;
-        col.setPreferredWidth(width);
+    private Date obtenerFechaTabla(JTable tabla, int fila) {
+        String campoFecha = TableMethods
+                .obtenerValorTabla(tabla, fila, 21)
+                .toString().substring(0, 10);
+        return Date.valueOf(campoFecha);
     }
 
-    public boolean DatosLlenosFacturacion() {
-
-        return !id.getText().equals("") && !pjcode.getText().equals("")
-                && !pjname.getText().equals("") && !customer.getText().equals("")
-                && !postatus.getText().equals("") && !pon.getText().equals("") && !poline.getText().equals("")
-                && !shipment.getText().equals("") && !sitecode.getText().equals("")
-                && !sitename.getText().equals("") && !itemcode.getText().equals("")
-                && !itemdsc.getText().equals("") && !requestedqty.getText().equals("")
-                && !dueqty.getText().equals("") && !billedqty.getText().equals("")
-                && !unitprice.getText().equals("") && !amount.getText().equals("")
-                && !unit.getText().equals("") && !payment.getText().equals("")
-                && !category.getText().equals("") && !bidding.getText().equals("")
-                && !pdate.getDateFormatString().equals("");
-    }
-
-    public void LimpiarDatos() {
-        id.setText("");
-        pjcode.setText("");
-        pjname.setText("");
-        customer.setText("");
-        postatus.setText("");
-        pon.setText("");
-        poline.setText("");
-        shipment.setText("");
-        sitecode.setText("");
-        sitename.setText("");
-        itemcode.setText("");
-        itemdsc.setText("");
-        requestedqty.setText("");
-        dueqty.setText("");
-        billedqty.setText("");
-        unitprice.setText("");
-        amount.setText("");
-        unit.setText("");
-        payment.setText("");
-        category.setText("");
-        bidding.setText("");
-        pdate.setCalendar(null);
-    }
-
-    public void Buscar() {
-
+    private void llenarCampos() {
+        int fila = tablaFacturacion.getSelectedRow();
+        id.setText(obtenerValorTabla(fila, 0).toString());
+        pjcode.setText(obtenerValorTabla(fila, 1).toString());
+        pjname.setText(obtenerValorTabla(fila, 2).toString());
+        customer.setText(obtenerValorTabla(fila, 3).toString());
+        postatus.setText(obtenerValorTabla(fila, 4).toString());
+        pon.setText(obtenerValorTabla(fila, 5).toString());
+        shipment.setText(obtenerValorTabla(fila, 6).toString());
+        poline.setText(obtenerValorTabla(fila, 7).toString());
+        sitecode.setText(obtenerValorTabla(fila, 8).toString());
+        sitename.setText(obtenerValorTabla(fila, 9).toString());
+        itemcode.setText(obtenerValorTabla(fila, 10).toString());
+        itemdsc.setText(obtenerValorTabla(fila, 11).toString());
+        requestedqty.setText(obtenerValorTabla(fila, 12).toString());
+        dueqty.setText(obtenerValorTabla(fila, 13).toString());
+        billedqty.setText(obtenerValorTabla(fila, 14).toString());
+        unitprice.setText(obtenerValorTabla(fila, 15).toString());
+        amount.setText(obtenerValorTabla(fila, 16).toString());
+        unit.setText(obtenerValorTabla(fila, 17).toString());
+        payment.setText(obtenerValorTabla(fila, 18).toString());
+        category.setText(obtenerValorTabla(fila, 19).toString());
+        bidding.setText(obtenerValorTabla(fila, 20).toString());
+        pdate.setDate(obtenerFechaTabla(tablaFacturacion, fila));
     }
 
     @SuppressWarnings("unchecked")
@@ -173,21 +98,10 @@ public final class Facturacion extends javax.swing.JFrame {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        jPanel1 = new javax.swing.JPanel();
-        jLabel28 = new javax.swing.JLabel();
-        Nombre_UsuarioAdmin = new javax.swing.JLabel();
-        jLabel33 = new javax.swing.JLabel();
-        ID_Usuario = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        TipBusqueda = new javax.swing.JLabel();
-        update = new javax.swing.JButton();
-        delete = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        buscarPO = new javax.swing.JTextField();
+        buscadorProyecto = new javax.swing.JTextField();
         jButton5 = new javax.swing.JButton();
         jScrollPane9 = new javax.swing.JScrollPane();
         tablaFacturacion = new javax.swing.JTable();
-        Fecha_PO = new com.toedter.calendar.JDateChooser();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         id = new javax.swing.JTextField();
@@ -222,24 +136,7 @@ public final class Facturacion extends javax.swing.JFrame {
         jScrollPane8 = new javax.swing.JScrollPane();
         bidding = new javax.swing.JTextArea();
         pdate = new com.toedter.calendar.JDateChooser();
-        jPanel5 = new javax.swing.JPanel();
-        jLabel24 = new javax.swing.JLabel();
-        numordenc = new javax.swing.JTextField();
-        jLabel23 = new javax.swing.JLabel();
-        contratista = new javax.swing.JTextField();
-        jLabel25 = new javax.swing.JLabel();
-        ordencompradt = new javax.swing.JTextField();
-        jLabel26 = new javax.swing.JLabel();
-        importe = new javax.swing.JTextField();
-        jLabel27 = new javax.swing.JLabel();
-        total = new javax.swing.JTextField();
-        jLabel29 = new javax.swing.JLabel();
-        stat = new javax.swing.JTextField();
-        jLabel38 = new javax.swing.JLabel();
-        jLabel39 = new javax.swing.JLabel();
-        jLabel40 = new javax.swing.JLabel();
-        stat_cierre = new javax.swing.JTextField();
-        jLabel44 = new javax.swing.JLabel();
+        filtroProyecto = new javax.swing.JComboBox<>();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -247,99 +144,13 @@ public final class Facturacion extends javax.swing.JFrame {
         jMenuItem2 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Administrador Facturación");
         setBackground(new java.awt.Color(0, 0, 0));
         setIconImage(getIconImage());
         setLocationByPlatform(true);
         setResizable(false);
-        addComponentListener(new java.awt.event.ComponentAdapter() {
-            public void componentResized(java.awt.event.ComponentEvent evt) {
-                formComponentResized(evt);
-            }
-        });
 
-        jPanel1.setBackground(new java.awt.Color(60, 59, 89));
-        jPanel1.setLayout(new java.awt.GridBagLayout());
-
-        jLabel28.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel28.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel28.setText("Bienvenido(a):");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = java.awt.GridBagConstraints.RELATIVE;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 5);
-        jPanel1.add(jLabel28, gridBagConstraints);
-
-        Nombre_UsuarioAdmin.setForeground(new java.awt.Color(255, 255, 255));
-        Nombre_UsuarioAdmin.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Nombre_UsuarioAdmin.setText("Nombre");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = java.awt.GridBagConstraints.RELATIVE;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
-        jPanel1.add(Nombre_UsuarioAdmin, gridBagConstraints);
-
-        jLabel33.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel33.setText("ID:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = java.awt.GridBagConstraints.RELATIVE;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 5);
-        jPanel1.add(jLabel33, gridBagConstraints);
-
-        ID_Usuario.setForeground(new java.awt.Color(255, 255, 255));
-        ID_Usuario.setText("ID");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = java.awt.GridBagConstraints.RELATIVE;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
-        jPanel1.add(ID_Usuario, gridBagConstraints);
-
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("Administrador Facturación");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 4;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = java.awt.GridBagConstraints.RELATIVE;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(10, 50, 10, 50);
-        jPanel1.add(jLabel2, gridBagConstraints);
-
-        TipBusqueda.setFont(new java.awt.Font("Microsoft Sans Serif", 1, 12)); // NOI18N
-        TipBusqueda.setForeground(new java.awt.Color(255, 255, 255));
-        TipBusqueda.setText("Busque el registro deseado en la tabla aquí:");
-
-        update.setText("Actualizar");
-        update.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                updateActionPerformed(evt);
-            }
-        });
-
-        delete.setText("Borrar");
-        delete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteActionPerformed(evt);
-            }
-        });
-
-        jButton1.setText("Buscar P.O:");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
-        buscarPO.setBorder(javax.swing.BorderFactory.createTitledBorder("Buscar"));
+        buscadorProyecto.setBorder(javax.swing.BorderFactory.createTitledBorder("Buscar"));
 
         jButton5.setText("Cerrar Sesión");
         jButton5.addActionListener(new java.awt.event.ActionListener() {
@@ -350,6 +161,7 @@ public final class Facturacion extends javax.swing.JFrame {
 
         tablaFacturacion.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         tablaFacturacion.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
+        tablaFacturacion.setForeground(new java.awt.Color(255, 255, 255));
         tablaFacturacion.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -362,10 +174,13 @@ public final class Facturacion extends javax.swing.JFrame {
         tablaFacturacion.setColumnSelectionAllowed(true);
         tablaFacturacion.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         tablaFacturacion.setGridColor(new java.awt.Color(0, 0, 0));
-        tablaFacturacion.setSelectionBackground(new java.awt.Color(0, 153, 204));
+        tablaFacturacion.setSelectionBackground(new java.awt.Color(255, 255, 255));
+        tablaFacturacion.setSelectionForeground(new java.awt.Color(0, 0, 0));
+        tablaFacturacion.getTableHeader().setResizingAllowed(false);
+        tablaFacturacion.getTableHeader().setReorderingAllowed(false);
         tablaFacturacion.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                tablaFacturacionMousePressed(evt);
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaFacturacionMouseClicked(evt);
             }
         });
         tablaFacturacion.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -375,10 +190,6 @@ public final class Facturacion extends javax.swing.JFrame {
         });
         jScrollPane9.setViewportView(tablaFacturacion);
 
-        Fecha_PO.setDateFormatString("yyyy/MM/dd");
-        Fecha_PO.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        Fecha_PO.setOpaque(false);
-
         jPanel2.setBackground(new java.awt.Color(60, 59, 89));
         jPanel2.setMaximumSize(new java.awt.Dimension(316, 338));
         jPanel2.setMinimumSize(new java.awt.Dimension(316, 338));
@@ -387,11 +198,7 @@ public final class Facturacion extends javax.swing.JFrame {
         id.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         id.setToolTipText("ID");
         id.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "Id Proyecto"));
-        id.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                idKeyTyped(evt);
-            }
-        });
+        id.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridwidth = 24;
@@ -404,6 +211,7 @@ public final class Facturacion extends javax.swing.JFrame {
         pjcode.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         pjcode.setToolTipText("Project Code");
         pjcode.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "Código de Proyecto"));
+        pjcode.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridwidth = 24;
@@ -413,12 +221,15 @@ public final class Facturacion extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 38, 5, 38);
         jPanel2.add(pjcode, gridBagConstraints);
 
+        jScrollPane3.setBackground(new Color(0, 0, 0, 0));
+
         pjname.setColumns(20);
         pjname.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         pjname.setLineWrap(true);
         pjname.setRows(3);
         pjname.setToolTipText("Project Name");
         pjname.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "Nombre Proyecto"));
+        pjname.setEnabled(false);
         jScrollPane3.setViewportView(pjname);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -431,12 +242,15 @@ public final class Facturacion extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 38, 5, 38);
         jPanel2.add(jScrollPane3, gridBagConstraints);
 
+        jScrollPane1.setBackground(new Color(0, 0, 0, 0));
+
         customer.setColumns(20);
         customer.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         customer.setLineWrap(true);
         customer.setRows(3);
         customer.setToolTipText("Customer");
         customer.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "Cliente"));
+        customer.setEnabled(false);
         jScrollPane1.setViewportView(customer);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -452,11 +266,7 @@ public final class Facturacion extends javax.swing.JFrame {
         postatus.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         postatus.setToolTipText("PO Status");
         postatus.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "PO Status"));
-        postatus.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                postatusKeyTyped(evt);
-            }
-        });
+        postatus.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridwidth = 24;
@@ -469,6 +279,7 @@ public final class Facturacion extends javax.swing.JFrame {
         pon.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         pon.setToolTipText("PO NO");
         pon.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "PO NO"));
+        pon.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridwidth = 24;
@@ -480,11 +291,7 @@ public final class Facturacion extends javax.swing.JFrame {
 
         shipment.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         shipment.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "Shipment NO"));
-        shipment.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                shipmentKeyTyped(evt);
-            }
-        });
+        shipment.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridwidth = 24;
@@ -497,11 +304,7 @@ public final class Facturacion extends javax.swing.JFrame {
         poline.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         poline.setToolTipText("PO Line NO");
         poline.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "PO Line NO"));
-        poline.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                polineKeyTyped(evt);
-            }
-        });
+        poline.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridwidth = 24;
@@ -523,6 +326,7 @@ public final class Facturacion extends javax.swing.JFrame {
         sitecode.setLineWrap(true);
         sitecode.setRows(3);
         sitecode.setBorder(javax.swing.BorderFactory.createTitledBorder("Site Code"));
+        sitecode.setEnabled(false);
         jScrollPane2.setViewportView(sitecode);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -539,6 +343,7 @@ public final class Facturacion extends javax.swing.JFrame {
         sitename.setLineWrap(true);
         sitename.setRows(3);
         sitename.setBorder(javax.swing.BorderFactory.createTitledBorder("Site Name"));
+        sitename.setEnabled(false);
         jScrollPane4.setViewportView(sitename);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -553,11 +358,7 @@ public final class Facturacion extends javax.swing.JFrame {
 
         itemcode.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         itemcode.setBorder(javax.swing.BorderFactory.createTitledBorder("Item Code"));
-        itemcode.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                itemcodeKeyTyped(evt);
-            }
-        });
+        itemcode.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridwidth = 24;
@@ -572,6 +373,7 @@ public final class Facturacion extends javax.swing.JFrame {
         itemdsc.setRows(3);
         itemdsc.setText("\n");
         itemdsc.setBorder(javax.swing.BorderFactory.createTitledBorder("Item Desc"));
+        itemdsc.setEnabled(false);
         jScrollPane5.setViewportView(itemdsc);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -586,11 +388,7 @@ public final class Facturacion extends javax.swing.JFrame {
 
         requestedqty.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         requestedqty.setBorder(javax.swing.BorderFactory.createTitledBorder("Requested Quantity"));
-        requestedqty.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                requestedqtyKeyTyped(evt);
-            }
-        });
+        requestedqty.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridwidth = 24;
@@ -602,11 +400,7 @@ public final class Facturacion extends javax.swing.JFrame {
 
         dueqty.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         dueqty.setBorder(javax.swing.BorderFactory.createTitledBorder("Due Quantity"));
-        dueqty.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                dueqtyKeyTyped(evt);
-            }
-        });
+        dueqty.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridwidth = 24;
@@ -618,11 +412,7 @@ public final class Facturacion extends javax.swing.JFrame {
 
         billedqty.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         billedqty.setBorder(javax.swing.BorderFactory.createTitledBorder("Billed Quantity"));
-        billedqty.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                billedqtyKeyTyped(evt);
-            }
-        });
+        billedqty.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridwidth = 24;
@@ -640,11 +430,7 @@ public final class Facturacion extends javax.swing.JFrame {
 
         unitprice.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         unitprice.setBorder(javax.swing.BorderFactory.createTitledBorder("Unit Price"));
-        unitprice.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                unitpriceKeyTyped(evt);
-            }
-        });
+        unitprice.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridwidth = 24;
@@ -656,11 +442,7 @@ public final class Facturacion extends javax.swing.JFrame {
 
         amount.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         amount.setBorder(javax.swing.BorderFactory.createTitledBorder("Line Amount"));
-        amount.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                amountKeyTyped(evt);
-            }
-        });
+        amount.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridwidth = 24;
@@ -672,6 +454,7 @@ public final class Facturacion extends javax.swing.JFrame {
 
         unit.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
         unit.setBorder(javax.swing.BorderFactory.createTitledBorder("Unit"));
+        unit.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridwidth = 24;
@@ -687,6 +470,7 @@ public final class Facturacion extends javax.swing.JFrame {
         payment.setRows(3);
         payment.setText("\n");
         payment.setBorder(javax.swing.BorderFactory.createTitledBorder("Payment Terms"));
+        payment.setEnabled(false);
         jScrollPane6.setViewportView(payment);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -705,6 +489,7 @@ public final class Facturacion extends javax.swing.JFrame {
         category.setRows(3);
         category.setText("\n");
         category.setBorder(javax.swing.BorderFactory.createTitledBorder("Category"));
+        category.setEnabled(false);
         jScrollPane7.setViewportView(category);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -723,6 +508,7 @@ public final class Facturacion extends javax.swing.JFrame {
         bidding.setRows(3);
         bidding.setText("\n");
         bidding.setBorder(javax.swing.BorderFactory.createTitledBorder("BiddingArea"));
+        bidding.setEnabled(false);
         jScrollPane8.setViewportView(bidding);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -736,8 +522,8 @@ public final class Facturacion extends javax.swing.JFrame {
         jPanel4.add(jScrollPane8, gridBagConstraints);
 
         pdate.setBorder(javax.swing.BorderFactory.createTitledBorder("Publish Date"));
-        pdate.setDateFormatString("yyyy-MM-dd HH:mm:ss");
-        pdate.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        pdate.setDateFormatString("yyyy-MM-dd");
+        pdate.setEnabled(false);
         pdate.setMaxSelectableDate(new java.util.Date(253370790095000L));
         pdate.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -752,175 +538,16 @@ public final class Facturacion extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Información Financiera", jPanel4);
 
-        jPanel5.setBackground(new java.awt.Color(60, 59, 89));
-
-        jLabel24.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
-        jLabel24.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel24.setText("No. Orden de Compra:");
-
-        numordenc.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        numordenc.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
-        numordenc.setEnabled(false);
-
-        jLabel23.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
-        jLabel23.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel23.setText("Nombre Contratista:");
-
-        contratista.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        contratista.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
-        contratista.setEnabled(false);
-
-        jLabel25.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
-        jLabel25.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel25.setText("Orden de Compra DT:");
-
-        ordencompradt.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        ordencompradt.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
-        ordencompradt.setEnabled(false);
-
-        jLabel26.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
-        jLabel26.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel26.setText("Importe:");
-
-        importe.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        importe.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
-        importe.setEnabled(false);
-
-        jLabel27.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
-        jLabel27.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel27.setText("Total:");
-
-        total.setEditable(false);
-        total.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        total.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
-        total.setEnabled(false);
-
-        jLabel29.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
-        jLabel29.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel29.setText("Status:");
-
-        stat.setEditable(false);
-        stat.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        stat.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
-
-        jLabel38.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 12)); // NOI18N
-        jLabel38.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel38.setText("Status Cierre:");
-
-        jLabel39.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel39.setText("$");
-
-        jLabel40.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel40.setText("%");
-
-        stat_cierre.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        stat_cierre.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
-        stat_cierre.setEnabled(false);
-        stat_cierre.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                stat_cierreKeyTyped(evt);
-            }
-        });
-
-        jLabel44.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel44.setText("%");
-
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addComponent(jLabel24))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addComponent(numordenc, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addComponent(jLabel23))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addComponent(contratista, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addComponent(jLabel25))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addComponent(ordencompradt, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addComponent(jLabel26))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addComponent(importe, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(25, 25, 25)
-                        .addComponent(jLabel27)
-                        .addGap(10, 10, 10)
-                        .addComponent(total, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(3, 3, 3)
-                        .addComponent(jLabel39))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addComponent(jLabel29)
-                        .addGap(13, 13, 13)
-                        .addComponent(stat, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(3, 3, 3)
-                        .addComponent(jLabel40))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(25, 25, 25)
-                        .addComponent(jLabel38))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(25, 25, 25)
-                        .addComponent(stat_cierre, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)
-                        .addComponent(jLabel44)))
-                .addGap(273, 273, 273))
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addComponent(jLabel24)
-                .addGap(5, 5, 5)
-                .addComponent(numordenc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(8, 8, 8)
-                .addComponent(jLabel23)
-                .addGap(15, 15, 15)
-                .addComponent(contratista, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(8, 8, 8)
-                .addComponent(jLabel25)
-                .addGap(15, 15, 15)
-                .addComponent(ordencompradt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(8, 8, 8)
-                .addComponent(jLabel26)
-                .addGap(5, 5, 5)
-                .addComponent(importe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(8, 8, 8)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel27)
-                    .addComponent(total, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel39))
-                .addGap(8, 8, 8)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel29)
-                    .addComponent(stat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel40))
-                .addGap(8, 8, 8)
-                .addComponent(jLabel38)
-                .addGap(5, 5, 5)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(stat_cierre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel44)))
-        );
-
-        jTabbedPane1.addTab("Detalle Facturación", jPanel5);
+        filtroProyecto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID", "PO_NO" }));
 
         jMenu1.setText("Opciones");
 
         jMenuItem1.setText("Gestionar Asignaciones");
+        jMenuItem1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenuItem1MouseClicked(evt);
+            }
+        });
         jMenu1.add(jMenuItem1);
 
         jMenuBar1.add(jMenu1);
@@ -950,168 +577,64 @@ public final class Facturacion extends javax.swing.JFrame {
                         .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 536, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane9)
+                            .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 779, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jButton1)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(buscarPO, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(update)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(delete, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(0, 419, Short.MAX_VALUE))))
-                    .addComponent(jButton5)
-                    .addComponent(TipBusqueda)
-                    .addComponent(Fecha_PO, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(buscadorProyecto, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(filtroProyecto, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))))
+                    .addComponent(jButton5))
                 .addContainerGap())
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(15, 15, 15)
                 .addComponent(jButton5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton1)
-                            .addComponent(buscarPO, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(26, 26, 26)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(update)
-                            .addComponent(delete))
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 616, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(buscadorProyecto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(8, 8, 8)
+                                .addComponent(filtroProyecto, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane9))
                     .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 725, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(TipBusqueda)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(Fecha_PO, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
-        // TODO add your handling code here:
-    }//GEN-LAST:event_formComponentResized
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        Buscar();
-        ColumnasAutoajustadas(tablaFacturacion, margin);
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateActionPerformed
-
-    }//GEN-LAST:event_updateActionPerformed
-
-    private void idKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_idKeyTyped
-        char car = evt.getKeyChar();
-        if ((car < '0' || car > '9')) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_idKeyTyped
-
-    private void deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteActionPerformed
-
-    }//GEN-LAST:event_deleteActionPerformed
-
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         this.dispose();
         new Login().setVisible(true);
     }//GEN-LAST:event_jButton5ActionPerformed
 
-    private void tablaFacturacionMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaFacturacionMousePressed
-
-    }//GEN-LAST:event_tablaFacturacionMousePressed
-
-    private void tablaFacturacionKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tablaFacturacionKeyReleased
-        if ((evt.getKeyCode() == 38) || (evt.getKeyCode() == 40) || (evt.getKeyCode() == 33) || (evt.getKeyCode() == 34)) {
-            int fila = tablaFacturacion.getSelectedRow();
-
-        }
-    }//GEN-LAST:event_tablaFacturacionKeyReleased
-
-    private void stat_cierreKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_stat_cierreKeyTyped
-        char car = evt.getKeyChar();
-        if ((car < '0' || car > '9') && (car != '.')) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_stat_cierreKeyTyped
-
-    private void postatusKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_postatusKeyTyped
-        char car = evt.getKeyChar();
-        if ((car < 'A' || car > 'Z')) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_postatusKeyTyped
-
-    private void polineKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_polineKeyTyped
-        char car = evt.getKeyChar();
-        if ((car < '0' || car > '9')) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_polineKeyTyped
-
-    private void shipmentKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_shipmentKeyTyped
-        char car = evt.getKeyChar();
-        if ((car < '0' || car > '9')) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_shipmentKeyTyped
-
-    private void itemcodeKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_itemcodeKeyTyped
-        char car = evt.getKeyChar();
-        if ((car < '0' || car > '9')) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_itemcodeKeyTyped
-
-    private void requestedqtyKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_requestedqtyKeyTyped
-        char car = evt.getKeyChar();
-        if ((car < '0' || car > '9')) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_requestedqtyKeyTyped
-
-    private void dueqtyKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_dueqtyKeyTyped
-        char car = evt.getKeyChar();
-        if ((car < '0' || car > '9')) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_dueqtyKeyTyped
-
-    private void billedqtyKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_billedqtyKeyTyped
-        char car = evt.getKeyChar();
-        if ((car < '0' || car > '9')) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_billedqtyKeyTyped
-
-    private void unitpriceKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_unitpriceKeyTyped
-        char car = evt.getKeyChar();
-        if ((car < '0' || car > '9') && (car != '.')) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_unitpriceKeyTyped
-
-    private void amountKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_amountKeyTyped
-        char car = evt.getKeyChar();
-        if ((car < '0' || car > '9') && (car != '.')) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_amountKeyTyped
-
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         importarExcel = new ImportarExcel();
         importarExcel.setVisible(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void tablaFacturacionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaFacturacionMouseClicked
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            llenarCampos();
+        }
+    }//GEN-LAST:event_tablaFacturacionMouseClicked
+
+    private void tablaFacturacionKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tablaFacturacionKeyReleased
+        if ((evt.getKeyCode() == KeyEvent.VK_UP)
+                || (evt.getKeyCode() == KeyEvent.VK_DOWN)) {
+            llenarCampos();
+        }
+    }//GEN-LAST:event_tablaFacturacionKeyReleased
+
+    private void jMenuItem1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem1MouseClicked
+
+    }//GEN-LAST:event_jMenuItem1MouseClicked
 
     /**
      * @param args the command line arguments
@@ -1126,48 +649,26 @@ public final class Facturacion extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private com.toedter.calendar.JDateChooser Fecha_PO;
-    public static javax.swing.JLabel ID_Usuario;
-    public javax.swing.JLabel Nombre_UsuarioAdmin;
-    private javax.swing.JLabel TipBusqueda;
     private javax.swing.JTextField amount;
     private javax.swing.JTextArea bidding;
     private javax.swing.JTextField billedqty;
-    private javax.swing.JTextField buscarPO;
+    private javax.swing.JTextField buscadorProyecto;
     private javax.swing.JTextArea category;
-    private javax.swing.JTextField contratista;
     private javax.swing.JTextArea customer;
-    private javax.swing.JButton delete;
     private javax.swing.JTextField dueqty;
+    private javax.swing.JComboBox<String> filtroProyecto;
     private javax.swing.JTextField id;
-    private javax.swing.JTextField importe;
     private javax.swing.JTextField itemcode;
     private javax.swing.JTextArea itemdsc;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton5;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel23;
-    private javax.swing.JLabel jLabel24;
-    private javax.swing.JLabel jLabel25;
-    private javax.swing.JLabel jLabel26;
-    private javax.swing.JLabel jLabel27;
-    private javax.swing.JLabel jLabel28;
-    private javax.swing.JLabel jLabel29;
-    private javax.swing.JLabel jLabel33;
-    private javax.swing.JLabel jLabel38;
-    private javax.swing.JLabel jLabel39;
-    private javax.swing.JLabel jLabel40;
-    private javax.swing.JLabel jLabel44;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -1178,8 +679,6 @@ public final class Facturacion extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextField numordenc;
-    private javax.swing.JTextField ordencompradt;
     private javax.swing.JTextArea payment;
     private com.toedter.calendar.JDateChooser pdate;
     private javax.swing.JTextField pjcode;
@@ -1191,12 +690,8 @@ public final class Facturacion extends javax.swing.JFrame {
     private javax.swing.JTextField shipment;
     private javax.swing.JTextArea sitecode;
     private javax.swing.JTextArea sitename;
-    private javax.swing.JTextField stat;
-    private javax.swing.JTextField stat_cierre;
     private javax.swing.JTable tablaFacturacion;
-    private javax.swing.JTextField total;
     private javax.swing.JTextField unit;
     private javax.swing.JTextField unitprice;
-    private javax.swing.JButton update;
     // End of variables declaration//GEN-END:variables
 }
