@@ -27,7 +27,7 @@ public class TableDataModelEmpleado {
         this.empleados = empleados;
     }
 
-    public void cargarTablaEmpleados() {
+    public void cargarModeloTablaEmpleados() {
         modeloTabla.getDataVector().clear();
         tabla.clearSelection();
         modeloTabla.setColumnIdentifiers(
