@@ -17,7 +17,6 @@ import java.awt.event.MouseEvent;
 import java.sql.Date;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
-import javax.swing.JTable;
 
 /**
  *
@@ -27,48 +26,49 @@ public final class Facturacion extends javax.swing.JFrame {
 
     private DefaultTableModel modeloTablaProyectos;
     private TableDataModelProyecto tableDataModelProyecto;
-    private final ProyectoController proyectoController;
-    private ImportarExcel importarExcel;
+    private ProyectoController proyectoController;
 
     public Facturacion() {
         initComponents();
-        this.proyectoController = new ProyectoController();
-        cargarTablaProyectos();
-        TableMethods.filtrarResultados(tablaFacturacion, buscadorProyecto, filtroProyecto);
+        iniciarProcesos();
     }
 
-    
+    private void iniciarProcesos() {
+        this.proyectoController = new ProyectoController();
+        cargarTablaProyectos();
+        TableMethods.filtrarResultados(tablaProyectos, buscadorProyecto, filtroProyecto);
+    }
+
     @Override
     public Image getIconImage() {
         Image retValue = Toolkit.getDefaultToolkit().
                 getImage(ClassLoader.getSystemResource("Imagenes/Logo.png"));
         return retValue;
-
     }
-    
+
     private void cargarTablaProyectos() {
-        modeloTablaProyectos = (DefaultTableModel) tablaFacturacion.getModel();
+        tablaProyectos.setModel(new Asignaciones().tablaProyectos.getModel());
+        modeloTablaProyectos = (DefaultTableModel) tablaProyectos.getModel();
         List<Proyecto> listaProyecto = this.proyectoController.listar();
         tableDataModelProyecto = new TableDataModelProyecto(
-                modeloTablaProyectos, tablaFacturacion, listaProyecto
+                modeloTablaProyectos, tablaProyectos, listaProyecto
         );
         tableDataModelProyecto.cargarModeloTablaProyecto();
-        TablaColumnasAutoajustables.autoajustarColumnas(tablaFacturacion);
+        TablaColumnasAutoajustables.autoajustarColumnas(tablaProyectos);
     }
 
     private Object obtenerValorTabla(int fila, int columna) {
-        return tablaFacturacion.getValueAt(fila, columna);
+        return tablaProyectos.getValueAt(fila, columna);
     }
 
-    private Date obtenerFechaTabla(JTable tabla, int fila) {
-        String campoFecha = TableMethods
-                .obtenerValorTabla(tabla, fila, 21)
+    private Date obtenerFechaTabla(int fila, int columna) {
+        String campoFecha = obtenerValorTabla(fila, columna)
                 .toString().substring(0, 10);
         return Date.valueOf(campoFecha);
     }
 
-    private void llenarCampos() {
-        int fila = tablaFacturacion.getSelectedRow();
+    private void llenarCamposFacturacion() {
+        int fila = tablaProyectos.getSelectedRow();
         id.setText(obtenerValorTabla(fila, 0).toString());
         pjcode.setText(obtenerValorTabla(fila, 1).toString());
         pjname.setText(obtenerValorTabla(fila, 2).toString());
@@ -90,7 +90,7 @@ public final class Facturacion extends javax.swing.JFrame {
         payment.setText(obtenerValorTabla(fila, 18).toString());
         category.setText(obtenerValorTabla(fila, 19).toString());
         bidding.setText(obtenerValorTabla(fila, 20).toString());
-        pdate.setDate(obtenerFechaTabla(tablaFacturacion, fila));
+        pdate.setDate(obtenerFechaTabla(fila, 21));
     }
 
     @SuppressWarnings("unchecked")
@@ -101,7 +101,7 @@ public final class Facturacion extends javax.swing.JFrame {
         buscadorProyecto = new javax.swing.JTextField();
         jButton5 = new javax.swing.JButton();
         jScrollPane9 = new javax.swing.JScrollPane();
-        tablaFacturacion = new javax.swing.JTable();
+        tablaProyectos = new javax.swing.JTable();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         id = new javax.swing.JTextField();
@@ -143,8 +143,8 @@ public final class Facturacion extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Administrador Facturación");
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Facturación");
         setBackground(new java.awt.Color(0, 0, 0));
         setIconImage(getIconImage());
         setLocationByPlatform(true);
@@ -159,38 +159,30 @@ public final class Facturacion extends javax.swing.JFrame {
             }
         });
 
-        tablaFacturacion.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        tablaFacturacion.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
-        tablaFacturacion.setForeground(new java.awt.Color(255, 255, 255));
-        tablaFacturacion.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-
-            }
-        ));
-        tablaFacturacion.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-        tablaFacturacion.setColumnSelectionAllowed(true);
-        tablaFacturacion.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        tablaFacturacion.setGridColor(new java.awt.Color(0, 0, 0));
-        tablaFacturacion.setSelectionBackground(new java.awt.Color(255, 255, 255));
-        tablaFacturacion.setSelectionForeground(new java.awt.Color(0, 0, 0));
-        tablaFacturacion.getTableHeader().setResizingAllowed(false);
-        tablaFacturacion.getTableHeader().setReorderingAllowed(false);
-        tablaFacturacion.addMouseListener(new java.awt.event.MouseAdapter() {
+        tablaProyectos.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        tablaProyectos.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        tablaProyectos.setForeground(new java.awt.Color(255, 255, 255));
+        tablaProyectos.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        tablaProyectos.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        tablaProyectos.setGridColor(new java.awt.Color(0, 0, 0));
+        tablaProyectos.setSelectionBackground(new java.awt.Color(255, 255, 255));
+        tablaProyectos.setSelectionForeground(new java.awt.Color(0, 0, 0));
+        tablaProyectos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tablaProyectos.getTableHeader().setResizingAllowed(false);
+        tablaProyectos.getTableHeader().setReorderingAllowed(false);
+        tablaProyectos.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tablaFacturacionMouseClicked(evt);
+                tablaProyectosMouseClicked(evt);
             }
         });
-        tablaFacturacion.addKeyListener(new java.awt.event.KeyAdapter() {
+        tablaProyectos.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                tablaFacturacionKeyReleased(evt);
+                tablaProyectosKeyReleased(evt);
             }
         });
-        jScrollPane9.setViewportView(tablaFacturacion);
+        jScrollPane9.setViewportView(tablaProyectos);
+        tablaProyectos.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-        jPanel2.setBackground(new java.awt.Color(60, 59, 89));
         jPanel2.setMaximumSize(new java.awt.Dimension(316, 338));
         jPanel2.setMinimumSize(new java.awt.Dimension(316, 338));
         jPanel2.setLayout(new java.awt.GridBagLayout());
@@ -316,7 +308,6 @@ public final class Facturacion extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Información Proyecto", jPanel2);
 
-        jPanel3.setBackground(new java.awt.Color(60, 59, 89));
         jPanel3.setMaximumSize(new java.awt.Dimension(317, 338));
         jPanel3.setMinimumSize(new java.awt.Dimension(317, 338));
         jPanel3.setPreferredSize(new java.awt.Dimension(317, 338));
@@ -424,7 +415,6 @@ public final class Facturacion extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Detalle Proyecto", jPanel3);
 
-        jPanel4.setBackground(new java.awt.Color(60, 59, 89));
         jPanel4.setPreferredSize(new java.awt.Dimension(326, 336));
         jPanel4.setLayout(new java.awt.GridBagLayout());
 
@@ -538,14 +528,15 @@ public final class Facturacion extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Información Financiera", jPanel4);
 
-        filtroProyecto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID", "PO_NO" }));
+        filtroProyecto.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        filtroProyecto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Id Proyecto", "Po No" }));
 
         jMenu1.setText("Opciones");
 
         jMenuItem1.setText("Gestionar Asignaciones");
-        jMenuItem1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jMenuItem1MouseClicked(evt);
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
             }
         });
         jMenu1.add(jMenuItem1);
@@ -610,31 +601,39 @@ public final class Facturacion extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        evt.getID();
         this.dispose();
         new Login().setVisible(true);
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        importarExcel = new ImportarExcel();
+        evt.getID();
+        this.setVisible(false);
+        ImportarExcel importarExcel = new ImportarExcel();
+        importarExcel.setFacturacion(this);
         importarExcel.setVisible(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
-    private void tablaFacturacionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaFacturacionMouseClicked
+    private void tablaProyectosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaProyectosMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1) {
-            llenarCampos();
+            llenarCamposFacturacion();
         }
-    }//GEN-LAST:event_tablaFacturacionMouseClicked
+    }//GEN-LAST:event_tablaProyectosMouseClicked
 
-    private void tablaFacturacionKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tablaFacturacionKeyReleased
+    private void tablaProyectosKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tablaProyectosKeyReleased
         if ((evt.getKeyCode() == KeyEvent.VK_UP)
                 || (evt.getKeyCode() == KeyEvent.VK_DOWN)) {
-            llenarCampos();
+            llenarCamposFacturacion();
         }
-    }//GEN-LAST:event_tablaFacturacionKeyReleased
+    }//GEN-LAST:event_tablaProyectosKeyReleased
 
-    private void jMenuItem1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem1MouseClicked
-
-    }//GEN-LAST:event_jMenuItem1MouseClicked
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        evt.getID();
+        this.setVisible(false);
+        Asignaciones asignaciones = new Asignaciones();
+        asignaciones.setFacturacion(this);
+        asignaciones.setVisible(true);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -690,7 +689,7 @@ public final class Facturacion extends javax.swing.JFrame {
     private javax.swing.JTextField shipment;
     private javax.swing.JTextArea sitecode;
     private javax.swing.JTextArea sitename;
-    private javax.swing.JTable tablaFacturacion;
+    private javax.swing.JTable tablaProyectos;
     private javax.swing.JTextField unit;
     private javax.swing.JTextField unitprice;
     // End of variables declaration//GEN-END:variables
