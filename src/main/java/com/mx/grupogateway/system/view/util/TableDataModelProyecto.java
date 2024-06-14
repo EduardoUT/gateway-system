@@ -5,7 +5,6 @@
 package com.mx.grupogateway.system.view.util;
 
 import com.mx.grupogateway.system.modelo.Proyecto;
-import com.mx.grupogateway.system.util.IdentificadoresProyecto;
 import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -31,19 +30,17 @@ public class TableDataModelProyecto {
         modeloTabla.getDataVector().clear();
         tabla.clearSelection();
         modeloTabla = (DefaultTableModel) tabla.getModel();
-        modeloTabla.setColumnIdentifiers(
-                IdentificadoresProyecto.values()
-        );
+        tabla.getTableHeader().setFont(tabla.getFont());
         proyectos.forEach((proyecto) -> {
             modeloTabla.addRow(
                     new Object[]{
                         proyecto.getIdProyecto(),
-                        proyecto.getPoNo(),
-                        proyecto.getPoStatus(),
-                        proyecto.getPoLineNo(),
                         proyecto.getProjectCode(),
                         proyecto.getProjectName(),
                         proyecto.getCustomer(),
+                        proyecto.getPoStatus(),
+                        proyecto.getPoNo(),
+                        proyecto.getPoLineNo(),
                         proyecto.getShipmentNo(),
                         proyecto.getSiteCode(),
                         proyecto.getSiteName(),
