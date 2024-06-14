@@ -68,26 +68,31 @@ public class EmpleadoDAO {
      */
     public List<Empleado> listar() {
         List<Empleado> resultado = new ArrayList<>();
-        String sql = "SELECT ID_EMPLEADO, NOMBRE, APE_PAT, "
-                + "APE_MAT, ID_USUARIO, ID_CATEGORIA_EMPLEADO FROM EMPLEADOS";
-
+        String sql = "SELECT ID_EMPLEADO, NOMBRE, APE_PAT, APE_MAT, ID_USUARIO, "
+                + "NOMBRE_CATEGORIA "
+                + "FROM CATEGORIA_EMPLEADO "
+                + "INNER JOIN EMPLEADOS ON "
+                + "CATEGORIA_EMPLEADO.ID_CATEGORIA_EMPLEADO = "
+                + "EMPLEADOS.ID_CATEGORIA_EMPLEADO; ";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet();) {
                 while (resultSet.next()) {
-                    Empleado fila = new Empleado(
-                            resultSet.getString("ID_EMPLEADO"),
-                            resultSet.getString("NOMBRE"),
-                            resultSet.getString("APELLIDO_P"),
-                            resultSet.getString("APELLIDO_M"),
-                            new Usuario(resultSet.getString("ID_USUARIO")),
-                            new EmpleadoCategoria(resultSet.getString("ID_CATEGORIA_EMPLEADO"))
+                    resultado.add(
+                            new Empleado(
+                                    resultSet.getString("ID_EMPLEADO"),
+                                    resultSet.getString("NOMBRE"),
+                                    resultSet.getString("APE_PAT"),
+                                    resultSet.getString("APE_MAT"),
+                                    new Usuario(resultSet.getString("ID_USUARIO")),
+                                    new EmpleadoCategoria(resultSet.getString("NOMBRE_CATEGORIA"))
+                            )
                     );
-                    resultado.add(fila);
                 }
                 return resultado;
             }
         } catch (SQLException e) {
+            System.out.println(e.getMessage());
             throw new RuntimeException(e);
         }
     }
