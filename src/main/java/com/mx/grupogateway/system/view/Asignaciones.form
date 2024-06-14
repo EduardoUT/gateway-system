@@ -210,9 +210,6 @@
                   </StringArray>
                 </Property>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filtroProyectoActionPerformed"/>
-              </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
               </AuxValues>
@@ -242,9 +239,6 @@
                       <TableHeader reorderingAllowed="false" resizingAllowed="false"/>
                     </Property>
                   </Properties>
-                  <Events>
-                    <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tablaProyectosKeyReleased"/>
-                  </Events>
                 </Component>
               </SubComponents>
             </Container>
@@ -252,9 +246,6 @@
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" value="Buscar Empleado"/>
               </Properties>
-              <Events>
-                <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="buscadorEmpleadoKeyTyped"/>
-              </Events>
             </Component>
             <Component class="javax.swing.JComboBox" name="filtroEmpleado">
               <Properties>
@@ -372,9 +363,6 @@
                       <TableHeader reorderingAllowed="false" resizingAllowed="false"/>
                     </Property>
                   </Properties>
-                  <Events>
-                    <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tablaEmpleadosKeyReleased"/>
-                  </Events>
                 </Component>
               </SubComponents>
             </Container>
