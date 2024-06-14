@@ -16,18 +16,11 @@ import com.mx.grupogateway.system.view.util.TablaColumnasAutoajustables;
 import com.mx.grupogateway.system.view.util.TableDataModelAsignacion;
 import com.mx.grupogateway.system.view.util.TableDataModelEmpleado;
 import com.mx.grupogateway.system.view.util.TableDataModelProyecto;
+import com.mx.grupogateway.system.view.util.TableMethods;
 import java.awt.event.KeyEvent;
 import java.util.LinkedList;
 import java.util.List;
 import java.awt.event.MouseEvent;
-import javax.swing.JComboBox;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.RowFilter;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -70,9 +63,9 @@ public final class Asignaciones extends javax.swing.JFrame {
         cargarTablaProyectos();
         cargarTablaProyectosAsignados();
         selectionRowListener();
-        filtrarResultados(tablaProyectos, buscadorProyecto, filtroProyecto);
-        filtrarResultados(tablaEmpleados, buscadorEmpleado, filtroEmpleado);
-        filtrarResultados(tablaAsignaciones, buscadorAsignacion, filtroAsignacion);
+        TableMethods.filtrarResultados(tablaProyectos, buscadorProyecto, filtroProyecto);
+        TableMethods.filtrarResultados(tablaEmpleados, buscadorEmpleado, filtroEmpleado);
+        TableMethods.filtrarResultados(tablaAsignaciones, buscadorAsignacion, filtroAsignacion);
     }
 
     private void cargarTablaEmpleados() {
@@ -81,7 +74,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         tableDataModelEmpleado = new TableDataModelEmpleado(
                 modeloTablaEmpleados, tablaEmpleados, empleados
         );
-        tableDataModelEmpleado.cargarTablaEmpleados();
+        tableDataModelEmpleado.cargarModeloTablaEmpleados();
         TablaColumnasAutoajustables.autoajustarColumnas(tablaEmpleados);
     }
 
@@ -91,7 +84,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         tableDataModelProyecto = new TableDataModelProyecto(
                 modeloTablaProyectos, tablaProyectos, listaProyectos
         );
-        tableDataModelProyecto.cargarTablaProyectos();
+        tableDataModelProyecto.cargarModeloTablaProyecto();
         TablaColumnasAutoajustables.autoajustarColumnas(tablaProyectos);
     }
 
@@ -101,7 +94,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                 = this.proyectosAsignadosController.listar();
         tableDataModelAsignacion = new TableDataModelAsignacion(
                 modeloTablaAsignaciones, tablaAsignaciones, listaProyectosAsignados);
-        tableDataModelAsignacion.cargarTablaAsignaciones();
+        tableDataModelAsignacion.cargarModeloTablaAsignaciones();
         TablaColumnasAutoajustables.autoajustarColumnas(tablaAsignaciones);
     }
 
@@ -121,63 +114,6 @@ public final class Asignaciones extends javax.swing.JFrame {
         tablaAsignaciones.getSelectionModel().addListSelectionListener(e -> {
             filaTablaAsignaciones = tablaAsignaciones.getSelectedRow();
         });
-    }
-
-    private void filtrarResultados(JTable tabla, JTextField campo,
-            JComboBox comboBox) {
-        TableRowSorter<TableModel> rowSorter
-                = new TableRowSorter<>(tabla.getModel());
-        campo.getDocument().addDocumentListener(new DocumentListener() {
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                String text = campo.getText();
-                String seleccion = (String) comboBox.getSelectedItem();
-                comboBox.getSelectedIndex();
-                if (text.trim().length() == 0) {
-                    rowSorter.setRowFilter(null);
-                } else {
-                    rowSorter.setRowFilter(
-                            RowFilter.regexFilter(
-                                    "(?i)" + text,
-                                    tabla
-                                            .getColumnModel()
-                                            .getColumnIndex(
-                                                    seleccion
-                                            )
-                            )
-                    );
-                }
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                String text = campo.getText();
-                String seleccion = (String) comboBox.getSelectedItem();
-                comboBox.getSelectedIndex();
-                if (text.trim().length() == 0) {
-                    rowSorter.setRowFilter(null);
-                } else {
-                    rowSorter.setRowFilter(
-                            RowFilter.regexFilter(
-                                    "(?i)" + text,
-                                    tabla
-                                            .getColumnModel()
-                                            .getColumnIndex(
-                                                    seleccion
-                                            )
-                            )
-                    );
-                }
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-        });
-        tabla.setRowSorter(rowSorter);
     }
 
     private void guardarAsignacion() {
@@ -207,7 +143,7 @@ public final class Asignaciones extends javax.swing.JFrame {
 
     private void actualizarAsignacion() {
         if (filaTablaEmpleados == -1 || filaTablaAsignaciones == -1) {
-
+            System.out.println("Debe seleccionar tablas.");
         } else {
             String idEmpleadoAsignado = tablaAsignaciones.getValueAt(
                     filaTablaAsignaciones, 0).toString();
@@ -229,7 +165,7 @@ public final class Asignaciones extends javax.swing.JFrame {
     }
 
     private void llenarResumenAsignaciones() {
-        String nombreCompleto = tablaAsignaciones
+        String nombre = tablaAsignaciones
                 .getValueAt(filaTablaAsignaciones, 1).toString()
                 .concat(" ")
                 .concat(tablaAsignaciones
@@ -238,7 +174,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                 .concat(tablaAsignaciones
                         .getValueAt(filaTablaAsignaciones, 3).toString());
 
-        nombreEmpleado.setText(nombreCompleto);
+        nombreEmpleado.setText(nombre);
         poNoCampo.setText(tablaAsignaciones
                 .getValueAt(filaTablaAsignaciones, 6).toString()
         );
@@ -312,7 +248,7 @@ public final class Asignaciones extends javax.swing.JFrame {
             }
         });
 
-        filtroProyecto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID", "PO_NO" }));
+        filtroProyecto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID_PROYECTO", "PO_NO" }));
 
         jLabel15.setForeground(new java.awt.Color(255, 255, 255));
         jLabel15.setText("Seleccione en la tabla el proyecto que desee asignar");
@@ -370,7 +306,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         });
         jScrollPane4.setViewportView(tablaAsignaciones);
 
-        filtroAsignacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID_PROYECTO", "ID_EMPLEADO", "PO_NO" }));
+        filtroAsignacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID_PROYECTO", "ID_EMPLEADO", "NOMBRE", "PO_NO" }));
 
         botonActualizarAsignacion.setText("Actualizar Asignación");
         botonActualizarAsignacion.addMouseListener(new java.awt.event.MouseAdapter() {
