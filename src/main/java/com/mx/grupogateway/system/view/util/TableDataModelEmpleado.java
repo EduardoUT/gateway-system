@@ -5,7 +5,6 @@
 package com.mx.grupogateway.system.view.util;
 
 import com.mx.grupogateway.system.modelo.Empleado;
-import com.mx.grupogateway.system.util.IdentificadoresEmpleado;
 import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -30,9 +29,7 @@ public class TableDataModelEmpleado {
     public void cargarModeloTablaEmpleados() {
         modeloTabla.getDataVector().clear();
         tabla.clearSelection();
-        modeloTabla.setColumnIdentifiers(
-                IdentificadoresEmpleado.values()
-        );
+        tabla.getTableHeader().setFont(tabla.getFont());
         empleados.forEach(empleado -> {
             modeloTabla.addRow(
                     new Object[]{
