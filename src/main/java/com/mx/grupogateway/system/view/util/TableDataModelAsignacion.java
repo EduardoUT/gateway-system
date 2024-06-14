@@ -5,7 +5,6 @@
 package com.mx.grupogateway.system.view.util;
 
 import com.mx.grupogateway.system.modelo.ProyectoAsignado;
-import com.mx.grupogateway.system.util.IdentificadoresProyectoAsignacion;
 import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -30,9 +29,7 @@ public class TableDataModelAsignacion {
     public void cargarModeloTablaAsignaciones() {
         modeloTabla.getDataVector().clear();
         tabla.clearSelection();
-        modeloTabla.setColumnIdentifiers(
-                IdentificadoresProyectoAsignacion.values()
-        );
+        tabla.getTableHeader().setFont(tabla.getFont());
         proyectosAsignados.forEach((proyectoAsignado) -> {
             modeloTabla.addRow(
                     new Object[]{
