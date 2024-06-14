@@ -17,6 +17,8 @@ import com.mx.grupogateway.system.view.util.TableDataModelAsignacion;
 import com.mx.grupogateway.system.view.util.TableDataModelEmpleado;
 import com.mx.grupogateway.system.view.util.TableDataModelProyecto;
 import com.mx.grupogateway.system.view.util.TableMethods;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,10 +30,7 @@ import javax.swing.table.DefaultTableModel;
  * @author mcore
  */
 public final class Asignaciones extends javax.swing.JFrame {
-
-    /**
-     * Creates new form Asignaciones
-     */
+    
     private DefaultTableModel modeloTablaProyectos;
     private DefaultTableModel modeloTablaEmpleados;
     private DefaultTableModel modeloTablaAsignaciones;
@@ -46,12 +45,13 @@ public final class Asignaciones extends javax.swing.JFrame {
     private int filaTablaProyectos;
     private int filaTablaEmpleados;
     private int filaTablaAsignaciones;
-
+    private Facturacion facturacion;
+    
     public Asignaciones() {
         initComponents();
         iniciarProcesos();
     }
-
+    
     private void iniciarProcesos() {
         filaTablaProyectos = tablaProyectos.getSelectedRow();
         filaTablaEmpleados = tablaEmpleados.getSelectedRow();
@@ -67,7 +67,14 @@ public final class Asignaciones extends javax.swing.JFrame {
         TableMethods.filtrarResultados(tablaEmpleados, buscadorEmpleado, filtroEmpleado);
         TableMethods.filtrarResultados(tablaAsignaciones, buscadorAsignacion, filtroAsignacion);
     }
-
+    
+    @Override
+    public Image getIconImage() {
+        Image retValue = Toolkit.getDefaultToolkit().
+                getImage(ClassLoader.getSystemResource("Imagenes/Logo.png"));
+        return retValue;
+    }
+    
     private void cargarTablaEmpleados() {
         modeloTablaEmpleados = (DefaultTableModel) tablaEmpleados.getModel();
         List<Empleado> empleados = this.empleadoController.listar();
@@ -77,7 +84,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         tableDataModelEmpleado.cargarModeloTablaEmpleados();
         TablaColumnasAutoajustables.autoajustarColumnas(tablaEmpleados);
     }
-
+    
     private void cargarTablaProyectos() {
         modeloTablaProyectos = (DefaultTableModel) tablaProyectos.getModel();
         listaProyectos = this.proyectoController.listar();
@@ -87,7 +94,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         tableDataModelProyecto.cargarModeloTablaProyecto();
         TablaColumnasAutoajustables.autoajustarColumnas(tablaProyectos);
     }
-
+    
     private void cargarTablaProyectosAsignados() {
         modeloTablaAsignaciones = (DefaultTableModel) tablaAsignaciones.getModel();
         List<ProyectoAsignado> listaProyectosAsignados
@@ -97,25 +104,25 @@ public final class Asignaciones extends javax.swing.JFrame {
         tableDataModelAsignacion.cargarModeloTablaAsignaciones();
         TablaColumnasAutoajustables.autoajustarColumnas(tablaAsignaciones);
     }
-
+    
     private void selectionRowListener() {
         tablaProyectos.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 filaTablaProyectos = tablaProyectos.getSelectedRow();
             }
         });
-
+        
         tablaEmpleados.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 filaTablaEmpleados = tablaEmpleados.getSelectedRow();
             }
         });
-
+        
         tablaAsignaciones.getSelectionModel().addListSelectionListener(e -> {
             filaTablaAsignaciones = tablaAsignaciones.getSelectedRow();
         });
     }
-
+    
     private void guardarAsignacion() {
         if (filaTablaProyectos == -1 || filaTablaEmpleados == -1) {
             System.out.println("No se han seleccionado filas");
@@ -140,7 +147,7 @@ public final class Asignaciones extends javax.swing.JFrame {
             filtroProyectosAsignados = null;
         }
     }
-
+    
     private void actualizarAsignacion() {
         if (filaTablaEmpleados == -1 || filaTablaAsignaciones == -1) {
             System.out.println("Debe seleccionar tablas.");
@@ -163,7 +170,7 @@ public final class Asignaciones extends javax.swing.JFrame {
             }
         }
     }
-
+    
     private void llenarResumenAsignaciones() {
         String nombre = tablaAsignaciones
                 .getValueAt(filaTablaAsignaciones, 1).toString()
@@ -173,7 +180,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                 .concat(" ")
                 .concat(tablaAsignaciones
                         .getValueAt(filaTablaAsignaciones, 3).toString());
-
+        
         nombreEmpleado.setText(nombre);
         poNoCampo.setText(tablaAsignaciones
                 .getValueAt(filaTablaAsignaciones, 6).toString()
@@ -182,7 +189,14 @@ public final class Asignaciones extends javax.swing.JFrame {
         importe.setText(tablaAsignaciones.getValueAt(filaTablaAsignaciones, 7).toString());
         total.setText(tablaAsignaciones.getValueAt(filaTablaAsignaciones, 8).toString());
         statusFacturacion.setText(tablaAsignaciones.getValueAt(filaTablaAsignaciones, 9).toString());
-
+    }
+    
+    protected void setFacturacion(Facturacion facturacion) {
+        this.facturacion = facturacion;
+    }
+    
+    private Facturacion getFacturacion() {
+        return this.facturacion;
     }
 
     /**
@@ -230,17 +244,23 @@ public final class Asignaciones extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Facturación");
+        setTitle("Asignaciones");
         setBackground(new java.awt.Color(255, 255, 255));
+        setIconImage(getIconImage());
         setMinimumSize(new java.awt.Dimension(1766, 910));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
-        jTabbedPane1.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        jTabbedPane1.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jTabbedPane1.setMinimumSize(new java.awt.Dimension(1651, 95));
 
         Asignaciones.setMinimumSize(new java.awt.Dimension(1651, 854));
         Asignaciones.setName(""); // NOI18N
 
-        buscadorProyecto.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 15)); // NOI18N
+        buscadorProyecto.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         buscadorProyecto.setToolTipText("Buscar proyecto");
         buscadorProyecto.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -248,32 +268,48 @@ public final class Asignaciones extends javax.swing.JFrame {
             }
         });
 
-        filtroProyecto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID_PROYECTO", "PO_NO" }));
+        filtroProyecto.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        filtroProyecto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Id Proyecto", "Po No" }));
 
+        jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel15.setForeground(new java.awt.Color(255, 255, 255));
         jLabel15.setText("Seleccione en la tabla el proyecto que desee asignar");
 
+        tablaProyectos.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         tablaProyectos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-
+                "Id Proyecto", "Project Code", "Project Name", "Customer", "Po Status", "Po No", "Po Line No", "Shipment No", "Site Code", "Site Name", "Item Code", "Item Description", "Requested Qty", "Due Qty", "Billed Qty", "Unit Price", "Line Amount", "Unit", "Payment Terms", "Category", "Bidding Area", "Publish Date"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         tablaProyectos.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        tablaProyectos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tablaProyectos.getTableHeader().setResizingAllowed(false);
         tablaProyectos.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tablaProyectos);
 
+        buscadorEmpleado.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         buscadorEmpleado.setToolTipText("Buscar Empleado");
 
-        filtroEmpleado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID_EMPLEADO", "ID_USUARIO", "NOMBRE", "CARGO" }));
+        filtroEmpleado.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        filtroEmpleado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Id Empleado", "Id Usuario", "Nombre", "Cargo" }));
 
+        jLabel16.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel16.setForeground(new java.awt.Color(255, 255, 255));
         jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel16.setText("Seleccione en la tabla el empleado que desee asignar.");
 
+        botonGuardarAsignacion.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         botonGuardarAsignacion.setText("Guardar Asignación");
         botonGuardarAsignacion.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -283,17 +319,28 @@ public final class Asignaciones extends javax.swing.JFrame {
 
         jScrollPane4.setAutoscrolls(true);
 
-        tablaAsignaciones.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        tablaAsignaciones.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         tablaAsignaciones.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-
+                "Id Empleado", "Nombre", "Apellido Paterno", "Apellido Materno", "Fecha Asignación", "Id Proyecto", "Po No", "Importe", "Total Pagar", "Status", "Customer", "Project Name", "Po Status", "Po Line No", "Site Code", "Site Name", "Item Desc", "Requested Qty", "Due Qty", "Billed Qty", "Unit Price", "Line Amount", "Unit", "Payment Terms", "Category", "Publish Date"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         tablaAsignaciones.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        tablaAsignaciones.setColumnSelectionAllowed(true);
+        tablaAsignaciones.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tablaAsignaciones.getTableHeader().setResizingAllowed(false);
+        tablaAsignaciones.getTableHeader().setReorderingAllowed(false);
         tablaAsignaciones.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tablaAsignacionesMouseClicked(evt);
@@ -305,9 +352,14 @@ public final class Asignaciones extends javax.swing.JFrame {
             }
         });
         jScrollPane4.setViewportView(tablaAsignaciones);
+        tablaAsignaciones.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-        filtroAsignacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID_PROYECTO", "ID_EMPLEADO", "NOMBRE", "PO_NO" }));
+        filtroAsignacion.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        filtroAsignacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Id Proyecto", "Id Empleado", "Nombre", "Po No" }));
 
+        buscadorAsignacion.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        botonActualizarAsignacion.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         botonActualizarAsignacion.setText("Actualizar Asignación");
         botonActualizarAsignacion.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -315,28 +367,41 @@ public final class Asignaciones extends javax.swing.JFrame {
             }
         });
 
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel1.setText("Asignaciones");
 
         jScrollPane2.setAutoscrolls(true);
         jScrollPane2.setPreferredSize(new java.awt.Dimension(300, 402));
 
+        tablaEmpleados.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         tablaEmpleados.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-
+                "Id Empleado", "Nombre", "Apellido Paterno", "Apellido Materno", "Id Usuario", "Cargo"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tablaEmpleados.setColumnSelectionAllowed(true);
         tablaEmpleados.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tablaEmpleados.getTableHeader().setResizingAllowed(false);
         tablaEmpleados.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(tablaEmpleados);
+        tablaEmpleados.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         jPanel3.setBackground(new java.awt.Color(0, 153, 153));
         jPanel3.setPreferredSize(new java.awt.Dimension(370, 227));
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("PO NO:");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -346,6 +411,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 35, 5, 5);
         jPanel3.add(jLabel3, gridBagConstraints);
 
+        poNoCampo.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         poNoCampo.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -355,6 +421,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 35);
         jPanel3.add(poNoCampo, gridBagConstraints);
 
+        importe.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         importe.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -364,6 +431,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 35);
         jPanel3.add(importe, gridBagConstraints);
 
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setText("Importe:");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -373,6 +441,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 35, 5, 5);
         jPanel3.add(jLabel8, gridBagConstraints);
 
+        total.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         total.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -382,6 +451,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 35);
         jPanel3.add(total, gridBagConstraints);
 
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Total:");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -391,6 +461,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 35, 5, 5);
         jPanel3.add(jLabel9, gridBagConstraints);
 
+        statusFacturacion.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         statusFacturacion.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -401,6 +472,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 35);
         jPanel3.add(statusFacturacion, gridBagConstraints);
 
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(255, 255, 255));
         jLabel10.setText("Status Facturación:");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -410,6 +482,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 35, 5, 5);
         jPanel3.add(jLabel10, gridBagConstraints);
 
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Fecha Asignacion:");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -419,6 +492,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 35, 5, 5);
         jPanel3.add(jLabel6, gridBagConstraints);
 
+        fechaAsignacion.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         fechaAsignacion.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -428,6 +502,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 35);
         jPanel3.add(fechaAsignacion, gridBagConstraints);
 
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Nombre Empleado:");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -437,6 +512,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 35, 5, 5);
         jPanel3.add(jLabel4, gridBagConstraints);
 
+        nombreEmpleado.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         nombreEmpleado.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -447,6 +523,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         jPanel3.add(nombreEmpleado, gridBagConstraints);
 
         jLabel7.setBackground(new java.awt.Color(0, 0, 0));
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel7.setText("Resumen orden de compra.");
@@ -468,7 +545,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                                 .addComponent(filtroAsignacion, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(AsignacionesLayout.createSequentialGroup()
                                 .addComponent(jLabel1)
-                                .addGap(0, 1100, Short.MAX_VALUE))
+                                .addGap(0, 1096, Short.MAX_VALUE))
                             .addComponent(jScrollPane4))
                         .addGap(18, 18, 18)
                         .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -518,8 +595,8 @@ public final class Asignaciones extends javax.swing.JFrame {
                         .addComponent(jLabel15)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 429, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 429, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(AsignacionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(AsignacionesLayout.createSequentialGroup()
@@ -535,7 +612,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(47, 47, 47))
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("Asignacion de Proyectos", Asignaciones);
@@ -595,6 +672,11 @@ public final class Asignaciones extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_botonActualizarAsignacionMouseClicked
 
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        evt.getID();
+        getFacturacion().setVisible(true);
+    }//GEN-LAST:event_formWindowClosed
+
     /**
      * @param args the command line arguments
      */
@@ -639,7 +721,7 @@ public final class Asignaciones extends javax.swing.JFrame {
     private javax.swing.JTextField statusFacturacion;
     private javax.swing.JTable tablaAsignaciones;
     private javax.swing.JTable tablaEmpleados;
-    private javax.swing.JTable tablaProyectos;
+    protected javax.swing.JTable tablaProyectos;
     private javax.swing.JTextField total;
     // End of variables declaration//GEN-END:variables
 }
