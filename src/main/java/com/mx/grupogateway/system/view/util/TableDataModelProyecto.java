@@ -27,7 +27,7 @@ public class TableDataModelProyecto {
         this.proyectos = proyectos;
     }
 
-    public void cargarTablaProyectos() {
+    public void cargarModeloTablaProyecto() {
         modeloTabla.getDataVector().clear();
         tabla.clearSelection();
         modeloTabla = (DefaultTableModel) tabla.getModel();
@@ -62,6 +62,5 @@ public class TableDataModelProyecto {
                     }
             );
         });
-
     }
 }
