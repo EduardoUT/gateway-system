@@ -9,6 +9,8 @@ import com.mx.grupogateway.system.controller.ExcelController;
 import com.mx.grupogateway.system.modelo.Excel;
 import com.mx.grupogateway.system.modelo.Proyecto;
 import com.mx.grupogateway.system.view.util.ExcelFileChooser;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 import javax.swing.JFileChooser;
@@ -22,13 +24,21 @@ public class ImportarExcel extends javax.swing.JFrame {
     private static Excel excel;
     private ExcelController excelController;
     private static LinkedList<Proyecto> listaProyectos;
-
+    private Facturacion facturacion;
+    
     /**
      * Creates new form Facturacion
      */
     public ImportarExcel() {
         initComponents();
         lockButtonImportExcel();
+    }
+    
+    @Override
+    public Image getIconImage() {
+        Image retValue = Toolkit.getDefaultToolkit().
+                getImage(ClassLoader.getSystemResource("Imagenes/Logo.png"));
+        return retValue;
     }
 
     private void lockButtonImportExcel() {
@@ -37,6 +47,14 @@ public class ImportarExcel extends javax.swing.JFrame {
         } else {
             botonImportarExcel.setVisible(true);
         }
+    }
+    
+    protected void setFacturacion(Facturacion facturacion) {
+        this.facturacion = facturacion;
+    }
+    
+    private Facturacion getFacturacion() {
+        return this.facturacion;
     }
 
     /**
@@ -60,7 +78,13 @@ public class ImportarExcel extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Importar hoja de Excel");
+        setIconImage(getIconImage());
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         tituloSeleccionArchivo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         tituloSeleccionArchivo.setText("Seleccione el archivo Excel:");
@@ -191,6 +215,11 @@ public class ImportarExcel extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_botonExaminarArchivoMouseClicked
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        evt.getID();
+        getFacturacion().setVisible(true);
+    }//GEN-LAST:event_formWindowClosed
 
     /**
      * @param args the command line arguments
