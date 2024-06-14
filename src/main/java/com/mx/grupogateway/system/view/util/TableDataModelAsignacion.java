@@ -27,7 +27,7 @@ public class TableDataModelAsignacion {
         this.proyectosAsignados = proyectosAsignados;
     }
 
-    public void cargarTablaAsignaciones() {
+    public void cargarModeloTablaAsignaciones() {
         modeloTabla.getDataVector().clear();
         tabla.clearSelection();
         modeloTabla.setColumnIdentifiers(
@@ -67,5 +67,4 @@ public class TableDataModelAsignacion {
             );
         });
     }
-
 }
