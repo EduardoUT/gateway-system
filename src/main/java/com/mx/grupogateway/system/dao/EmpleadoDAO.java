@@ -69,7 +69,7 @@ public class EmpleadoDAO {
     public List<Empleado> listar() {
         List<Empleado> resultado = new ArrayList<>();
         String sql = "SELECT ID_EMPLEADO, NOMBRE, APE_PAT, APE_MAT, ID_USUARIO, "
-                + "NOMBRE_CATEGORIA "
+                + "NOMBRE_CATEGORIA, EMPLEADOS.ID_CATEGORIA_EMPLEADO "
                 + "FROM CATEGORIA_EMPLEADO "
                 + "INNER JOIN EMPLEADOS ON "
                 + "CATEGORIA_EMPLEADO.ID_CATEGORIA_EMPLEADO = "
@@ -85,7 +85,10 @@ public class EmpleadoDAO {
                                     resultSet.getString("APE_PAT"),
                                     resultSet.getString("APE_MAT"),
                                     new Usuario(resultSet.getString("ID_USUARIO")),
-                                    new EmpleadoCategoria(resultSet.getString("NOMBRE_CATEGORIA"))
+                                    new EmpleadoCategoria(
+                                            resultSet.getString("ID_CATEGORIA_EMPLEADO"),
+                                            resultSet.getString("NOMBRE_CATEGORIA")
+                                    )
                             )
                     );
                 }
