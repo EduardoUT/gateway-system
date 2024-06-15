@@ -27,8 +27,7 @@ public class TableDataModelEmpleado {
     }
 
     public void cargarModeloTablaEmpleados() {
-        modeloTabla.getDataVector().clear();
-        tabla.clearSelection();
+        TableMethods.limpiarTabla(modeloTabla, tabla);
         tabla.getTableHeader().setFont(tabla.getFont());
         empleados.forEach(empleado -> {
             modeloTabla.addRow(
