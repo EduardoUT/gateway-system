@@ -27,8 +27,7 @@ public class TableDataModelAsignacion {
     }
 
     public void cargarModeloTablaAsignaciones() {
-        modeloTabla.getDataVector().clear();
-        tabla.clearSelection();
+        TableMethods.limpiarTabla(modeloTabla, tabla);
         tabla.getTableHeader().setFont(tabla.getFont());
         proyectosAsignados.forEach((proyectoAsignado) -> {
             modeloTabla.addRow(
