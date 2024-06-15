@@ -53,8 +53,8 @@ public class EmpleadoCategoriaDAO {
      * @return List de tipo EmpleadoCargo de la BD.
      */
     public List<EmpleadoCategoria> listar() {
-        List<EmpleadoCategoria> resultado = new ArrayList<>();
-        String sql = "SELECT ID_CATEGORIA, NOMBRE_CATEGORIA "
+        List<EmpleadoCategoria> empleadoCategorias = new ArrayList<>();
+        String sql = "SELECT ID_CATEGORIA_EMPLEADO, NOMBRE_CATEGORIA "
                 + "FROM CATEGORIA_EMPLEADO";
 
         try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
@@ -62,12 +62,12 @@ public class EmpleadoCategoriaDAO {
             try (ResultSet resultSet = preparedStatement.getResultSet();) {
                 while (resultSet.next()) {
                     EmpleadoCategoria fila = new EmpleadoCategoria(
-                            resultSet.getString("ID_CATEGORIA"),
+                            resultSet.getString("ID_CATEGORIA_EMPLEADO"),
                             resultSet.getString("NOMBRE_CATEGORIA")
                     );
-                    resultado.add(fila);
+                    empleadoCategorias.add(fila);
                 }
-                return resultado;
+                return empleadoCategorias;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
