@@ -27,8 +27,7 @@ public class TableDataModelProyecto {
     }
 
     public void cargarModeloTablaProyecto() {
-        modeloTabla.getDataVector().clear();
-        tabla.clearSelection();
+        TableMethods.limpiarTabla(modeloTabla, tabla);
         modeloTabla = (DefaultTableModel) tabla.getModel();
         tabla.getTableHeader().setFont(tabla.getFont());
         proyectos.forEach((proyecto) -> {
