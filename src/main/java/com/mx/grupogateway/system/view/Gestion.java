@@ -4,6 +4,7 @@
  */
 package com.mx.grupogateway.system.view;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
 import com.mx.grupogateway.system.controller.EmpleadoCategoriaController;
 import com.mx.grupogateway.system.controller.EmpleadoController;
 import com.mx.grupogateway.system.controller.UsuarioController;
@@ -11,12 +12,16 @@ import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.EmpleadoCategoria;
 import com.mx.grupogateway.system.modelo.Usuario;
 import com.mx.grupogateway.system.view.util.TablaColumnasAutoajustables;
-import com.mx.grupogateway.system.view.util.TableCommonMethods;
+import com.mx.grupogateway.system.view.util.TableDataModelEmpleado;
+import com.mx.grupogateway.system.view.util.TableDataModelUsuario;
+import com.mx.grupogateway.system.view.util.TableMethods;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.List;
-import java.util.Optional;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -28,31 +33,40 @@ public class Gestion extends javax.swing.JFrame {
     private DefaultTableModel modeloTablaEmpleado;
     private DefaultTableModel modeloTablaUsuario;
     private DefaultComboBoxModel modeloComboBoxCargoEmpleado;
-    private final TablaColumnasAutoajustables tablaColumnasAutoajustables;
-    private final EmpleadoController empleadoController;
-    private final EmpleadoCategoriaController empleadoCargoController;
-    private final UsuarioController usuarioController;
+    private TableDataModelEmpleado tableDataModelEmpleado;
+    private TableDataModelUsuario tableDataModelUsuario;
+    private EmpleadoController empleadoController;
+    private EmpleadoCategoriaController empleadoCargoController;
+    private UsuarioController usuarioController;
 
     /**
      * Creates new form Gestion
      */
     public Gestion() {
         initComponents();
+        iniciarProcesos();
+    }
+
+    private void iniciarProcesos() {
         this.empleadoController = new EmpleadoController();
         this.empleadoCargoController = new EmpleadoCategoriaController();
         this.usuarioController = new UsuarioController();
-        this.tablaColumnasAutoajustables = new TablaColumnasAutoajustables();
         configurarFormularioEmpleado();
+        cargarTablaUsuario();
     }
 
     private void configurarFormularioEmpleado() {
         cargarTablaEmpleado();
-        cargarTablaUsuario();
-        tablaColumnasAutoajustables.autoajustarColumnas(tablaUsuario);
-        tablaColumnasAutoajustables.autoajustarColumnas(tablaEmpleado);
         botonGuardar.setVisible(false);
         botonCancelarNuevoRegistro.setVisible(false);
         configurarComboBoxEmpleado();
+    }
+
+    @Override
+    public Image getIconImage() {
+        Image retValue = Toolkit.getDefaultToolkit().
+                getImage(ClassLoader.getSystemResource("Imagenes/Logo.png"));
+        return retValue;
     }
 
     /**
@@ -80,8 +94,6 @@ public class Gestion extends javax.swing.JFrame {
             botonGuardar.setVisible(false);
             botonCancelarNuevoRegistro.setVisible(false);
             limpiarCamposFormularioEmpleado();
-            TableCommonMethods.limpiarTabla(
-                    modeloTablaEmpleado, tablaEmpleado);
             cargarTablaEmpleado();
         } else {
             JOptionPane.showMessageDialog(
@@ -97,19 +109,12 @@ public class Gestion extends javax.swing.JFrame {
      */
     private void cargarTablaEmpleado() {
         modeloTablaEmpleado = (DefaultTableModel) tablaEmpleado.getModel();
-        List<Empleado> listaEmpleado = this.empleadoController.listar();
-        listaEmpleado.forEach((empleado) -> {
-            modeloTablaEmpleado.addRow(
-                    new Object[]{
-                        empleado.getIdEmpleado(),
-                        empleado.getNombre(),
-                        empleado.getApellidoPaterno(),
-                        empleado.getApellidoMaterno(),
-                        empleado.getEmpleadoCategoria().getCategoriaId(),
-                        empleado.getUsuario().getIdUsuario()
-                    }
-            );
-        });
+        List<Empleado> empleados = this.empleadoController.listar();
+        tableDataModelEmpleado = new TableDataModelEmpleado(
+                modeloTablaEmpleado, tablaEmpleado, empleados
+        );
+        tableDataModelEmpleado.cargarModeloTablaEmpleados();
+        TablaColumnasAutoajustables.autoajustarColumnas(tablaEmpleado);
     }
 
     /**
@@ -120,19 +125,21 @@ public class Gestion extends javax.swing.JFrame {
         if (sonCamposValidosEmpleado()) {
 
             int lineasActualizadas;
-            lineasActualizadas = this.empleadoController.modificar(
-                    TableCommonMethods.obtenerUUID(tablaEmpleado, 0),
-                    campoNombre.getText(),
-                    campoApellidoP.getText(),
-                    campoApellidoM.getText(),
-                    String.valueOf(empleadoCargos.getSelectedIndex())
-            );
+            lineasActualizadas = this.empleadoController
+                    .modificar(
+                            TableMethods
+                                    .obtenerUUID(tablaEmpleado, 0),
+                            campoNombre.getText(),
+                            campoApellidoP.getText(),
+                            campoApellidoM.getText(),
+                            String.valueOf(
+                                    empleadoCargos.getSelectedIndex()
+                            )
+                    );
 
             JOptionPane.showMessageDialog(null, lineasActualizadas
                     + " registro actualizado exitosamente.");
             limpiarCamposFormularioEmpleado();
-            TableCommonMethods.limpiarTabla(
-                    modeloTablaEmpleado, tablaEmpleado);
             cargarTablaEmpleado();
         } else {
             JOptionPane.showMessageDialog(
@@ -148,11 +155,11 @@ public class Gestion extends javax.swing.JFrame {
      */
     private void eliminarEmpleado() {
         int cantidadEliminada = this.empleadoController
-                .eliminar(TableCommonMethods.obtenerUUID(tablaEmpleado, 0));
+                .eliminar(TableMethods.obtenerUUID(tablaEmpleado, 0));
         JOptionPane.showMessageDialog(null, cantidadEliminada
                 + " registro eliminado exitosamente.");
         limpiarCamposFormularioEmpleado();
-        TableCommonMethods.limpiarTabla(modeloTablaEmpleado, tablaEmpleado);
+        TableMethods.limpiarTabla(modeloTablaEmpleado, tablaEmpleado);
         cargarTablaEmpleado();
     }
 
@@ -160,8 +167,8 @@ public class Gestion extends javax.swing.JFrame {
      * Pasa los registros de la tablaEmpleado al formulario para ser editados.
      */
     private void llenarCamposFormularioFromTablaEmpleado() {
-        int fila = TableCommonMethods.indiceFilaSeleccionada(tablaEmpleado);
-        if (TableCommonMethods.filaEstaSeleccionada(tablaEmpleado)) {
+        int fila = TableMethods.indiceFila(tablaEmpleado);
+        if (TableMethods.filaEstaSeleccionada(tablaEmpleado)) {
             campoNombre.setText(
                     String.valueOf(tablaEmpleado.getValueAt(fila, 1))
             );
@@ -171,10 +178,8 @@ public class Gestion extends javax.swing.JFrame {
             campoApellidoM.setText(
                     String.valueOf(tablaEmpleado.getValueAt(fila, 3))
             );
-            empleadoCargos.setSelectedIndex(
-                    Integer.valueOf(tablaEmpleado.getValueAt(fila, 4)
-                            .toString())
-            );
+            empleadoCargos.setSelectedItem(tablaEmpleado.getValueAt(fila, 5)
+                    .toString());
         }
     }
 
@@ -206,14 +211,11 @@ public class Gestion extends javax.swing.JFrame {
      */
     private void configurarComboBoxEmpleado() {
         modeloComboBoxCargoEmpleado = (DefaultComboBoxModel) empleadoCargos.getModel();
-        modeloComboBoxCargoEmpleado.addElement(new EmpleadoCategoria("", "Seleccione un Cargo")
-        );
-
+        modeloComboBoxCargoEmpleado.addElement("Seleccione un cargo");
         List<EmpleadoCategoria> listaCargos = this.empleadoCargoController
                 .listar();
-
         listaCargos.forEach((empleadoCargo) -> {
-            modeloComboBoxCargoEmpleado.addElement(empleadoCargo);
+            modeloComboBoxCargoEmpleado.addElement(empleadoCargo.getNombreCategoria());
         });
     }
 
@@ -223,16 +225,10 @@ public class Gestion extends javax.swing.JFrame {
      */
     private void cargarTablaUsuario() {
         modeloTablaUsuario = (DefaultTableModel) tablaUsuario.getModel();
-        List<Usuario> listaUsuario = this.usuarioController.listar();
-        listaUsuario.forEach((usuario) -> {
-            modeloTablaUsuario.addRow(
-                    new Object[]{
-                        usuario.getIdUsuario(),
-                        usuario.getNombreUsuario(),
-                        usuario.getClaveSeguridad()
-                    }
-            );
-        });
+        List<Usuario> usuarios = this.usuarioController.listar();
+        tableDataModelUsuario = new TableDataModelUsuario(modeloTablaUsuario, tablaUsuario, usuarios);
+        tableDataModelUsuario.cargarModeloTablaUsuario();
+        TablaColumnasAutoajustables.autoajustarColumnas(tablaUsuario);
     }
 
     /**
@@ -241,12 +237,12 @@ public class Gestion extends javax.swing.JFrame {
      */
     private void eliminarUsuario() {
         int cantidadEliminada = this.usuarioController
-                .eliminar(String.valueOf(TableCommonMethods
+                .eliminar(String.valueOf(TableMethods
                         .obtenerID(tablaUsuario, 0)));
         JOptionPane.showMessageDialog(null, cantidadEliminada
                 + " registro eliminado exitosamente.");
-        TableCommonMethods.limpiarTabla(modeloTablaUsuario, tablaUsuario);
-        TableCommonMethods.limpiarTabla(modeloTablaEmpleado, tablaEmpleado);
+        TableMethods.limpiarTabla(modeloTablaUsuario, tablaUsuario);
+        TableMethods.limpiarTabla(modeloTablaEmpleado, tablaEmpleado);
         cargarTablaUsuario();
         cargarTablaEmpleado();
     }
@@ -285,6 +281,9 @@ public class Gestion extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Getsión de Personal");
+        setIconImage(getIconImage());
+        setResizable(false);
 
         tablaUsuario.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -340,7 +339,7 @@ public class Gestion extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "Nombre", "Apellido Paterno", "Apellido Materno", "ID Cargo", "ID Usuario"
+                "ID", "Nombre", "Apellido Paterno", "Apellido Materno", "Id Usuario", "Cargo"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -351,12 +350,15 @@ public class Gestion extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        tablaEmpleado.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-        tablaEmpleado.setFocusable(false);
         tablaEmpleado.getTableHeader().setReorderingAllowed(false);
         tablaEmpleado.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tablaEmpleadoMouseClicked(evt);
+            }
+        });
+        tablaEmpleado.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tablaEmpleadoKeyReleased(evt);
             }
         });
         jScrollPane1.setViewportView(tablaEmpleado);
@@ -406,27 +408,30 @@ public class Gestion extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(empleadoCargos, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(1, 1, 1)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4)
-                            .addComponent(campoNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
-                            .addComponent(campoApellidoP)
-                            .addComponent(campoApellidoM)))
-                    .addComponent(jLabel5)
-                    .addComponent(botonCancelarNuevoRegistro, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
-                    .addComponent(botonNuevoRegistro, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(empleadoCargos, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(1, 1, 1)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel4)
+                                    .addComponent(campoNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
+                                    .addComponent(campoApellidoP)
+                                    .addComponent(campoApellidoM)))
+                            .addComponent(jLabel5)
+                            .addComponent(botonCancelarNuevoRegistro, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
+                            .addComponent(botonNuevoRegistro, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(botonGuardar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 2, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(botonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(38, 38, 38)
-                        .addComponent(botonActualizar))
-                    .addComponent(botonGuardar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(botonActualizar)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -499,87 +504,79 @@ public class Gestion extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonEliminarUsuarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonEliminarUsuarioMouseClicked
-        if (TableCommonMethods.filaEstaSeleccionada(tablaUsuario)) {
-            eliminarUsuario();
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            if (TableMethods.filaEstaSeleccionada(tablaUsuario)) {
+                eliminarUsuario();
+            }
         }
     }//GEN-LAST:event_botonEliminarUsuarioMouseClicked
 
     private void botonCancelarNuevoRegistroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonCancelarNuevoRegistroMouseClicked
-        evt.consume();
-        limpiarCamposFormularioEmpleado();
-        botonGuardar.setVisible(false);
-        botonCancelarNuevoRegistro.setVisible(false);
-        tablaEmpleado.setVisible(true);
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            limpiarCamposFormularioEmpleado();
+            botonGuardar.setVisible(false);
+            botonCancelarNuevoRegistro.setVisible(false);
+            tablaEmpleado.setVisible(true);
+        }
     }//GEN-LAST:event_botonCancelarNuevoRegistroMouseClicked
 
     private void botonNuevoRegistroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonNuevoRegistroMouseClicked
-        evt.consume();
-        limpiarCamposFormularioEmpleado();
-        TableCommonMethods.limpiarSeleccion(tablaEmpleado);
-        botonGuardar.setVisible(true);
-        botonCancelarNuevoRegistro.setVisible(true);
-        tablaEmpleado.setVisible(false);
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            limpiarCamposFormularioEmpleado();
+            TableMethods.limpiarSeleccion(tablaEmpleado);
+            botonGuardar.setVisible(true);
+            botonCancelarNuevoRegistro.setVisible(true);
+        }
     }//GEN-LAST:event_botonNuevoRegistroMouseClicked
 
     private void botonEliminarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonEliminarMouseClicked
-        evt.consume();
-        if (TableCommonMethods.filaEstaSeleccionada(tablaEmpleado)) {
-            eliminarEmpleado();
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            if (TableMethods.filaEstaSeleccionada(tablaEmpleado)) {
+                eliminarEmpleado();
+            }
         }
     }//GEN-LAST:event_botonEliminarMouseClicked
 
     private void botonActualizarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonActualizarMouseClicked
-        evt.consume();
-        if (TableCommonMethods.filaEstaSeleccionada(tablaEmpleado)) {
-            actualizarEmpleado();
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            if (TableMethods.filaEstaSeleccionada(tablaEmpleado)) {
+                actualizarEmpleado();
+            }
         }
     }//GEN-LAST:event_botonActualizarMouseClicked
 
     private void botonGuardarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonGuardarMouseClicked
-        evt.consume();
-        guardarEmpleado();
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            guardarEmpleado();
+        }
     }//GEN-LAST:event_botonGuardarMouseClicked
 
     private void tablaEmpleadoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaEmpleadoMouseClicked
-        evt.consume();
-        llenarCamposFormularioFromTablaEmpleado();
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            llenarCamposFormularioFromTablaEmpleado();
+        }
     }//GEN-LAST:event_tablaEmpleadoMouseClicked
+
+    private void tablaEmpleadoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tablaEmpleadoKeyReleased
+        if ((evt.getKeyCode() == KeyEvent.VK_UP)
+                || (evt.getKeyCode() == KeyEvent.VK_DOWN)) {
+            llenarCamposFormularioFromTablaEmpleado();
+        }
+    }//GEN-LAST:event_tablaEmpleadoKeyReleased
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Gestion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Gestion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Gestion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Gestion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+        FlatDarculaLaf.setup();
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Gestion().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new Gestion().setVisible(true);
         });
     }
 
