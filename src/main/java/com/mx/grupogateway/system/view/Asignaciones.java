@@ -82,7 +82,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                 modeloTablaEmpleados, tablaEmpleados, empleados
         );
         tableDataModelEmpleado.cargarModeloTablaEmpleados();
-        TablaColumnasAutoajustables.autoajustarColumnas(tablaEmpleados);
+        TablaColumnasAutoajustables.autoAjustarColumnas(tablaEmpleados);
     }
     
     private void cargarTablaProyectos() {
@@ -92,7 +92,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                 modeloTablaProyectos, tablaProyectos, listaProyectos
         );
         tableDataModelProyecto.cargarModeloTablaProyecto();
-        TablaColumnasAutoajustables.autoajustarColumnas(tablaProyectos);
+        TablaColumnasAutoajustables.autoAjustarColumnas(tablaProyectos);
     }
     
     private void cargarTablaProyectosAsignados() {
@@ -102,7 +102,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         tableDataModelAsignacion = new TableDataModelAsignacion(
                 modeloTablaAsignaciones, tablaAsignaciones, listaProyectosAsignados);
         tableDataModelAsignacion.cargarModeloTablaAsignaciones();
-        TablaColumnasAutoajustables.autoajustarColumnas(tablaAsignaciones);
+        TablaColumnasAutoajustables.autoAjustarColumnas(tablaAsignaciones);
     }
     
     private void selectionRowListener() {
