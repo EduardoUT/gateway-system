@@ -40,7 +40,7 @@ public class TablaColumnasAutoajustables {
      *
      * @param tabla JTable a ser ajustada.
      */
-    public static void autoajustarColumnas(JTable tabla) {
+    public static void autoAjustarColumnas(JTable tabla) {
         for (int indiceColumna = 0; indiceColumna < tabla.getColumnCount();
                 indiceColumna++) {
             configurarAutoajuste(tabla, indiceColumna, MARGEN_COLUMNA);
