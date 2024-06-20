@@ -80,14 +80,12 @@ public class Gestion extends javax.swing.JFrame {
                     campoApellidoP.getText(),
                     campoApellidoM.getText()
             );
-
             EmpleadoCategoria empleadoCargo
                     = (EmpleadoCategoria) empleadoCargos.getSelectedItem();
             this.empleadoController.guardar(
                     empleado,
                     empleadoCargo.getCategoriaId()
             );
-
             JOptionPane.showMessageDialog(null, "Empleado guardado "
                     + "éxitosamente.");
             tablaEmpleado.setVisible(true);
@@ -114,7 +112,7 @@ public class Gestion extends javax.swing.JFrame {
                 modeloTablaEmpleado, tablaEmpleado, empleados
         );
         tableDataModelEmpleado.cargarModeloTablaEmpleados();
-        TablaColumnasAutoajustables.autoajustarColumnas(tablaEmpleado);
+        TablaColumnasAutoajustables.autoAjustarColumnas(tablaEmpleado);
     }
 
     /**
@@ -123,7 +121,6 @@ public class Gestion extends javax.swing.JFrame {
      */
     private void actualizarEmpleado() {
         if (sonCamposValidosEmpleado()) {
-
             int lineasActualizadas;
             lineasActualizadas = this.empleadoController
                     .modificar(
@@ -136,7 +133,6 @@ public class Gestion extends javax.swing.JFrame {
                                     empleadoCargos.getSelectedIndex()
                             )
                     );
-
             JOptionPane.showMessageDialog(null, lineasActualizadas
                     + " registro actualizado exitosamente.");
             limpiarCamposFormularioEmpleado();
@@ -159,7 +155,6 @@ public class Gestion extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null, cantidadEliminada
                 + " registro eliminado exitosamente.");
         limpiarCamposFormularioEmpleado();
-        TableMethods.limpiarTabla(modeloTablaEmpleado, tablaEmpleado);
         cargarTablaEmpleado();
     }
 
@@ -228,7 +223,7 @@ public class Gestion extends javax.swing.JFrame {
         List<Usuario> usuarios = this.usuarioController.listar();
         tableDataModelUsuario = new TableDataModelUsuario(modeloTablaUsuario, tablaUsuario, usuarios);
         tableDataModelUsuario.cargarModeloTablaUsuario();
-        TablaColumnasAutoajustables.autoajustarColumnas(tablaUsuario);
+        TablaColumnasAutoajustables.autoAjustarColumnas(tablaUsuario);
     }
 
     /**
@@ -241,8 +236,6 @@ public class Gestion extends javax.swing.JFrame {
                         .obtenerID(tablaUsuario, 0)));
         JOptionPane.showMessageDialog(null, cantidadEliminada
                 + " registro eliminado exitosamente.");
-        TableMethods.limpiarTabla(modeloTablaUsuario, tablaUsuario);
-        TableMethods.limpiarTabla(modeloTablaEmpleado, tablaEmpleado);
         cargarTablaUsuario();
         cargarTablaEmpleado();
     }
@@ -293,7 +286,9 @@ public class Gestion extends javax.swing.JFrame {
                 "ID", "Nombre de Usuario", "Clave de Seguridad"
             }
         ));
+        tablaUsuario.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         tablaUsuario.setFocusable(false);
+        tablaUsuario.getTableHeader().setResizingAllowed(false);
         tablaUsuario.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(tablaUsuario);
 
@@ -339,7 +334,7 @@ public class Gestion extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "Nombre", "Apellido Paterno", "Apellido Materno", "Id Usuario", "Cargo"
+                "Id Empleado", "Nombre", "Apellido Paterno", "Apellido Materno", "Id Usuario", "Cargo"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -350,6 +345,9 @@ public class Gestion extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tablaEmpleado.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        tablaEmpleado.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tablaEmpleado.getTableHeader().setResizingAllowed(false);
         tablaEmpleado.getTableHeader().setReorderingAllowed(false);
         tablaEmpleado.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -473,8 +471,18 @@ public class Gestion extends javax.swing.JFrame {
         jTabbedPane1.addTab("Registro Empleado", jPanel1);
 
         jButton1.setText("Perfil");
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
 
         jButton2.setText("Cerrar Sesión");
+        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton2MouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -520,7 +528,7 @@ public class Gestion extends javax.swing.JFrame {
             limpiarCamposFormularioEmpleado();
             botonGuardar.setVisible(false);
             botonCancelarNuevoRegistro.setVisible(false);
-            tablaEmpleado.setVisible(true);
+            tablaEmpleado.setEnabled(true);
         }
     }//GEN-LAST:event_botonCancelarNuevoRegistroMouseClicked
 
@@ -530,6 +538,8 @@ public class Gestion extends javax.swing.JFrame {
             TableMethods.limpiarSeleccion(tablaEmpleado);
             botonGuardar.setVisible(true);
             botonCancelarNuevoRegistro.setVisible(true);
+            tablaEmpleado.setEnabled(false);
+            campoNombre.requestFocus();
         }
     }//GEN-LAST:event_botonNuevoRegistroMouseClicked
 
@@ -567,6 +577,19 @@ public class Gestion extends javax.swing.JFrame {
             llenarCamposFormularioFromTablaEmpleado();
         }
     }//GEN-LAST:event_tablaEmpleadoKeyReleased
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            
+        }
+    }//GEN-LAST:event_jButton1MouseClicked
+
+    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            this.dispose();
+            new Login().setVisible(true);
+        }
+    }//GEN-LAST:event_jButton2MouseClicked
 
     /**
      * @param args the command line arguments
