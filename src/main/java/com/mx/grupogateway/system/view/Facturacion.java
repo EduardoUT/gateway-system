@@ -54,7 +54,7 @@ public final class Facturacion extends javax.swing.JFrame {
                 modeloTablaProyectos, tablaProyectos, listaProyecto
         );
         tableDataModelProyecto.cargarModeloTablaProyecto();
-        TablaColumnasAutoajustables.autoajustarColumnas(tablaProyectos);
+        TablaColumnasAutoajustables.autoAjustarColumnas(tablaProyectos);
     }
 
     private Object obtenerValorTabla(int fila, int columna) {
