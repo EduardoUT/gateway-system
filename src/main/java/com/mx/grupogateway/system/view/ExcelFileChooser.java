@@ -10,6 +10,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * Ventana de explorador de archivos Excel.
+ *
  * @author eduar
  */
 public class ExcelFileChooser {
@@ -54,5 +55,4 @@ public class ExcelFileChooser {
             this.rutaArchivo = archivo.getAbsolutePath();
         }
     }
-
 }
