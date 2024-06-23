@@ -8,12 +8,11 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.ExcelController;
 import com.mx.grupogateway.system.modelo.Excel;
 import com.mx.grupogateway.system.modelo.Proyecto;
-import com.mx.grupogateway.system.view.util.ExcelFileChooser;
-import java.awt.Image;
-import java.awt.Toolkit;
+import com.mx.grupogateway.system.view.util.IconoVentana;
 import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 
 /**
  *
@@ -24,21 +23,23 @@ public class ImportarExcel extends javax.swing.JFrame {
     private static Excel excel;
     private ExcelController excelController;
     private static LinkedList<Proyecto> listaProyectos;
-    private Facturacion facturacion;
-    
+    private JFrame jFrame;
+
     /**
      * Creates new form Facturacion
      */
     public ImportarExcel() {
         initComponents();
+        iniciarProcesos();
+    }
+
+    private void iniciarProcesos() {
+        cargarIconoVentana();
         lockButtonImportExcel();
     }
-    
-    @Override
-    public Image getIconImage() {
-        Image retValue = Toolkit.getDefaultToolkit().
-                getImage(ClassLoader.getSystemResource("Imagenes/Logo.png"));
-        return retValue;
+
+    private void cargarIconoVentana() {
+        this.setIconImage(IconoVentana.getIconoVentana());
     }
 
     private void lockButtonImportExcel() {
@@ -48,13 +49,49 @@ public class ImportarExcel extends javax.swing.JFrame {
             botonImportarExcel.setVisible(true);
         }
     }
-    
-    protected void setFacturacion(Facturacion facturacion) {
-        this.facturacion = facturacion;
+
+    /**
+     * Se encarga de abrir el explorador de archivos específicos de Excel,
+     * posteriormente importa la información en una Lista de objetos Excel
+     * mientras informa al usuario el progreso.
+     */
+    private void ejecutarSwingWorkerImportarArchivoExcel() {
+        ExcelFileChooser excelFileChooser = new ExcelFileChooser(
+                new JFileChooser(".")
+        );
+        if (!excelFileChooser.getRutaArchivo().isEmpty()) {
+            nombreArchivo.setText(excelFileChooser.getRutaArchivo());
+            excel = new Excel(excelFileChooser.getRutaArchivo(),
+                    excelFileChooser.getOptionValueSelected(),
+                    progressBar, textoProgreso
+            );
+            excel.execute();
+            listaProyectos = excel.getDatos();
+            lockButtonImportExcel();
+        }
     }
-    
-    private Facturacion getFacturacion() {
-        return this.facturacion;
+
+    /**
+     * Cuando la lista contiene la información extraida del archivo, informa al
+     * usuario el progreso y envía la información a la Base de Datos.
+     */
+    private void ejecutarSwingWorkerExcelController() {
+        if (listaProyectos != null) {
+            excelController = new ExcelController(listaProyectos,
+                    progressBar, textoProgreso
+            );
+            excelController.getExecuteSwingWorker();
+            listaProyectos = null;
+            lockButtonImportExcel();
+        }
+    }
+
+    protected void setJFrame(JFrame jFrame) {
+        this.jFrame = jFrame;
+    }
+
+    private JFrame getFacturacion() {
+        return this.jFrame;
     }
 
     /**
@@ -86,9 +123,11 @@ public class ImportarExcel extends javax.swing.JFrame {
             }
         });
 
+        tituloSeleccionArchivo.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         tituloSeleccionArchivo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         tituloSeleccionArchivo.setText("Seleccione el archivo Excel:");
 
+        botonExaminarArchivo.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         botonExaminarArchivo.setText("Examinar...");
         botonExaminarArchivo.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -96,10 +135,13 @@ public class ImportarExcel extends javax.swing.JFrame {
             }
         });
 
+        indicadorArchivo.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         indicadorArchivo.setText("Archivo Seleccionado:");
 
+        nombreArchivo.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         nombreArchivo.setText("Ningun archivo seleccionado");
 
+        botonImportarExcel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         botonImportarExcel.setText("Importar a la Base de Datos");
         botonImportarExcel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -107,11 +149,13 @@ public class ImportarExcel extends javax.swing.JFrame {
             }
         });
 
-        progressBar.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        progressBar.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         progressBar.setStringPainted(true);
 
+        tituloStatus.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         tituloStatus.setText("Status:");
 
+        textoProgreso.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         textoProgreso.setText("Info");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -139,7 +183,7 @@ public class ImportarExcel extends javax.swing.JFrame {
                                 .addComponent(tituloStatus)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(textoProgreso)))
-                        .addGap(0, 219, Short.MAX_VALUE)))
+                        .addGap(0, 214, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -153,7 +197,7 @@ public class ImportarExcel extends javax.swing.JFrame {
                 .addComponent(indicadorArchivo)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(nombreArchivo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
                 .addComponent(botonImportarExcel)
                 .addGap(34, 34, 34)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -187,32 +231,13 @@ public class ImportarExcel extends javax.swing.JFrame {
 
     private void botonImportarExcelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonImportarExcelMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1) {
-            if (listaProyectos != null) {
-                excelController = new ExcelController(listaProyectos,
-                        progressBar, textoProgreso
-                );
-                excelController.getExecuteSwingWorker();
-                listaProyectos = null;
-                lockButtonImportExcel();
-            }
+            ejecutarSwingWorkerExcelController();
         }
     }//GEN-LAST:event_botonImportarExcelMouseClicked
 
     private void botonExaminarArchivoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonExaminarArchivoMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1) {
-            ExcelFileChooser excelFileChooser = new ExcelFileChooser(
-                    new JFileChooser(".")
-            );
-            if (!excelFileChooser.getRutaArchivo().isEmpty()) {
-                nombreArchivo.setText(excelFileChooser.getRutaArchivo());
-                excel = new Excel(excelFileChooser.getRutaArchivo(),
-                        excelFileChooser.getOptionValueSelected(),
-                        progressBar, textoProgreso
-                );
-                excel.execute();
-                listaProyectos = excel.getDatos();
-                lockButtonImportExcel();
-            }
+            ejecutarSwingWorkerImportarArchivoExcel();
         }
     }//GEN-LAST:event_botonExaminarArchivoMouseClicked
 
