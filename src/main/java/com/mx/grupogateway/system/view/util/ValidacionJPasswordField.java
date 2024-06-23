@@ -11,6 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 
 /**
+ * Métodos encargados de validar y actualizar de forma visual al usuario cuando
+ * interactua con campos de tipo JPasswordField.
  *
  * @author Eduardo Reyes Hernández
  */
@@ -19,6 +21,12 @@ public class ValidacionJPasswordField {
     private ValidacionJPasswordField() {
     }
 
+    /**
+     * Realiza una representación visual cuando el usuario escribe en el campo.
+     *
+     * @param password Campo contraseña.
+     * @param jLabel Etiqueta donde se informa el estado de la contraseña.
+     */
     public static void evaluarCampoPassword(JPasswordField password,
             JLabel jLabel) {
         if (Validaciones.esPasswordValida(password.getPassword())) {
@@ -28,18 +36,37 @@ public class ValidacionJPasswordField {
         }
     }
 
+    /**
+     * Cambia el estilo de un JLabel cuando este es correcto.
+     *
+     * @param jLabel Etiqueta donde se informa el estado de la contraseña.
+     * @param mensaje Cadena de texto.
+     */
     private static void statusJlabelOk(JLabel jLabel, String mensaje) {
         jLabel.setVisible(true);
         jLabel.setText(mensaje);
         jLabel.setForeground(Color.GREEN);
     }
 
+    /**
+     * Cambia el estilo de un JLabel cuando este es incorrecto.
+     *
+     * @param jLabel Etiqueta donde se informa el estado de la contraseña.
+     * @param mensaje Cadena de texto.
+     */
     private static void statusJlabelNotOk(JLabel jLabel, String mensaje) {
         jLabel.setVisible(true);
         jLabel.setText(mensaje);
         jLabel.setForeground(Color.RED);
     }
 
+    /**
+     * Intercambia el formato de texto a asteriscos de un JPasswordField cuando
+     * es activado un JCheckBox.
+     *
+     * @param jCheckBox JCheckBox a ser evaluado.
+     * @param password Campo a ser mostrado.
+     */
     public static void visualizacionPassword(JCheckBox jCheckBox,
             JPasswordField password) {
         if (jCheckBox.isSelected()) {
@@ -49,6 +76,13 @@ public class ValidacionJPasswordField {
         }
     }
 
+    /**
+     * Evalúa que coincidan dos campos JPasswordField.
+     *
+     * @param password Campo JPasswordField.
+     * @param passwordConfirm Campo a comparar.
+     * @param jLabel Informa el estatus de la contraseña.
+     */
     public static void concidePassword(JPasswordField password,
             JPasswordField passwordConfirm, JLabel jLabel) {
         if (esPasswordSimilar(password, passwordConfirm)) {
@@ -59,9 +93,10 @@ public class ValidacionJPasswordField {
     }
 
     /**
+     * Evalúa que dos campos JPasswordField sean similares.
      *
-     * @param password
-     * @param passwordCheck
+     * @param password Campo JPasswordField.
+     * @param passwordCheck Campo a comparar.
      * @return
      */
     public static boolean esPasswordSimilar(JPasswordField password,
