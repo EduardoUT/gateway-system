@@ -8,6 +8,8 @@ import java.awt.Image;
 import java.awt.Toolkit;
 
 /**
+ * Posee el objeto Image con la representación de la imagen que se usa en las
+ * ventanas del proyecto.
  *
  * @author eduar
  */
