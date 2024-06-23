@@ -6,18 +6,19 @@ package com.mx.grupogateway.system.view.util;
 
 import java.awt.Image;
 import java.awt.Toolkit;
-import javax.swing.JFrame;
 
 /**
  *
  * @author eduar
  */
-public class IconoVentana extends JFrame {
+public class IconoVentana {
 
-    @Override
-    public Image getIconImage() {
-        Image retValue = Toolkit.getDefaultToolkit().
-                getImage(ClassLoader.getSystemResource("Imagenes/Logo.png"));
-        return retValue;
+    private IconoVentana() {
+    }
+
+    public static Image getIconoVentana() {
+        Image imagen = Toolkit.getDefaultToolkit()
+                .getImage(ClassLoader.getSystemResource("Imagenes/Logo.png"));
+        return imagen;
     }
 }
