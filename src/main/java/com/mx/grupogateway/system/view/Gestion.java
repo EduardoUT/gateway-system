@@ -11,12 +11,11 @@ import com.mx.grupogateway.system.controller.UsuarioController;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.EmpleadoCategoria;
 import com.mx.grupogateway.system.modelo.Usuario;
-import com.mx.grupogateway.system.view.util.TablaColumnasAutoajustables;
-import com.mx.grupogateway.system.view.util.TableDataModelEmpleado;
-import com.mx.grupogateway.system.view.util.TableDataModelUsuario;
-import com.mx.grupogateway.system.view.util.TableMethods;
-import java.awt.Image;
-import java.awt.Toolkit;
+import com.mx.grupogateway.system.view.util.IconoVentana;
+import com.mx.grupogateway.system.view.util.MargenTabla;
+import com.mx.grupogateway.system.view.model.TableDataModelEmpleado;
+import com.mx.grupogateway.system.view.model.TableDataModelUsuario;
+import com.mx.grupogateway.system.view.util.AccionesTabla;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -38,6 +37,7 @@ public class Gestion extends javax.swing.JFrame {
     private EmpleadoController empleadoController;
     private EmpleadoCategoriaController empleadoCargoController;
     private UsuarioController usuarioController;
+    private Usuario usuario;
 
     /**
      * Creates new form Gestion
@@ -48,6 +48,7 @@ public class Gestion extends javax.swing.JFrame {
     }
 
     private void iniciarProcesos() {
+        cargarIconoVentana();
         this.empleadoController = new EmpleadoController();
         this.empleadoCargoController = new EmpleadoCategoriaController();
         this.usuarioController = new UsuarioController();
@@ -62,11 +63,8 @@ public class Gestion extends javax.swing.JFrame {
         configurarComboBoxEmpleado();
     }
 
-    @Override
-    public Image getIconImage() {
-        Image retValue = Toolkit.getDefaultToolkit().
-                getImage(ClassLoader.getSystemResource("Imagenes/Logo.png"));
-        return retValue;
+    private void cargarIconoVentana() {
+        this.setIconImage(IconoVentana.getIconoVentana());
     }
 
     /**
@@ -78,21 +76,21 @@ public class Gestion extends javax.swing.JFrame {
             Empleado empleado = new Empleado(
                     campoNombre.getText(),
                     campoApellidoP.getText(),
-                    campoApellidoM.getText()
+                    campoApellidoM.getText(),
+                    new EmpleadoCategoria(
+                            Integer.toString(
+                                    empleadoCargos.getSelectedIndex()),
+                            empleadoCargos.getSelectedItem().toString()
+                    )
             );
-            EmpleadoCategoria empleadoCargo
-                    = (EmpleadoCategoria) empleadoCargos.getSelectedItem();
-            this.empleadoController.guardar(
-                    empleado,
-                    empleadoCargo.getCategoriaId()
-            );
+            this.empleadoController.guardar(empleado);
             JOptionPane.showMessageDialog(null, "Empleado guardado "
                     + "éxitosamente.");
-            tablaEmpleado.setVisible(true);
             botonGuardar.setVisible(false);
             botonCancelarNuevoRegistro.setVisible(false);
             limpiarCamposFormularioEmpleado();
             cargarTablaEmpleado();
+            tablaEmpleado.setEnabled(true);
         } else {
             JOptionPane.showMessageDialog(
                     null,
@@ -112,7 +110,7 @@ public class Gestion extends javax.swing.JFrame {
                 modeloTablaEmpleado, tablaEmpleado, empleados
         );
         tableDataModelEmpleado.cargarModeloTablaEmpleados();
-        TablaColumnasAutoajustables.autoAjustarColumnas(tablaEmpleado);
+        MargenTabla.ajustarColumnas(tablaEmpleado);
     }
 
     /**
@@ -123,9 +121,8 @@ public class Gestion extends javax.swing.JFrame {
         if (sonCamposValidosEmpleado()) {
             int lineasActualizadas;
             lineasActualizadas = this.empleadoController
-                    .modificar(
-                            TableMethods
-                                    .obtenerUUID(tablaEmpleado, 0),
+                    .actualizar(AccionesTabla
+                            .obtenerUUID(tablaEmpleado, 0),
                             campoNombre.getText(),
                             campoApellidoP.getText(),
                             campoApellidoM.getText(),
@@ -151,7 +148,7 @@ public class Gestion extends javax.swing.JFrame {
      */
     private void eliminarEmpleado() {
         int cantidadEliminada = this.empleadoController
-                .eliminar(TableMethods.obtenerUUID(tablaEmpleado, 0));
+                .eliminar(AccionesTabla.obtenerUUID(tablaEmpleado, 0));
         JOptionPane.showMessageDialog(null, cantidadEliminada
                 + " registro eliminado exitosamente.");
         limpiarCamposFormularioEmpleado();
@@ -162,8 +159,8 @@ public class Gestion extends javax.swing.JFrame {
      * Pasa los registros de la tablaEmpleado al formulario para ser editados.
      */
     private void llenarCamposFormularioFromTablaEmpleado() {
-        int fila = TableMethods.indiceFila(tablaEmpleado);
-        if (TableMethods.filaEstaSeleccionada(tablaEmpleado)) {
+        int fila = AccionesTabla.indiceFila(tablaEmpleado);
+        if (AccionesTabla.filaEstaSeleccionada(tablaEmpleado)) {
             campoNombre.setText(
                     String.valueOf(tablaEmpleado.getValueAt(fila, 1))
             );
@@ -223,7 +220,7 @@ public class Gestion extends javax.swing.JFrame {
         List<Usuario> usuarios = this.usuarioController.listar();
         tableDataModelUsuario = new TableDataModelUsuario(modeloTablaUsuario, tablaUsuario, usuarios);
         tableDataModelUsuario.cargarModeloTablaUsuario();
-        TablaColumnasAutoajustables.autoAjustarColumnas(tablaUsuario);
+        MargenTabla.ajustarColumnas(tablaUsuario);
     }
 
     /**
@@ -232,7 +229,7 @@ public class Gestion extends javax.swing.JFrame {
      */
     private void eliminarUsuario() {
         int cantidadEliminada = this.usuarioController
-                .eliminar(String.valueOf(TableMethods
+                .eliminar(String.valueOf(AccionesTabla
                         .obtenerID(tablaUsuario, 0)));
         JOptionPane.showMessageDialog(null, cantidadEliminada
                 + " registro eliminado exitosamente.");
@@ -270,14 +267,19 @@ public class Gestion extends javax.swing.JFrame {
         empleadoCargos = new javax.swing.JComboBox<>();
         botonNuevoRegistro = new javax.swing.JButton();
         botonCancelarNuevoRegistro = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu3 = new javax.swing.JMenu();
+        jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItem4 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Getsión de Personal");
         setIconImage(getIconImage());
         setResizable(false);
 
+        jTabbedPane1.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        tablaUsuario.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         tablaUsuario.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -292,6 +294,7 @@ public class Gestion extends javax.swing.JFrame {
         tablaUsuario.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(tablaUsuario);
 
+        botonEliminarUsuario.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         botonEliminarUsuario.setText("Eliminar Usuario ");
         botonEliminarUsuario.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -305,13 +308,12 @@ public class Gestion extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 819, Short.MAX_VALUE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(281, 281, 281)
-                        .addComponent(botonEliminarUsuario)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 819, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(332, 332, 332)
+                .addComponent(botonEliminarUsuario)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -320,15 +322,20 @@ public class Gestion extends javax.swing.JFrame {
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(botonEliminarUsuario)
-                .addContainerGap(271, Short.MAX_VALUE))
+                .addContainerGap(292, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Gestión de Usuarios", jPanel2);
 
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel3.setText("Apellido Paterno:");
 
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel4.setText("Apellido Materno:");
 
+        campoApellidoM.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        tablaEmpleado.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         tablaEmpleado.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -361,6 +368,7 @@ public class Gestion extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tablaEmpleado);
 
+        botonGuardar.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         botonGuardar.setText("Guardar");
         botonGuardar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -368,6 +376,7 @@ public class Gestion extends javax.swing.JFrame {
             }
         });
 
+        botonActualizar.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         botonActualizar.setText("Actualizar");
         botonActualizar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -375,6 +384,7 @@ public class Gestion extends javax.swing.JFrame {
             }
         });
 
+        botonEliminar.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         botonEliminar.setText("Eliminar");
         botonEliminar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -382,10 +392,19 @@ public class Gestion extends javax.swing.JFrame {
             }
         });
 
+        campoNombre.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        campoApellidoP.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel2.setText("Nombre:");
 
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel5.setText("Cargo:");
 
+        empleadoCargos.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        botonNuevoRegistro.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         botonNuevoRegistro.setText("Nuevo Registro");
         botonNuevoRegistro.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -393,6 +412,7 @@ public class Gestion extends javax.swing.JFrame {
             }
         });
 
+        botonCancelarNuevoRegistro.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         botonCancelarNuevoRegistro.setText("Cancelar Registro");
         botonCancelarNuevoRegistro.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -437,7 +457,7 @@ public class Gestion extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(8, 8, 8)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -470,19 +490,32 @@ public class Gestion extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Registro Empleado", jPanel1);
 
-        jButton1.setText("Perfil");
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
-            }
-        });
+        jMenuBar1.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
 
-        jButton2.setText("Cerrar Sesión");
-        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton2MouseClicked(evt);
+        jMenu3.setText("Perfil");
+        jMenu3.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        jMenuItem3.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jMenuItem3.setText("Actualizar Contraseña");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
             }
         });
+        jMenu3.add(jMenuItem3);
+
+        jMenuItem4.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jMenuItem4.setText("Cerrar Sesión");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
+        jMenu3.add(jMenuItem4);
+
+        jMenuBar1.add(jMenu3);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -490,23 +523,12 @@ public class Gestion extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton2))
-                    .addComponent(jTabbedPane1))
+                .addComponent(jTabbedPane1)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
-                .addGap(18, 18, 18)
+            .addGroup(layout.createSequentialGroup()
                 .addComponent(jTabbedPane1)
                 .addContainerGap())
         );
@@ -517,7 +539,7 @@ public class Gestion extends javax.swing.JFrame {
 
     private void botonEliminarUsuarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonEliminarUsuarioMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1) {
-            if (TableMethods.filaEstaSeleccionada(tablaUsuario)) {
+            if (AccionesTabla.filaEstaSeleccionada(tablaUsuario)) {
                 eliminarUsuario();
             }
         }
@@ -535,7 +557,7 @@ public class Gestion extends javax.swing.JFrame {
     private void botonNuevoRegistroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonNuevoRegistroMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1) {
             limpiarCamposFormularioEmpleado();
-            TableMethods.limpiarSeleccion(tablaEmpleado);
+            AccionesTabla.limpiarSeleccion(tablaEmpleado);
             botonGuardar.setVisible(true);
             botonCancelarNuevoRegistro.setVisible(true);
             tablaEmpleado.setEnabled(false);
@@ -545,7 +567,7 @@ public class Gestion extends javax.swing.JFrame {
 
     private void botonEliminarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonEliminarMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1) {
-            if (TableMethods.filaEstaSeleccionada(tablaEmpleado)) {
+            if (AccionesTabla.filaEstaSeleccionada(tablaEmpleado)) {
                 eliminarEmpleado();
             }
         }
@@ -553,7 +575,7 @@ public class Gestion extends javax.swing.JFrame {
 
     private void botonActualizarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonActualizarMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1) {
-            if (TableMethods.filaEstaSeleccionada(tablaEmpleado)) {
+            if (AccionesTabla.filaEstaSeleccionada(tablaEmpleado)) {
                 actualizarEmpleado();
             }
         }
@@ -578,18 +600,21 @@ public class Gestion extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_tablaEmpleadoKeyReleased
 
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-        if (evt.getButton() == MouseEvent.BUTTON1) {
-            
-        }
-    }//GEN-LAST:event_jButton1MouseClicked
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        evt.getID();
+        ActualizarPassword actualizarPassword = new ActualizarPassword();
+        actualizarPassword.setUsuario(usuario);
+        actualizarPassword.setJFrame(this);
+        actualizarPassword.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
 
-    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
-        if (evt.getButton() == MouseEvent.BUTTON1) {
-            this.dispose();
-            new Login().setVisible(true);
-        }
-    }//GEN-LAST:event_jButton2MouseClicked
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        evt.getID();
+        this.dispose();
+        new Login().setVisible(true);
+
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -614,12 +639,14 @@ public class Gestion extends javax.swing.JFrame {
     private javax.swing.JTextField campoApellidoP;
     private javax.swing.JTextField campoNombre;
     private javax.swing.JComboBox<String> empleadoCargos;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
