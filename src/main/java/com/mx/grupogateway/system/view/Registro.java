@@ -7,13 +7,13 @@ package com.mx.grupogateway.system.view;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.UsuarioController;
 import com.mx.grupogateway.system.modelo.Usuario;
-import com.mx.grupogateway.system.view.util.CamposCommonMethods;
+import com.mx.grupogateway.system.view.util.ValidacionJPasswordField;
+import com.mx.grupogateway.system.view.util.IconoVentana;
 import java.awt.event.MouseEvent;
 import java.util.Optional;
 import javax.swing.JOptionPane;
 
 /**
- * TODO: Hacer validación que valide que los campos password coincidan.
  *
  * @author Eduardo Reyes Hernández
  */
@@ -30,8 +30,13 @@ public class Registro extends javax.swing.JFrame {
     }
 
     private void iniciarProcesos() {
+        cargarIconoVentana();
         this.usuarioController = new UsuarioController();
         passwordStatusLabel.setVisible(false);
+    }
+
+    private void cargarIconoVentana() {
+        this.setIconImage(IconoVentana.getIconoVentana());
     }
 
     /**
@@ -49,7 +54,7 @@ public class Registro extends javax.swing.JFrame {
      */
     private void registrarUsuario() {
         String idUsuario = campoIdUsuario.getText();
-        if (sonCamposValidosRegistro()) {
+        if (sonCamposValidos()) {
             Optional id = this.usuarioController.consultarIdUsuario(idUsuario);
             if (!id.isPresent()) {
                 JOptionPane.showMessageDialog(
@@ -80,16 +85,18 @@ public class Registro extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(
                     null,
-                    "Campos obligatorios, por favor, complete el formulario.",
+                    "Por favor, llene correctamente el formulario..",
                     "Formulario incompleto", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
-    private boolean sonCamposValidosRegistro() {
+    private boolean sonCamposValidos() {
         return !campoIdUsuario.getText().isEmpty()
                 && !campoNombreUsuario.getText().isEmpty()
                 && campoPassword.getPassword().length != 0
-                && campoCheckPassword.getPassword().length != 0;
+                && campoCheckPassword.getPassword().length != 0
+                && ValidacionJPasswordField.esPasswordSimilar(campoPassword,
+                        campoCheckPassword);
     }
 
     private void limpiarRegistros() {
@@ -108,7 +115,6 @@ public class Registro extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        botonRegresar = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         campoIdUsuario = new javax.swing.JTextField();
@@ -124,23 +130,29 @@ public class Registro extends javax.swing.JFrame {
         botonAyuda = new javax.swing.JButton();
         passwordConfirmLabel = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        botonRegresar.setText("Regresar");
-        botonRegresar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                botonRegresarMouseClicked(evt);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
             }
         });
 
         jPanel1.setBackground(new java.awt.Color(0, 153, 204));
 
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel6.setText("Id Usuario:");
 
+        campoIdUsuario.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel2.setText("Nombre de Usuario:");
 
+        campoNombreUsuario.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel3.setText("Contraseña:");
 
+        campoPassword.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         campoPassword.setToolTipText("Mínimo 10 carácteres, debe tener al menos 1 (minúscula, mayúscula, número, carácter especial ! $ % & * ? @)");
         campoPassword.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -148,14 +160,17 @@ public class Registro extends javax.swing.JFrame {
             }
         });
 
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel4.setText("Confirmar Contraseña:");
 
+        campoCheckPassword.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         campoCheckPassword.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 campoCheckPasswordKeyReleased(evt);
             }
         });
 
+        botonRegistrar.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         botonRegistrar.setText("Registrarse");
         botonRegistrar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -163,7 +178,8 @@ public class Registro extends javax.swing.JFrame {
             }
         });
 
-        passwordStatusLabel.setText("Status");
+        passwordStatusLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        passwordStatusLabel.setText("Estado");
 
         checkBoxVerPassword.setBorder(null);
         checkBoxVerPassword.setContentAreaFilled(false);
@@ -178,6 +194,7 @@ public class Registro extends javax.swing.JFrame {
             }
         });
 
+        botonAyuda.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         botonAyuda.setText("?");
         botonAyuda.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -185,38 +202,40 @@ public class Registro extends javax.swing.JFrame {
             }
         });
 
-        passwordConfirmLabel.setText("Status");
+        passwordConfirmLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        passwordConfirmLabel.setText("Estado");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(botonRegistrar)
-                .addGap(101, 101, 101))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(28, 28, 28)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(campoPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(checkBoxVerPassword))
-                    .addComponent(campoIdUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
-                        .addComponent(campoNombreUsuario, javax.swing.GroupLayout.Alignment.LEADING))
-                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(28, 28, 28)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(campoPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(checkBoxVerPassword))
+                            .addComponent(campoIdUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
+                                .addComponent(campoNombreUsuario, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(passwordConfirmLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(passwordStatusLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(campoCheckPassword, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(botonAyuda))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(passwordConfirmLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(passwordStatusLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(campoCheckPassword, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(botonAyuda)))
+                        .addGap(83, 83, 83)
+                        .addComponent(botonRegistrar)))
                 .addContainerGap(12, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -246,41 +265,31 @@ public class Registro extends javax.swing.JFrame {
                     .addComponent(botonAyuda))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(passwordConfirmLabel)
-                .addGap(1, 1, 1)
+                .addGap(18, 18, 18)
                 .addComponent(botonRegistrar)
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addContainerGap(10, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(116, 116, 116)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(115, 115, 115)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
-                .addComponent(botonRegresar)
-                .addContainerGap())
+                .addContainerGap(125, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(botonRegresar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void botonRegresarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonRegresarMouseClicked
-        if (evt.getButton() == MouseEvent.BUTTON1) {
-            this.dispose();
-            new Login().setVisible(true);
-        }
-    }//GEN-LAST:event_botonRegresarMouseClicked
 
     private void botonRegistrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonRegistrarMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1) {
@@ -303,26 +312,31 @@ public class Registro extends javax.swing.JFrame {
 
     private void campoPasswordKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_campoPasswordKeyReleased
         evt.getID();
-        CamposCommonMethods.evaluarCampoPassword(
+        ValidacionJPasswordField.evaluarCampoPassword(
                 campoPassword, passwordStatusLabel
         );
     }//GEN-LAST:event_campoPasswordKeyReleased
 
     private void checkBoxVerPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxVerPasswordActionPerformed
         evt.getID();
-        CamposCommonMethods.visualizacionPassword(
+        ValidacionJPasswordField.visualizacionPassword(
                 checkBoxVerPassword, campoPassword
         );
     }//GEN-LAST:event_checkBoxVerPasswordActionPerformed
 
     private void campoCheckPasswordKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_campoCheckPasswordKeyReleased
         evt.getID();
-        CamposCommonMethods.concidePassword(
+        ValidacionJPasswordField.concidePassword(
                 campoPassword,
                 campoCheckPassword,
                 passwordConfirmLabel
         );
     }//GEN-LAST:event_campoCheckPasswordKeyReleased
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        evt.getID();
+        new Login().setVisible(true);
+    }//GEN-LAST:event_formWindowClosed
 
     /**
      * @param args the command line arguments
@@ -339,7 +353,6 @@ public class Registro extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonAyuda;
     private javax.swing.JButton botonRegistrar;
-    private javax.swing.JButton botonRegresar;
     private javax.swing.JPasswordField campoCheckPassword;
     private javax.swing.JTextField campoIdUsuario;
     private javax.swing.JTextField campoNombreUsuario;
