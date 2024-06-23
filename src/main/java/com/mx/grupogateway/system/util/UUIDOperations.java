@@ -11,6 +11,10 @@ import java.util.UUID;
  * @author eduar
  */
 public class UUIDOperations {
+
+    private UUIDOperations() {
+    }
+
     /**
      * Método que generá el identificador único de los empleados creados.
      *
