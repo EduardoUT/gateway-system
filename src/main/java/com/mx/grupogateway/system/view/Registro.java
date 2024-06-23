@@ -4,28 +4,32 @@
  */
 package com.mx.grupogateway.system.view;
 
+import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.UsuarioController;
-import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Usuario;
-import com.mx.grupogateway.system.security.ProtectorData;
 import com.mx.grupogateway.system.view.util.CamposCommonMethods;
+import java.awt.event.MouseEvent;
 import java.util.Optional;
 import javax.swing.JOptionPane;
 
 /**
  * TODO: Hacer validación que valide que los campos password coincidan.
- * 
+ *
  * @author Eduardo Reyes Hernández
  */
 public class Registro extends javax.swing.JFrame {
 
-    private final UsuarioController usuarioController;
+    private UsuarioController usuarioController;
 
     /**
      * Creates new form Registro
      */
     public Registro() {
         initComponents();
+        iniciarProcesos();
+    }
+
+    private void iniciarProcesos() {
         this.usuarioController = new UsuarioController();
         passwordStatusLabel.setVisible(false);
     }
@@ -44,33 +48,34 @@ public class Registro extends javax.swing.JFrame {
      * el usuario asociandolo a ese empleadoID.
      */
     private void registrarUsuario() {
-        String empleadoId = campoIdEmpleado.getText();
+        String idUsuario = campoIdUsuario.getText();
         if (sonCamposValidosRegistro()) {
-            Empleado empleado = new Empleado(empleadoId);
-            Optional id = this.usuarioController.consultarIdUsuario(empleado);
-            if (id.equals(Optional.empty())) {
+            Optional id = this.usuarioController.consultarIdUsuario(idUsuario);
+            if (!id.isPresent()) {
                 JOptionPane.showMessageDialog(
                         null,
-                        "El ID Empleado " + empleadoId + " no existe en la BD.",
-                        "Empleado inexistente.",
+                        "El usuario " + campoNombreUsuario.getText() + " no existe en la BD.",
+                        "Usuario inexistente.",
                         JOptionPane.ERROR_MESSAGE);
-            }
-
-            if (id.isPresent() && !id.get().equals(0)) {
-                JOptionPane.showMessageDialog(
-                        null, "El usuario asociado al ID Empleado " + empleadoId
-                        + " ya existe.", "Usuario ya existe",
-                        JOptionPane.WARNING_MESSAGE
-                );
-            }
-
-            if (id.isPresent() && id.get().equals(0)) {
-                Usuario usuario = new Usuario(
-                        campoNombreUsuario.getText(),
-                        ProtectorData.encriptar(
-                                campoPassword.getPassword())
-                );
-                this.usuarioController.guardar(usuario, empleadoId);
+            } else {
+                boolean esPasswordNula = this.usuarioController.esPasswordNula(idUsuario);
+                if (esPasswordNula) {
+                    this.usuarioController.actualizarPassword(new Usuario(
+                            campoIdUsuario.getText(),
+                            campoNombreUsuario.getText(),
+                            campoCheckPassword.getPassword()
+                    ));
+                    JOptionPane.showMessageDialog(null,
+                            "Usuario registrado éxitosamente.",
+                            "Registro éxitoso",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    limpiarRegistros();
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Este usuario ya a sido registrado.",
+                            "Registro anulado.",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
             }
         } else {
             JOptionPane.showMessageDialog(
@@ -81,10 +86,17 @@ public class Registro extends javax.swing.JFrame {
     }
 
     private boolean sonCamposValidosRegistro() {
-        return !campoIdEmpleado.getText().isEmpty()
+        return !campoIdUsuario.getText().isEmpty()
                 && !campoNombreUsuario.getText().isEmpty()
                 && campoPassword.getPassword().length != 0
                 && campoCheckPassword.getPassword().length != 0;
+    }
+
+    private void limpiarRegistros() {
+        campoIdUsuario.setText("");
+        campoNombreUsuario.setText("");
+        campoPassword.setText("");
+        campoCheckPassword.setText("");
     }
 
     /**
@@ -96,33 +108,34 @@ public class Registro extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
+        botonRegresar = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
-        campoIdEmpleado = new javax.swing.JTextField();
+        campoIdUsuario = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         campoNombreUsuario = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         campoPassword = new javax.swing.JPasswordField();
         jLabel4 = new javax.swing.JLabel();
         campoCheckPassword = new javax.swing.JPasswordField();
-        jButton2 = new javax.swing.JButton();
+        botonRegistrar = new javax.swing.JButton();
         passwordStatusLabel = new javax.swing.JLabel();
         checkBoxVerPassword = new javax.swing.JCheckBox();
-        jButton3 = new javax.swing.JButton();
+        botonAyuda = new javax.swing.JButton();
+        passwordConfirmLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jButton1.setText("Regresar");
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+        botonRegresar.setText("Regresar");
+        botonRegresar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
+                botonRegresarMouseClicked(evt);
             }
         });
 
         jPanel1.setBackground(new java.awt.Color(0, 153, 204));
 
-        jLabel6.setText("ID Empleado:");
+        jLabel6.setText("Id Usuario:");
 
         jLabel2.setText("Nombre de Usuario:");
 
@@ -133,21 +146,23 @@ public class Registro extends javax.swing.JFrame {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 campoPasswordKeyReleased(evt);
             }
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                campoPasswordKeyTyped(evt);
-            }
         });
 
         jLabel4.setText("Confirmar Contraseña:");
 
-        jButton2.setText("Registrarse");
-        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton2MouseClicked(evt);
+        campoCheckPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                campoCheckPasswordKeyReleased(evt);
             }
         });
 
-        passwordStatusLabel.setForeground(new java.awt.Color(204, 0, 0));
+        botonRegistrar.setText("Registrarse");
+        botonRegistrar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                botonRegistrarMouseClicked(evt);
+            }
+        });
+
         passwordStatusLabel.setText("Status");
 
         checkBoxVerPassword.setBorder(null);
@@ -163,22 +178,23 @@ public class Registro extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setText("?");
-        jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
+        botonAyuda.setText("?");
+        botonAyuda.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton3MouseClicked(evt);
+                botonAyudaMouseClicked(evt);
             }
         });
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
+
+        passwordConfirmLabel.setText("Status");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(botonRegistrar)
+                .addGap(101, 101, 101))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(28, 28, 28)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -188,23 +204,20 @@ public class Registro extends javax.swing.JFrame {
                             .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(checkBoxVerPassword))
-                    .addComponent(campoIdEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(campoIdUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
                         .addComponent(campoNombreUsuario, javax.swing.GroupLayout.Alignment.LEADING))
                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(passwordConfirmLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(passwordStatusLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(campoCheckPassword, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton3)))
+                        .addComponent(botonAyuda)))
                 .addContainerGap(12, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton2)
-                .addGap(101, 101, 101))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -212,7 +225,7 @@ public class Registro extends javax.swing.JFrame {
                 .addGap(12, 12, 12)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(campoIdEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(campoIdUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -230,9 +243,11 @@ public class Registro extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(campoCheckPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton3))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2)
+                    .addComponent(botonAyuda))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(passwordConfirmLabel)
+                .addGap(1, 1, 1)
+                .addComponent(botonRegistrar)
                 .addContainerGap(27, Short.MAX_VALUE))
         );
 
@@ -244,14 +259,14 @@ public class Registro extends javax.swing.JFrame {
                 .addGap(116, 116, 116)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addComponent(botonRegresar)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton1)
+                .addComponent(botonRegresar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -260,96 +275,82 @@ public class Registro extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-        evt.consume();
-        this.setVisible(false);
-        Login login = new Login();
-        login.setVisible(true);
-    }//GEN-LAST:event_jButton1MouseClicked
+    private void botonRegresarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonRegresarMouseClicked
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            this.dispose();
+            new Login().setVisible(true);
+        }
+    }//GEN-LAST:event_botonRegresarMouseClicked
 
-    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
-        evt.consume();
-        registrarUsuario();
-    }//GEN-LAST:event_jButton2MouseClicked
+    private void botonRegistrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonRegistrarMouseClicked
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            registrarUsuario();
+        }
+    }//GEN-LAST:event_botonRegistrarMouseClicked
 
-    private void campoPasswordKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_campoPasswordKeyTyped
-        CamposCommonMethods.evaluarCampoPassword(campoPassword, passwordStatusLabel);
-    }//GEN-LAST:event_campoPasswordKeyTyped
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
-        evt.consume();
-        JOptionPane.showMessageDialog(null, "1. Mínimo 10 carácteres.\n"
-                + "2. Al menos una letra mayúscula.\n"
-                + "3. Al menos una letra minúsula.\n"
-                + "4. Al menos un número.\n"
-                + "5. Al menos uno de los siguientes "
-                + "carácteres ! $ % & * ? @", "Escribir contraseña segura.",
-                JOptionPane.INFORMATION_MESSAGE
-        );
-    }//GEN-LAST:event_jButton3MouseClicked
+    private void botonAyudaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonAyudaMouseClicked
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            JOptionPane.showMessageDialog(null, "1. Mínimo 10 carácteres.\n"
+                    + "2. Al menos una letra mayúscula.\n"
+                    + "3. Al menos una letra minúsula.\n"
+                    + "4. Al menos un número.\n"
+                    + "5. Al menos uno de los siguientes "
+                    + "carácteres ! $ % & * ? @", "Escribir contraseña segura.",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        }
+    }//GEN-LAST:event_botonAyudaMouseClicked
 
     private void campoPasswordKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_campoPasswordKeyReleased
-
-        CamposCommonMethods.evaluarCampoPassword(campoPassword, passwordStatusLabel);
+        evt.getID();
+        CamposCommonMethods.evaluarCampoPassword(
+                campoPassword, passwordStatusLabel
+        );
     }//GEN-LAST:event_campoPasswordKeyReleased
 
     private void checkBoxVerPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBoxVerPasswordActionPerformed
-        CamposCommonMethods.visualizacionPassword(checkBoxVerPassword, campoPassword);
+        evt.getID();
+        CamposCommonMethods.visualizacionPassword(
+                checkBoxVerPassword, campoPassword
+        );
     }//GEN-LAST:event_checkBoxVerPasswordActionPerformed
+
+    private void campoCheckPasswordKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_campoCheckPasswordKeyReleased
+        evt.getID();
+        CamposCommonMethods.concidePassword(
+                campoPassword,
+                campoCheckPassword,
+                passwordConfirmLabel
+        );
+    }//GEN-LAST:event_campoCheckPasswordKeyReleased
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Registro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Registro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Registro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Registro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+        FlatDarkLaf.setup();
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Registro().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new Registro().setVisible(true);
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton botonAyuda;
+    private javax.swing.JButton botonRegistrar;
+    private javax.swing.JButton botonRegresar;
     private javax.swing.JPasswordField campoCheckPassword;
-    private javax.swing.JTextField campoIdEmpleado;
+    private javax.swing.JTextField campoIdUsuario;
     private javax.swing.JTextField campoNombreUsuario;
     private javax.swing.JPasswordField campoPassword;
     private javax.swing.JCheckBox checkBoxVerPassword;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel passwordConfirmLabel;
     private javax.swing.JLabel passwordStatusLabel;
     // End of variables declaration//GEN-END:variables
 
