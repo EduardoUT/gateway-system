@@ -8,10 +8,12 @@ package com.mx.grupogateway.system.view;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.ProyectoController;
 import com.mx.grupogateway.system.modelo.Proyecto;
-import com.mx.grupogateway.system.view.util.TablaColumnasAutoajustables;
-import com.mx.grupogateway.system.view.util.TableMethods;
-import com.mx.grupogateway.system.view.util.TableDataModelProyecto;
-import java.awt.*;
+import com.mx.grupogateway.system.modelo.Usuario;
+import com.mx.grupogateway.system.view.util.IconoVentana;
+import com.mx.grupogateway.system.view.util.MargenTabla;
+import com.mx.grupogateway.system.view.util.AccionesTabla;
+import com.mx.grupogateway.system.view.model.TableDataModelProyecto;
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.sql.Date;
@@ -27,6 +29,7 @@ public final class Facturacion extends javax.swing.JFrame {
     private DefaultTableModel modeloTablaProyectos;
     private TableDataModelProyecto tableDataModelProyecto;
     private ProyectoController proyectoController;
+    private Usuario usuario;
 
     public Facturacion() {
         initComponents();
@@ -34,18 +37,20 @@ public final class Facturacion extends javax.swing.JFrame {
     }
 
     private void iniciarProcesos() {
+        cargarIconoVentana();
         this.proyectoController = new ProyectoController();
         cargarTablaProyectos();
-        TableMethods.filtrarResultados(tablaProyectos, buscadorProyecto, filtroProyecto);
+        AccionesTabla.filtrarResultados(tablaProyectos, buscadorProyecto, filtroProyecto);
     }
 
-    @Override
-    public Image getIconImage() {
-        Image retValue = Toolkit.getDefaultToolkit().
-                getImage(ClassLoader.getSystemResource("Imagenes/Logo.png"));
-        return retValue;
+    private void cargarIconoVentana() {
+        this.setIconImage(IconoVentana.getIconoVentana());
     }
 
+    protected void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+    
     private void cargarTablaProyectos() {
         tablaProyectos.setModel(new Asignaciones().tablaProyectos.getModel());
         modeloTablaProyectos = (DefaultTableModel) tablaProyectos.getModel();
@@ -54,7 +59,7 @@ public final class Facturacion extends javax.swing.JFrame {
                 modeloTablaProyectos, tablaProyectos, listaProyecto
         );
         tableDataModelProyecto.cargarModeloTablaProyecto();
-        TablaColumnasAutoajustables.autoAjustarColumnas(tablaProyectos);
+        MargenTabla.ajustarColumnas(tablaProyectos);
     }
 
     private Object obtenerValorTabla(int fila, int columna) {
@@ -142,6 +147,9 @@ public final class Facturacion extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
+        jMenu3 = new javax.swing.JMenu();
+        jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItem4 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Facturación");
@@ -150,8 +158,10 @@ public final class Facturacion extends javax.swing.JFrame {
         setLocationByPlatform(true);
         setResizable(false);
 
-        buscadorProyecto.setBorder(javax.swing.BorderFactory.createTitledBorder("Buscar"));
+        buscadorProyecto.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        buscadorProyecto.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Buscar", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
 
+        jButton5.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jButton5.setText("Cerrar Sesión");
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -183,13 +193,16 @@ public final class Facturacion extends javax.swing.JFrame {
         jScrollPane9.setViewportView(tablaProyectos);
         tablaProyectos.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
+        jTabbedPane1.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        jPanel2.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jPanel2.setMaximumSize(new java.awt.Dimension(316, 338));
         jPanel2.setMinimumSize(new java.awt.Dimension(316, 338));
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
-        id.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        id.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         id.setToolTipText("ID");
-        id.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "Id Proyecto"));
+        id.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "Id Proyecto", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         id.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -200,9 +213,9 @@ public final class Facturacion extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 38, 5, 38);
         jPanel2.add(id, gridBagConstraints);
 
-        pjcode.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        pjcode.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         pjcode.setToolTipText("Project Code");
-        pjcode.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "Código de Proyecto"));
+        pjcode.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "Código de Proyecto", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         pjcode.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -216,11 +229,11 @@ public final class Facturacion extends javax.swing.JFrame {
         jScrollPane3.setBackground(new Color(0, 0, 0, 0));
 
         pjname.setColumns(20);
-        pjname.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        pjname.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         pjname.setLineWrap(true);
         pjname.setRows(3);
         pjname.setToolTipText("Project Name");
-        pjname.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "Nombre Proyecto"));
+        pjname.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "Nombre Proyecto", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         pjname.setEnabled(false);
         jScrollPane3.setViewportView(pjname);
 
@@ -237,11 +250,11 @@ public final class Facturacion extends javax.swing.JFrame {
         jScrollPane1.setBackground(new Color(0, 0, 0, 0));
 
         customer.setColumns(20);
-        customer.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        customer.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         customer.setLineWrap(true);
         customer.setRows(3);
         customer.setToolTipText("Customer");
-        customer.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "Cliente"));
+        customer.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "Cliente", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         customer.setEnabled(false);
         jScrollPane1.setViewportView(customer);
 
@@ -255,9 +268,9 @@ public final class Facturacion extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 38, 5, 38);
         jPanel2.add(jScrollPane1, gridBagConstraints);
 
-        postatus.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        postatus.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         postatus.setToolTipText("PO Status");
-        postatus.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "PO Status"));
+        postatus.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "PO Status", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         postatus.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -268,9 +281,9 @@ public final class Facturacion extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 38, 5, 38);
         jPanel2.add(postatus, gridBagConstraints);
 
-        pon.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        pon.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         pon.setToolTipText("PO NO");
-        pon.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "PO NO"));
+        pon.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "PO NO", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         pon.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -281,8 +294,8 @@ public final class Facturacion extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 38, 5, 38);
         jPanel2.add(pon, gridBagConstraints);
 
-        shipment.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        shipment.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "Shipment NO"));
+        shipment.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        shipment.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "Shipment NO", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         shipment.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -293,9 +306,9 @@ public final class Facturacion extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 38, 5, 38);
         jPanel2.add(shipment, gridBagConstraints);
 
-        poline.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        poline.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         poline.setToolTipText("PO Line NO");
-        poline.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "PO Line NO"));
+        poline.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), "PO Line NO", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         poline.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -308,15 +321,16 @@ public final class Facturacion extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Información Proyecto", jPanel2);
 
+        jPanel3.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jPanel3.setMaximumSize(new java.awt.Dimension(317, 338));
         jPanel3.setMinimumSize(new java.awt.Dimension(317, 338));
         jPanel3.setPreferredSize(new java.awt.Dimension(317, 338));
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
-        sitecode.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        sitecode.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         sitecode.setLineWrap(true);
         sitecode.setRows(3);
-        sitecode.setBorder(javax.swing.BorderFactory.createTitledBorder("Site Code"));
+        sitecode.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Site Code", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         sitecode.setEnabled(false);
         jScrollPane2.setViewportView(sitecode);
 
@@ -330,10 +344,10 @@ public final class Facturacion extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 38, 5, 38);
         jPanel3.add(jScrollPane2, gridBagConstraints);
 
-        sitename.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        sitename.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         sitename.setLineWrap(true);
         sitename.setRows(3);
-        sitename.setBorder(javax.swing.BorderFactory.createTitledBorder("Site Name"));
+        sitename.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Site Name", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         sitename.setEnabled(false);
         jScrollPane4.setViewportView(sitename);
 
@@ -347,8 +361,8 @@ public final class Facturacion extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 38, 5, 38);
         jPanel3.add(jScrollPane4, gridBagConstraints);
 
-        itemcode.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        itemcode.setBorder(javax.swing.BorderFactory.createTitledBorder("Item Code"));
+        itemcode.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        itemcode.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Item Code", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         itemcode.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -359,11 +373,11 @@ public final class Facturacion extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 38, 5, 38);
         jPanel3.add(itemcode, gridBagConstraints);
 
-        itemdsc.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        itemdsc.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         itemdsc.setLineWrap(true);
         itemdsc.setRows(3);
         itemdsc.setText("\n");
-        itemdsc.setBorder(javax.swing.BorderFactory.createTitledBorder("Item Desc"));
+        itemdsc.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Item Desc", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         itemdsc.setEnabled(false);
         jScrollPane5.setViewportView(itemdsc);
 
@@ -377,8 +391,8 @@ public final class Facturacion extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 38, 5, 38);
         jPanel3.add(jScrollPane5, gridBagConstraints);
 
-        requestedqty.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        requestedqty.setBorder(javax.swing.BorderFactory.createTitledBorder("Requested Quantity"));
+        requestedqty.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        requestedqty.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Requested Quantity", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         requestedqty.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -389,8 +403,8 @@ public final class Facturacion extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 38, 5, 38);
         jPanel3.add(requestedqty, gridBagConstraints);
 
-        dueqty.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        dueqty.setBorder(javax.swing.BorderFactory.createTitledBorder("Due Quantity"));
+        dueqty.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        dueqty.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Due Quantity", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         dueqty.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -401,8 +415,8 @@ public final class Facturacion extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 38, 5, 38);
         jPanel3.add(dueqty, gridBagConstraints);
 
-        billedqty.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        billedqty.setBorder(javax.swing.BorderFactory.createTitledBorder("Billed Quantity"));
+        billedqty.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        billedqty.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Billed Quantity", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         billedqty.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -415,11 +429,12 @@ public final class Facturacion extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Detalle Proyecto", jPanel3);
 
+        jPanel4.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jPanel4.setPreferredSize(new java.awt.Dimension(326, 336));
         jPanel4.setLayout(new java.awt.GridBagLayout());
 
-        unitprice.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        unitprice.setBorder(javax.swing.BorderFactory.createTitledBorder("Unit Price"));
+        unitprice.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        unitprice.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Unit Price", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         unitprice.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -430,8 +445,8 @@ public final class Facturacion extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 38, 5, 38);
         jPanel4.add(unitprice, gridBagConstraints);
 
-        amount.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        amount.setBorder(javax.swing.BorderFactory.createTitledBorder("Line Amount"));
+        amount.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        amount.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Line Amount", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         amount.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -442,8 +457,8 @@ public final class Facturacion extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 38, 5, 38);
         jPanel4.add(amount, gridBagConstraints);
 
-        unit.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
-        unit.setBorder(javax.swing.BorderFactory.createTitledBorder("Unit"));
+        unit.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        unit.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Unit", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         unit.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -455,11 +470,11 @@ public final class Facturacion extends javax.swing.JFrame {
         jPanel4.add(unit, gridBagConstraints);
 
         payment.setColumns(20);
-        payment.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        payment.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         payment.setLineWrap(true);
         payment.setRows(3);
         payment.setText("\n");
-        payment.setBorder(javax.swing.BorderFactory.createTitledBorder("Payment Terms"));
+        payment.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Payment Terms", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         payment.setEnabled(false);
         jScrollPane6.setViewportView(payment);
 
@@ -474,11 +489,11 @@ public final class Facturacion extends javax.swing.JFrame {
         jPanel4.add(jScrollPane6, gridBagConstraints);
 
         category.setColumns(20);
-        category.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        category.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         category.setLineWrap(true);
         category.setRows(3);
         category.setText("\n");
-        category.setBorder(javax.swing.BorderFactory.createTitledBorder("Category"));
+        category.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Category", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         category.setEnabled(false);
         jScrollPane7.setViewportView(category);
 
@@ -493,11 +508,11 @@ public final class Facturacion extends javax.swing.JFrame {
         jPanel4.add(jScrollPane7, gridBagConstraints);
 
         bidding.setColumns(20);
-        bidding.setFont(new java.awt.Font("Microsoft Sans Serif", 0, 11)); // NOI18N
+        bidding.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         bidding.setLineWrap(true);
         bidding.setRows(3);
         bidding.setText("\n");
-        bidding.setBorder(javax.swing.BorderFactory.createTitledBorder("BiddingArea"));
+        bidding.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "BiddingArea", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         bidding.setEnabled(false);
         jScrollPane8.setViewportView(bidding);
 
@@ -511,9 +526,10 @@ public final class Facturacion extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 38, 5, 38);
         jPanel4.add(jScrollPane8, gridBagConstraints);
 
-        pdate.setBorder(javax.swing.BorderFactory.createTitledBorder("Publish Date"));
+        pdate.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Publish Date", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16))); // NOI18N
         pdate.setDateFormatString("yyyy-MM-dd");
         pdate.setEnabled(false);
+        pdate.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         pdate.setMaxSelectableDate(new java.util.Date(253370790095000L));
         pdate.setOpaque(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -531,8 +547,12 @@ public final class Facturacion extends javax.swing.JFrame {
         filtroProyecto.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         filtroProyecto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Id Proyecto", "Po No" }));
 
-        jMenu1.setText("Opciones");
+        jMenuBar1.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
 
+        jMenu1.setText("Opciones");
+        jMenu1.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        jMenuItem1.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jMenuItem1.setText("Gestionar Asignaciones");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -544,7 +564,9 @@ public final class Facturacion extends javax.swing.JFrame {
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Archivo");
+        jMenu2.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
 
+        jMenuItem2.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jMenuItem2.setText("Importar archivo Excel");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -554,6 +576,24 @@ public final class Facturacion extends javax.swing.JFrame {
         jMenu2.add(jMenuItem2);
 
         jMenuBar1.add(jMenu2);
+
+        jMenu3.setText("Perfil");
+        jMenu3.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        jMenuItem3.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jMenuItem3.setText("Actualizar Contraseña");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        jMenu3.add(jMenuItem3);
+
+        jMenuItem4.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jMenuItem4.setText("Cerrar Sesión");
+        jMenu3.add(jMenuItem4);
+
+        jMenuBar1.add(jMenu3);
 
         setJMenuBar(jMenuBar1);
 
@@ -608,9 +648,9 @@ public final class Facturacion extends javax.swing.JFrame {
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         evt.getID();
-        this.setVisible(false);
         ImportarExcel importarExcel = new ImportarExcel();
-        importarExcel.setFacturacion(this);
+        importarExcel.setJFrame(this);
+        this.setVisible(false);
         importarExcel.setVisible(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
@@ -631,9 +671,18 @@ public final class Facturacion extends javax.swing.JFrame {
         evt.getID();
         this.setVisible(false);
         Asignaciones asignaciones = new Asignaciones();
-        asignaciones.setFacturacion(this);
+        asignaciones.setJFrame(this);
         asignaciones.setVisible(true);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        evt.getID();
+        ActualizarPassword actualizarPassword = new ActualizarPassword();
+        actualizarPassword.setUsuario(usuario);
+        actualizarPassword.setJFrame(this);
+        actualizarPassword.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -662,9 +711,12 @@ public final class Facturacion extends javax.swing.JFrame {
     private javax.swing.JButton jButton5;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
