@@ -4,7 +4,7 @@
  */
 package com.mx.grupogateway.system.view.util;
 
-import com.mx.grupogateway.system.util.Validaciones;
+import com.mx.grupogateway.system.util.ValidacionPassword;
 import java.awt.Color;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -29,7 +29,7 @@ public class ValidacionJPasswordField {
      */
     public static void evaluarCampoPassword(JPasswordField password,
             JLabel jLabel) {
-        if (Validaciones.esPasswordValida(password.getPassword())) {
+        if (ValidacionPassword.esPasswordValida(password.getPassword())) {
             statusJlabelOk(jLabel, "Segura");
         } else {
             statusJlabelNotOk(jLabel, "Insegura");
