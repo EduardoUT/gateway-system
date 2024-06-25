@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -22,6 +23,7 @@ import java.util.List;
 public class EmpleadoDAO {
 
     private final Connection con;
+    private UsuarioDAO usuarioDAO;
 
     public EmpleadoDAO(Connection con) {
         this.con = con;
@@ -33,28 +35,24 @@ public class EmpleadoDAO {
      * @param empleado
      */
     public void guardar(Empleado empleado) {
+        usuarioDAO = new UsuarioDAO(con);
+        usuarioDAO.guardar(
+                empleado.getUsuario(),
+                empleado.getIdEmpleado()
+        );
         String sql = "INSERT INTO EMPLEADOS "
                 + "(ID_EMPLEADO, NOMBRE, APE_PAT, "
                 + "APE_MAT, ID_USUARIO, ID_CATEGORIA_EMPLEADO) "
                 + "VALUES (?, ?, ?, ?, ?, ?)";
-
         try (PreparedStatement preparedStatement = con.prepareStatement(sql,
-                Statement.RETURN_GENERATED_KEYS);) {
+                Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, empleado.getIdEmpleado());
             preparedStatement.setString(2, empleado.getNombre());
             preparedStatement.setString(3, empleado.getApellidoPaterno());
             preparedStatement.setString(4, empleado.getApellidoMaterno());
             preparedStatement.setString(5, empleado.getUsuario().getIdUsuario());
-            preparedStatement.setString(6, empleado.getEmpleadoCategoria().getCategoriaId());
+            preparedStatement.setString(6, empleado.getEmpleadoCategoria().getidCategoria());
             preparedStatement.execute();
-
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
-                while (resultSet.next()) {
-                    System.out.println(
-                            String.format("Fue guardado el empleado %s",
-                                    empleado));
-                }
-            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -74,7 +72,7 @@ public class EmpleadoDAO {
                 + "INNER JOIN EMPLEADOS ON "
                 + "CATEGORIA_EMPLEADO.ID_CATEGORIA_EMPLEADO = "
                 + "EMPLEADOS.ID_CATEGORIA_EMPLEADO; ";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet();) {
                 while (resultSet.next()) {
@@ -95,7 +93,6 @@ public class EmpleadoDAO {
                 return resultado;
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -111,13 +108,13 @@ public class EmpleadoDAO {
      * @param idCategoria
      * @return
      */
-    public int modificar(String idEmpleado, String nombre, String apellidoP,
+    public int actualizar(String idEmpleado, String nombre, String apellidoP,
             String apellidoM, String idCategoria) {
         String sql = "UPDATE EMPLEADOS "
                 + "SET NOMBRE = ?, APE_PAT = ?, APE_MAT = ?, "
                 + "ID_CATEGORIA_EMPLEADO = ? "
                 + "WHERE ID_EMPLEADO = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.setString(1, nombre);
             preparedStatement.setString(2, apellidoP);
             preparedStatement.setString(3, apellidoM);
@@ -135,17 +132,22 @@ public class EmpleadoDAO {
      * Realiza la eliminación del registro en la BD, acorde al empleadoId.
      *
      * @param idEmpleado
-     * @return
+     * @return Código de error
      */
     public int eliminar(String idEmpleado) {
+        int statusCode = 0;
         String sql = "DELETE FROM EMPLEADOS WHERE ID_EMPLEADO = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.setString(1, idEmpleado);
             preparedStatement.execute();
-            int updateCount = preparedStatement.getUpdateCount();
-            return updateCount;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            statusCode = e.getErrorCode();
+            JOptionPane.showMessageDialog(null, "Error al "
+                    + "eliminar este empleado, es posible que aún cuente con "
+                    + "proyectos asignados, o la conexión a la base de datos "
+                    + "se haya perdido.", "Error al eliminar.",
+                    JOptionPane.ERROR_MESSAGE);
         }
+        return statusCode;
     }
 }
