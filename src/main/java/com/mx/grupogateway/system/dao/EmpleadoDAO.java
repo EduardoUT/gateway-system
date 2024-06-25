@@ -71,7 +71,9 @@ public class EmpleadoDAO {
                 + "FROM CATEGORIA_EMPLEADO "
                 + "INNER JOIN EMPLEADOS ON "
                 + "CATEGORIA_EMPLEADO.ID_CATEGORIA_EMPLEADO = "
-                + "EMPLEADOS.ID_CATEGORIA_EMPLEADO; ";
+                + "EMPLEADOS.ID_CATEGORIA_EMPLEADO "
+                + "WHERE NOMBRE_CATEGORIA = 'Administrador Facturación' "
+                + "OR NOMBRE_CATEGORIA = 'Operador Facturación'";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet();) {
