@@ -21,7 +21,6 @@ public class EmpleadoController {
         this.empleadoDAO = new EmpleadoDAO(
                 new ConnectionFactory().realizarConexion()
         );
-
     }
 
     /**
@@ -29,10 +28,8 @@ public class EmpleadoController {
      * id de la categoría a la que pertenece.
      *
      * @param empleado Objeto de tipo Empleado.
-     * @param idCategoria El id de la categoría correspondiente.
      */
-    public void guardar(Empleado empleado, String idCategoria) {
-        empleado.setEmpleadoCategoriaId(idCategoria);
+    public void guardar(Empleado empleado) {
         empleadoDAO.guardar(empleado);
     }
 
@@ -55,11 +52,10 @@ public class EmpleadoController {
      * @param idCategoria
      * @return Cantidad de registros actualizados.
      */
-    public int modificar(String empleadoId, String nombre,
+    public int actualizar(String empleadoId, String nombre,
             String apellidoP, String apellidoM, String idCategoria) {
-        return this.empleadoDAO.modificar(empleadoId, nombre,
+        return this.empleadoDAO.actualizar(empleadoId, nombre,
                 apellidoP, apellidoM, idCategoria);
-
     }
 
     /**
@@ -67,7 +63,7 @@ public class EmpleadoController {
      * tablaEmpleado.
      *
      * @param empleadoId
-     * @return Cantidad de registros eliminados.
+     * @return Código de error.
      */
     public int eliminar(String empleadoId) {
         return this.empleadoDAO.eliminar(empleadoId);
