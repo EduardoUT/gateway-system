@@ -12,17 +12,18 @@ import com.mx.grupogateway.system.controller.ProyectoController;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Proyecto;
 import com.mx.grupogateway.system.modelo.ProyectoAsignado;
-import com.mx.grupogateway.system.view.util.TablaColumnasAutoajustables;
-import com.mx.grupogateway.system.view.util.TableDataModelAsignacion;
-import com.mx.grupogateway.system.view.util.TableDataModelEmpleado;
-import com.mx.grupogateway.system.view.util.TableDataModelProyecto;
-import com.mx.grupogateway.system.view.util.TableMethods;
-import java.awt.Image;
-import java.awt.Toolkit;
+import com.mx.grupogateway.system.view.util.IconoVentana;
+import com.mx.grupogateway.system.view.util.MargenTabla;
+import com.mx.grupogateway.system.view.model.TableDataModelAsignacion;
+import com.mx.grupogateway.system.view.model.TableDataModelEmpleado;
+import com.mx.grupogateway.system.view.model.TableDataModelProyecto;
+import com.mx.grupogateway.system.view.util.AccionesTabla;
 import java.awt.event.KeyEvent;
 import java.util.LinkedList;
 import java.util.List;
 import java.awt.event.MouseEvent;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -30,7 +31,7 @@ import javax.swing.table.DefaultTableModel;
  * @author mcore
  */
 public final class Asignaciones extends javax.swing.JFrame {
-    
+
     private DefaultTableModel modeloTablaProyectos;
     private DefaultTableModel modeloTablaEmpleados;
     private DefaultTableModel modeloTablaAsignaciones;
@@ -45,14 +46,15 @@ public final class Asignaciones extends javax.swing.JFrame {
     private int filaTablaProyectos;
     private int filaTablaEmpleados;
     private int filaTablaAsignaciones;
-    private Facturacion facturacion;
-    
+    private JFrame jFrame;
+
     public Asignaciones() {
         initComponents();
         iniciarProcesos();
     }
-    
+
     private void iniciarProcesos() {
+        cargarIconoVentana();
         filaTablaProyectos = tablaProyectos.getSelectedRow();
         filaTablaEmpleados = tablaEmpleados.getSelectedRow();
         filaTablaAsignaciones = tablaAsignaciones.getSelectedRow();
@@ -63,18 +65,15 @@ public final class Asignaciones extends javax.swing.JFrame {
         cargarTablaProyectos();
         cargarTablaProyectosAsignados();
         selectionRowListener();
-        TableMethods.filtrarResultados(tablaProyectos, buscadorProyecto, filtroProyecto);
-        TableMethods.filtrarResultados(tablaEmpleados, buscadorEmpleado, filtroEmpleado);
-        TableMethods.filtrarResultados(tablaAsignaciones, buscadorAsignacion, filtroAsignacion);
+        AccionesTabla.filtrarResultados(tablaProyectos, buscadorProyecto, filtroProyecto);
+        AccionesTabla.filtrarResultados(tablaEmpleados, buscadorEmpleado, filtroEmpleado);
+        AccionesTabla.filtrarResultados(tablaAsignaciones, buscadorAsignacion, filtroAsignacion);
     }
-    
-    @Override
-    public Image getIconImage() {
-        Image retValue = Toolkit.getDefaultToolkit().
-                getImage(ClassLoader.getSystemResource("Imagenes/Logo.png"));
-        return retValue;
+
+    private void cargarIconoVentana() {
+        this.setIconImage(IconoVentana.getIconoVentana());
     }
-    
+
     private void cargarTablaEmpleados() {
         modeloTablaEmpleados = (DefaultTableModel) tablaEmpleados.getModel();
         List<Empleado> empleados = this.empleadoController.listar();
@@ -82,9 +81,9 @@ public final class Asignaciones extends javax.swing.JFrame {
                 modeloTablaEmpleados, tablaEmpleados, empleados
         );
         tableDataModelEmpleado.cargarModeloTablaEmpleados();
-        TablaColumnasAutoajustables.autoAjustarColumnas(tablaEmpleados);
+        MargenTabla.ajustarColumnas(tablaEmpleados);
     }
-    
+
     private void cargarTablaProyectos() {
         modeloTablaProyectos = (DefaultTableModel) tablaProyectos.getModel();
         listaProyectos = this.proyectoController.listar();
@@ -92,9 +91,9 @@ public final class Asignaciones extends javax.swing.JFrame {
                 modeloTablaProyectos, tablaProyectos, listaProyectos
         );
         tableDataModelProyecto.cargarModeloTablaProyecto();
-        TablaColumnasAutoajustables.autoAjustarColumnas(tablaProyectos);
+        MargenTabla.ajustarColumnas(tablaProyectos);
     }
-    
+
     private void cargarTablaProyectosAsignados() {
         modeloTablaAsignaciones = (DefaultTableModel) tablaAsignaciones.getModel();
         List<ProyectoAsignado> listaProyectosAsignados
@@ -102,30 +101,39 @@ public final class Asignaciones extends javax.swing.JFrame {
         tableDataModelAsignacion = new TableDataModelAsignacion(
                 modeloTablaAsignaciones, tablaAsignaciones, listaProyectosAsignados);
         tableDataModelAsignacion.cargarModeloTablaAsignaciones();
-        TablaColumnasAutoajustables.autoAjustarColumnas(tablaAsignaciones);
+        MargenTabla.ajustarColumnas(tablaAsignaciones);
     }
-    
+
+    /**
+     * Obtiene la selección de la fila de cada tabla.
+     */
     private void selectionRowListener() {
         tablaProyectos.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 filaTablaProyectos = tablaProyectos.getSelectedRow();
             }
         });
-        
+
         tablaEmpleados.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 filaTablaEmpleados = tablaEmpleados.getSelectedRow();
             }
         });
-        
+
         tablaAsignaciones.getSelectionModel().addListSelectionListener(e -> {
             filaTablaAsignaciones = tablaAsignaciones.getSelectedRow();
         });
     }
-    
+
+    /**
+     * Crea una nueva asignación de proyecto a un empleado.
+     */
     private void guardarAsignacion() {
         if (filaTablaProyectos == -1 || filaTablaEmpleados == -1) {
-            System.out.println("No se han seleccionado filas");
+            JOptionPane.showMessageDialog(null, "Por favor, "
+                    + "seleccione la fila de la tabla de proyectos y una de la "
+                    + "tabla de empleados.", "Filas no seleccionadas",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else {
             filtroProyectosAsignados = new LinkedList<>();
             String poNo = tablaProyectos.getValueAt(
@@ -147,10 +155,18 @@ public final class Asignaciones extends javax.swing.JFrame {
             filtroProyectosAsignados = null;
         }
     }
-    
+
+    /**
+     * Actualiza el empleado asignado a un proyecto con uno diferente, el
+     * progreso del proyecto se mantiene.
+     */
     private void actualizarAsignacion() {
         if (filaTablaEmpleados == -1 || filaTablaAsignaciones == -1) {
-            System.out.println("Debe seleccionar tablas.");
+            JOptionPane.showMessageDialog(null, "Por favor, "
+                    + "seleccione la fila de la tabla de empleados y una de la "
+                    + "tabla de asignaciones para actualizar la asignación.",
+                    "Filas no seleccionadas",
+                    JOptionPane.INFORMATION_MESSAGE);
         } else {
             String idEmpleadoAsignado = tablaAsignaciones.getValueAt(
                     filaTablaAsignaciones, 0).toString();
@@ -161,7 +177,9 @@ public final class Asignaciones extends javax.swing.JFrame {
                     filaTablaAsignaciones, 6)
                     .toString();
             if (idEmpleadoAsignado.equals(idEmpleado)) {
-                System.out.println("Seleccione un usuario diferente.");
+                JOptionPane.showMessageDialog(null, "Por favor, "
+                        + "seleccione un empleado diferente.", "Asignación existente.",
+                        JOptionPane.INFORMATION_MESSAGE);
             } else {
                 int filasActualizadas = this.proyectosAsignadosController.actualizar(
                         idEmpleado, poNo, idEmpleadoAsignado
@@ -170,7 +188,7 @@ public final class Asignaciones extends javax.swing.JFrame {
             }
         }
     }
-    
+
     private void llenarResumenAsignaciones() {
         String nombre = tablaAsignaciones
                 .getValueAt(filaTablaAsignaciones, 1).toString()
@@ -180,7 +198,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                 .concat(" ")
                 .concat(tablaAsignaciones
                         .getValueAt(filaTablaAsignaciones, 3).toString());
-        
+
         nombreEmpleado.setText(nombre);
         poNoCampo.setText(tablaAsignaciones
                 .getValueAt(filaTablaAsignaciones, 6).toString()
@@ -190,13 +208,13 @@ public final class Asignaciones extends javax.swing.JFrame {
         total.setText(tablaAsignaciones.getValueAt(filaTablaAsignaciones, 8).toString());
         statusFacturacion.setText(tablaAsignaciones.getValueAt(filaTablaAsignaciones, 9).toString());
     }
-    
-    protected void setFacturacion(Facturacion facturacion) {
-        this.facturacion = facturacion;
+
+    protected void setJFrame(JFrame jFrame) {
+        this.jFrame = jFrame;
     }
-    
-    private Facturacion getFacturacion() {
-        return this.facturacion;
+
+    private JFrame getFacturacion() {
+        return this.jFrame;
     }
 
     /**
