@@ -67,6 +67,10 @@ public class Gestion extends javax.swing.JFrame {
         this.setIconImage(IconoVentana.getIconoVentana());
     }
 
+    protected void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
     /**
      * Construyendo objeto de tipo Empleado y pasandolo por parámetro en el
      * método guardar() del EmpleadoController.
@@ -147,12 +151,16 @@ public class Gestion extends javax.swing.JFrame {
      * pasa por parámetro en el método eliminar() del EmpleadoController.
      */
     private void eliminarEmpleado() {
-        int cantidadEliminada = this.empleadoController
-                .eliminar(AccionesTabla.obtenerUUID(tablaEmpleado, 0));
-        JOptionPane.showMessageDialog(null, cantidadEliminada
-                + " registro eliminado exitosamente.");
-        limpiarCamposFormularioEmpleado();
-        cargarTablaEmpleado();
+        int status = this.empleadoController.eliminar(
+                AccionesTabla.obtenerUUID(tablaEmpleado, 0)
+        );
+        if (status != 1451) {
+            JOptionPane.showMessageDialog(null, "Registro "
+                    + "eliminado exitosamente.", "Eliminación completada.",
+                    JOptionPane.INFORMATION_MESSAGE);
+            limpiarCamposFormularioEmpleado();
+            cargarTablaEmpleado();
+        }
     }
 
     /**
@@ -285,10 +293,17 @@ public class Gestion extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "Nombre de Usuario", "Clave de Seguridad"
+                "ID", "Nombre de Usuario"
             }
-        ));
-        tablaUsuario.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         tablaUsuario.setFocusable(false);
         tablaUsuario.getTableHeader().setResizingAllowed(false);
         tablaUsuario.getTableHeader().setReorderingAllowed(false);
