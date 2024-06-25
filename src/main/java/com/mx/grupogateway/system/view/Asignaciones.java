@@ -24,6 +24,7 @@ import java.util.List;
 import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -108,7 +109,7 @@ public final class Asignaciones extends javax.swing.JFrame {
      * Obtiene la selección de la fila de cada tabla.
      */
     private void selectionRowListener() {
-        tablaProyectos.getSelectionModel().addListSelectionListener(e -> {
+        tablaProyectos.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
             if (!e.getValueIsAdjusting()) {
                 filaTablaProyectos = tablaProyectos.getSelectedRow();
             }
