@@ -22,11 +22,21 @@ public class ProyectoController {
                 new ConnectionFactory().realizarConexion()
         );
     }
-    
+
+    /**
+     * Realiza el guardado de un nuevo proyecto.
+     *
+     * @param proyecto
+     */
     public void guardar(Proyecto proyecto) {
         this.proyectoDAO.guardar(proyecto);
     }
-    
+
+    /**
+     * Lista de objetos de tipo Proyecto.
+     *
+     * @return
+     */
     public List<Proyecto> listar() {
         return this.proyectoDAO.listar();
     }
