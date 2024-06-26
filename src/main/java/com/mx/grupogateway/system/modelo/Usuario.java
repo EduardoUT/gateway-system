@@ -5,7 +5,7 @@
 package com.mx.grupogateway.system.modelo;
 
 import com.mx.grupogateway.system.security.SecurityPassword;
-import com.mx.grupogateway.system.util.UUIDOperations;
+import com.mx.grupogateway.system.util.GeneradorUUID;
 import java.util.UUID;
 
 /**
@@ -23,29 +23,28 @@ public class Usuario {
     }
 
     /**
-     * Constructor para crear un nuevo Usuario con nombre de usuario,
-     * identificador y sin password desde un objeto Empleado.
+     * Constructor para actualizar una password nula.
      *
-     * @param empleado Recibe un objeto Empleado para crear el nombre de Usuario
-     * con el nombre del empleado.
+     * @param idUsuario
+     * @param nombreUsuario
+     * @param password
      */
-    public Usuario(Empleado empleado) {
-        this.idUsuario = UUIDOperations.generarIdentificador();
-        this.nombreUsuario = generarNombreUsuario(empleado.getNombre(),
-                empleado.getApellidoPaterno(), empleado.getApellidoMaterno()
-        );
-        this.password = "NULL";
+    public Usuario(String idUsuario, String nombreUsuario,
+            char[] password) {
+        this.idUsuario = idUsuario;
+        this.nombreUsuario = nombreUsuario;
+        this.password = encriptarPass(password);
     }
 
     /**
      * Constructor para crear un nuevo usuario con una clave de seguridad
-     * generada automáticamente.
+     * generada por defecto.
      *
      * @param nombreUsuario
      * @param password
      */
     public Usuario(String nombreUsuario, char[] password) {
-        this.idUsuario = UUIDOperations.generarIdentificador();
+        this.idUsuario = GeneradorUUID.generarIdentificador();
         this.nombreUsuario = nombreUsuario;
         this.password = encriptarPass(password);
         this.claveSeguridad = generarClaveSeguridad();
@@ -63,19 +62,27 @@ public class Usuario {
     }
 
     /**
-     * Constructor para actualizar una password nula.
+     * Constructor para crear un nuevo Usuario con nombre de usuario,
+     * identificador y sin password desde un objeto Empleado.
      *
-     * @param idUsuario
-     * @param nombreUsuario
-     * @param password
+     * @param empleado Recibe un objeto Empleado para crear el nombre de Usuario
+     * con el nombre del empleado.
      */
-    public Usuario(String idUsuario, String nombreUsuario,
-            char[] password) {
-        this.idUsuario = idUsuario;
-        this.nombreUsuario = nombreUsuario;
-        this.password = encriptarPass(password);
+    public Usuario(Empleado empleado) {
+        this.idUsuario = GeneradorUUID.generarIdentificador();
+        this.nombreUsuario = generarNombreUsuario(
+                empleado.getNombre(),
+                empleado.getApellidoPaterno(),
+                empleado.getApellidoMaterno()
+        );
+        this.password = "NULL";
     }
 
+    /**
+     * Constructor para asignar el identificador de un usuario.
+     *
+     * @param idUsuario
+     */
     public Usuario(String idUsuario) {
         this.idUsuario = idUsuario;
     }
@@ -88,10 +95,24 @@ public class Usuario {
     }
 
     /**
+     * @param idUsuario the usuarioId to set
+     */
+    public void setIdUsuario(String idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    /**
      * @return the nombreUsuario
      */
     public String getNombreUsuario() {
         return nombreUsuario;
+    }
+
+    /**
+     * @param nombreUsuario the nombreUsuario to set
+     */
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
     }
 
     /**
@@ -102,17 +123,28 @@ public class Usuario {
     }
 
     /**
+     * Este método recibe la password sin encriptarla.
+     *
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
+     * Este método encripta la contraseña del usuario.
+     *
+     * @param password
+     */
+    public void setPassword(char[] password) {
+        this.password = encriptarPass(password);
+    }
+
+    /**
      * @return the claveSeguridad
      */
     public String getClaveSeguridad() {
         return claveSeguridad;
-    }
-
-    /**
-     * @param idUsuario the usuarioId to set
-     */
-    public void setUsuarioId(String idUsuario) {
-        this.idUsuario = idUsuario;
     }
 
     /**
@@ -132,7 +164,7 @@ public class Usuario {
                 .concat(apellidoPaterno)
                 .concat(apellidoMaterno.substring(0, 1))
                 .toLowerCase();
-        this.nombreUsuario = usuario;
+        this.setNombreUsuario(usuario);
         return this.nombreUsuario;
     }
 
@@ -148,12 +180,5 @@ public class Usuario {
                 this.nombreUsuario,
                 this.password,
                 this.claveSeguridad);
-    }
-
-    /**
-     * @param password the password to set
-     */
-    public void setPassword(String password) {
-        this.password = password;
     }
 }
