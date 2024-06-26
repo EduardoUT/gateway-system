@@ -10,7 +10,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 /**
- *
+ * 
  * @author eduar
  */
 public class FondoLogin extends JPanel {
