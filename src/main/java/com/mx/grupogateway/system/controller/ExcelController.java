@@ -19,7 +19,17 @@ public class ExcelController {
 
     private final ExcelDAO excelSwingWorker;
 
-    public ExcelController(LinkedList<Proyecto> proyectos, 
+    /**
+     * Recibe una lista de proyectos, misma que ha sido importada de Excel.
+     *
+     * @param proyectos Proyectos importados de Excel.
+     * @param jProgressBar Barra de progreso que será actualizada através del
+     * SwingWorker con la información que está siendo importada a la Base de
+     * Datos.
+     * @param jLabel Estatus del progreso que será informado a través del
+     * SwingWorker.
+     */
+    public ExcelController(LinkedList<Proyecto> proyectos,
             JProgressBar jProgressBar, JLabel jLabel) {
         this.excelSwingWorker = new ExcelDAO(
                 new ConnectionFactory().realizarConexion(),
@@ -27,6 +37,10 @@ public class ExcelController {
         );
     }
 
+    /**
+     * Invoca la ejecución de un SwingWorker el cuál realiza la importación de
+     * la información recopilada de Excel a una BD.
+     */
     public void getExecuteSwingWorker() {
         this.excelSwingWorker.execute();
     }
