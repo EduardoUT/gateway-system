@@ -22,23 +22,41 @@ public class EmpleadoCategoriaController {
                 new ConnectionFactory().realizarConexion()
         );
     }
-    
+
+    /**
+     * Guarda objeto de tipo EmpleadoCategoria.
+     *
+     * @param empleadoCategoria
+     */
     public void guardar(EmpleadoCategoria empleadoCategoria) {
         this.empleadoCategoriaDAO.guardar(empleadoCategoria);
     }
-    
+
     /**
-     * 
-     * @return List de tipo EmpleadoCargo. 
+     *
+     * @return List de tipo EmpleadoCategoria.
      */
     public List<EmpleadoCategoria> listar() {
         return this.empleadoCategoriaDAO.listar();
     }
-    
-    public int modificar(String idCategoria, String nombreCategoria) {
-        return this.empleadoCategoriaDAO.modificar(idCategoria, nombreCategoria);
+
+    /**
+     * Actualiza el nombre de una categoría de empleado acorde al id.
+     *
+     * @param idCategoria
+     * @param nombreCategoria
+     * @return
+     */
+    public int actualizar(String idCategoria, String nombreCategoria) {
+        return this.empleadoCategoriaDAO.actualizar(idCategoria, nombreCategoria);
     }
-    
+
+    /**
+     * Elimina una categoría de empleado.
+     *
+     * @param idCategoria
+     * @return
+     */
     public int eliminar(String idCategoria) {
         return this.empleadoCategoriaDAO.eliminar(idCategoria);
     }
