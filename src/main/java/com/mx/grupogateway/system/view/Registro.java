@@ -46,11 +46,8 @@ public class Registro extends javax.swing.JFrame {
      *
      * Si devuelve Optional.empty: El empleado no existe.
      *
-     * Si esta presente un valor entero y sea diferente de 0: El empleado ya
-     * tiene un usuario asignado.
-     *
-     * Si esta presente un valor entero y sea igual a 0: Se procede a registrar
-     * el usuario asociandolo a ese empleadoID.
+     * Si esta presente un valor diferente a NULL: El empleado ya tiene un
+     * usuario y contraseña asignados.
      */
     private void registrarUsuario() {
         String idUsuario = campoIdUsuario.getText();
@@ -131,13 +128,12 @@ public class Registro extends javax.swing.JFrame {
         passwordConfirmLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosed(java.awt.event.WindowEvent evt) {
                 formWindowClosed(evt);
             }
         });
-
-        jPanel1.setBackground(new java.awt.Color(0, 153, 204));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel6.setText("Id Usuario:");
@@ -366,5 +362,4 @@ public class Registro extends javax.swing.JFrame {
     private javax.swing.JLabel passwordConfirmLabel;
     private javax.swing.JLabel passwordStatusLabel;
     // End of variables declaration//GEN-END:variables
-
 }
