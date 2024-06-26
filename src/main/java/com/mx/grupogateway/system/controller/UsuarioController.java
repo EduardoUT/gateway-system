@@ -8,7 +8,6 @@ import com.mx.grupogateway.system.dao.UsuarioDAO;
 import com.mx.grupogateway.system.factory.ConnectionFactory;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Usuario;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,16 +48,53 @@ public class UsuarioController {
      * Permite comprobar y validar que un empleado tenga una cuenta de usuario
      * existente.
      *
-     * @param empleado
+     * @param idUsuario
      * @return
      */
-    public Optional consultarIdUsuario(Empleado empleado) {
-        return this.usuarioDAO.consultarIdUsuario(empleado);
+    public Optional consultarIdUsuario(String idUsuario) {
+        return this.usuarioDAO.consultarIdUsuario(idUsuario);
     }
 
-    public ArrayList<String> consultarPerfilUsuario(
-            String nombreUsuario, String password) {
-        return this.usuarioDAO.consultarUsuario(nombreUsuario, password);
+    /**
+     * Consulta si la password existe en la BD y es válida y no conrenga el
+     * valor por defecto NULL al crearse un nuevo empleado.
+     *
+     * @param usuario
+     * @return
+     */
+    public boolean esPasswordValida(Usuario usuario) {
+        return this.usuarioDAO.esPasswordValida(usuario);
+    }
+
+    /**
+     * Vslida si una password contiene NULL en la BD.
+     *
+     * @param idUsuario
+     * @return
+     */
+    public boolean esPasswordNula(String idUsuario) {
+        return this.usuarioDAO.esPasswordNula(idUsuario);
+    }
+
+    /**
+     * Obtiene los identificadores de Categoría de empleado e identificador de
+     * usuario.
+     *
+     * @param usuario
+     * @return
+     */
+    public Empleado consultarPerfilUsuario(Usuario usuario) {
+        return this.usuarioDAO.consultarPerfilUsuario(usuario);
+    }
+
+    /**
+     * Actualiza la password acorde al id, nombre y password dados por el
+     * usuario
+     *
+     * @param usuario
+     */
+    public void actualizarPassword(Usuario usuario) {
+        this.usuarioDAO.actualizarPassword(usuario);
     }
 
     /**
