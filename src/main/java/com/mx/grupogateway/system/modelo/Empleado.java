@@ -4,7 +4,7 @@
  */
 package com.mx.grupogateway.system.modelo;
 
-import com.mx.grupogateway.system.util.UUIDOperations;
+import com.mx.grupogateway.system.util.GeneradorUUID;
 
 /**
  *
@@ -32,6 +32,7 @@ public class Empleado {
     public Empleado(String empleadoId, String nombre, String apellidoPaterno,
             String apellidoMaterno, Usuario usuario,
             EmpleadoCategoria empleadoCategoria) {
+        validarEmpleado(nombre, apellidoPaterno, apellidoMaterno);
         this.idEmpleado = empleadoId;
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
@@ -39,17 +40,55 @@ public class Empleado {
         this.usuario = usuario;
         this.empleadoCategoria = empleadoCategoria;
     }
-    
+
+    /**
+     * Constructor para la creación de un empleado en conjunto de un Usuario.
+     *
+     * @param nombre
+     * @param apellidoPaterno
+     * @param apellidoMaterno
+     * @param empleadoCategoria
+     */
+    public Empleado(String nombre, String apellidoPaterno,
+            String apellidoMaterno, EmpleadoCategoria empleadoCategoria) {
+        validarEmpleado(nombre, apellidoPaterno, apellidoMaterno);
+        this.idEmpleado = GeneradorUUID.generarIdentificador();
+        this.nombre = nombre;
+        this.apellidoPaterno = apellidoPaterno;
+        this.apellidoMaterno = apellidoMaterno;
+        this.empleadoCategoria = empleadoCategoria;
+        this.usuario = new Usuario(this);
+    }
+
+    /**
+     * Constructor para crear un empleado y usuario.
+     *
+     * @param nombre
+     * @param apellidoPaterno
+     * @param apellidoMaterno
+     * @param usuario
+     */
     public Empleado(String nombre, String apellidoPaterno,
             String apellidoMaterno, Usuario usuario) {
+        validarEmpleado(nombre, apellidoPaterno, apellidoMaterno);
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
         this.usuario = usuario;
     }
-    
+
+    /**
+     * Constructor para obtener la representación de este objeto en una lista de
+     * tipo ProyectoAsignado.
+     *
+     * @param idEmpleado
+     * @param nombre
+     * @param apellidoPaterno
+     * @param apellidoMaterno
+     */
     public Empleado(String idEmpleado, String nombre, String apellidoPaterno,
             String apellidoMaterno) {
+        validarEmpleado(nombre, apellidoPaterno, apellidoMaterno);
         this.idEmpleado = idEmpleado;
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
@@ -57,24 +96,18 @@ public class Empleado {
     }
 
     /**
-     * Constructor para crear un Empleado.
+     * Constructor para obtener los identificadores de usuario y categoría.
      *
-     * @param nombre
-     * @param apellidoPaterno
-     * @param apellidoMaterno
+     * @param usuario
+     * @param empleadoCategoria
      */
-    public Empleado(String nombre, String apellidoPaterno,
-            String apellidoMaterno) {
-        validarEmpleado(nombre, apellidoPaterno, apellidoMaterno);
-        this.idEmpleado = UUIDOperations.generarIdentificador();
-        this.nombre = nombre;
-        this.apellidoPaterno = apellidoPaterno;
-        this.apellidoMaterno = apellidoMaterno;
-        //this.usuarioId = DEFAULT_USUARIO_ID;
+    public Empleado(Usuario usuario, EmpleadoCategoria empleadoCategoria) {
+        this.usuario = usuario;
+        this.empleadoCategoria = empleadoCategoria;
     }
 
     /**
-     * Constructor para asignar el empleadoId.
+     * Constructor para asignar el idEmpleado.
      *
      * @param idEmpleado
      */
@@ -97,20 +130,6 @@ public class Empleado {
     }
 
     /**
-     * @return the apellidoPaterno
-     */
-    public String getApellidoPaterno() {
-        return apellidoPaterno;
-    }
-
-    /**
-     * @return the apellidoMaterno
-     */
-    public String getApellidoMaterno() {
-        return apellidoMaterno;
-    }
-
-    /**
      * @param nombre the nombre to set
      */
     public void setNombre(String nombre) {
@@ -118,10 +137,24 @@ public class Empleado {
     }
 
     /**
+     * @return the apellidoPaterno
+     */
+    public String getApellidoPaterno() {
+        return apellidoPaterno;
+    }
+
+    /**
      * @param apellidoPaterno the apellidoPaterno to set
      */
     public void setApellidoPaterno(String apellidoPaterno) {
         this.apellidoPaterno = apellidoPaterno;
+    }
+
+    /**
+     * @return the apellidoMaterno
+     */
+    public String getApellidoMaterno() {
+        return apellidoMaterno;
     }
 
     /**
@@ -145,14 +178,17 @@ public class Empleado {
         return empleadoCategoria;
     }
 
-    public void setEmpleadoCategoriaId(String idCategoria) {
-        this.empleadoCategoria.setIdCategoria(idCategoria);
-    }
-
     public void setUsuarioId(String idUsuario) {
         this.usuario.setUsuarioId(idUsuario);
     }
 
+    /**
+     * Valida que el nombre del empleado este completo.
+     *
+     * @param nombre
+     * @param apellidoPaterno
+     * @param apellidoMaterno
+     */
     private void validarEmpleado(String nombre, String apellidoPaterno,
             String apellidoMaterno) {
         if (nombre == null || nombre.isEmpty()) {
@@ -176,7 +212,7 @@ public class Empleado {
         return String.format("[ID: %s | Nombre: %s | Apellido P: %s "
                 + "| Apellido M: %s | ID Categoría: %s | ID Usuario: %s]",
                 this.idEmpleado, this.getNombre(), this.getApellidoPaterno(), this.getApellidoMaterno(),
-                this.getEmpleadoCategoria().getCategoriaId(),
+                this.getEmpleadoCategoria().getidCategoria(),
                 this.getUsuario().getIdUsuario());
     }
 }
