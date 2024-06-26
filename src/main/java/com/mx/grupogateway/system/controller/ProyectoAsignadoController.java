@@ -23,6 +23,12 @@ public class ProyectoAsignadoController {
         );
     }
 
+    /**
+     * Guarda una lista enlazada de tipo ProyectoAsignado, evalúa di esta
+     * contiene uno o más asignaciones.
+     *
+     * @param proyectosAsignados
+     */
     public void guardar(LinkedList<ProyectoAsignado> proyectosAsignados) {
         if (proyectosAsignados.size() == 1) {
             proyectoAsignacionDAO.guardar(proyectosAsignados);
@@ -31,10 +37,23 @@ public class ProyectoAsignadoController {
         }
     }
 
-    public LinkedList listar() {
+    /**
+     * Lista de asignaciones, con el empleado asociado al proyecto.
+     *
+     * @return
+     */
+    public LinkedList<ProyectoAsignado> listar() {
         return this.proyectoAsignacionDAO.listar();
     }
 
+    /**
+     * Actualiza la asignación de un proyectoa otro empleado.
+     *
+     * @param idEmpleado
+     * @param poNo
+     * @param idEmpleadoAsignado
+     * @return
+     */
     public int actualizar(String idEmpleado, String poNo,
             String idEmpleadoAsignado) {
         return this.proyectoAsignacionDAO.actualizar(
