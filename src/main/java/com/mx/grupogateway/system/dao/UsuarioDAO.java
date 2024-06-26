@@ -63,7 +63,7 @@ public class UsuarioDAO {
         String sql = "SELECT ID_USUARIO, NOMBRE_USUARIO FROM USUARIOS";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.execute();
-            try (ResultSet resultSet = preparedStatement.getResultSet();) {
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     Usuario fila = new Usuario(
                             resultSet.getString("ID_USUARIO"),
@@ -122,7 +122,7 @@ public class UsuarioDAO {
             try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
                 preparedStatement.setString(1, usuario.getNombreUsuario());
                 preparedStatement.execute();
-                try (ResultSet resultSet = preparedStatement.getResultSet();) {
+                try (ResultSet resultSet = preparedStatement.getResultSet()) {
                     while (resultSet.next()) {
                         registros.put(
                                 resultSet.getString("PASSWORD"),
@@ -184,7 +184,7 @@ public class UsuarioDAO {
                 preparedStatement.setString(1, usuario.getNombreUsuario());
                 preparedStatement.setString(2, usuario.getIdUsuario());
                 preparedStatement.execute();
-                try (ResultSet resultSet = preparedStatement.getResultSet();) {
+                try (ResultSet resultSet = preparedStatement.getResultSet()) {
                     while (resultSet.next()) {
                         empleadoCategoria.setIdCategoria(resultSet.getString("ID_CATEGORIA_EMPLEADO"));
                         empleado = new Empleado(
