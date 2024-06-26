@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
  */
 public class Proyecto {
 
-    private Long idProyecto;
+    private final Long idProyecto;
     private String projectCode;
     private String projectName;
     private String customer;
@@ -36,6 +36,32 @@ public class Proyecto {
     private String biddingArea;
     private LocalDateTime publishDate;
 
+    /**
+     * Constructor para la creación de un Proyecto.
+     *
+     * @param idProyecto
+     * @param projectCode
+     * @param projectName
+     * @param customer
+     * @param poStatus
+     * @param poNo
+     * @param poLineNo
+     * @param shipmentNo
+     * @param siteCode
+     * @param siteName
+     * @param itemCode
+     * @param itemDesc
+     * @param requestedQty
+     * @param dueQty
+     * @param billedQty
+     * @param unitPrice
+     * @param lineAmount
+     * @param unit
+     * @param paymentTerms
+     * @param category
+     * @param biddingArea
+     * @param publishDate
+     */
     public Proyecto(Long idProyecto, String projectCode, String projectName,
             String customer, String poStatus, String poNo, Integer poLineNo,
             Integer shipmentNo, String siteCode, String siteName,
@@ -67,12 +93,35 @@ public class Proyecto {
         this.publishDate = publishDate;
     }
 
-    public Proyecto(Long idProject, String customer, String projectName, String poNo, 
+    /**
+     * Constructor para la representación de este objeto en una lista de tipo
+     * ProyectoAsignado.
+     *
+     * @param idProyecto
+     * @param customer
+     * @param projectName
+     * @param poNo
+     * @param poStatus
+     * @param poLineNo
+     * @param siteCode
+     * @param siteName
+     * @param itemDesc
+     * @param requestedQty
+     * @param dueQty
+     * @param billedQty
+     * @param unitPrice
+     * @param lineAmount
+     * @param unit
+     * @param paymentTerms
+     * @param category
+     * @param publishDate
+     */
+    public Proyecto(Long idProyecto, String customer, String projectName, String poNo,
             String poStatus, Integer poLineNo, String siteCode, String siteName,
             String itemDesc, String requestedQty, String dueQty, String billedQty,
-            BigDecimal unitPrice, BigDecimal lineAmount, String unit, 
+            BigDecimal unitPrice, BigDecimal lineAmount, String unit,
             String paymentTerms, String category, LocalDateTime publishDate) {
-        this.idProyecto = idProject;
+        this.idProyecto = idProyecto;
         this.customer = customer;
         this.projectName = projectName;
         this.poNo = poNo;
@@ -92,6 +141,13 @@ public class Proyecto {
         this.publishDate = publishDate;
     }
 
+    /**
+     * Constructor con el identificador del proyecto y la clave poNo a ser
+     * almacenadas en una lista de tipo ProyectoAsignado.
+     *
+     * @param idProyecto
+     * @param poNo
+     */
     public Proyecto(Long idProyecto, String poNo) {
         this.idProyecto = idProyecto;
         this.poNo = poNo;
