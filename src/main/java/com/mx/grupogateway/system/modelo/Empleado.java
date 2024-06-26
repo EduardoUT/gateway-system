@@ -178,8 +178,13 @@ public class Empleado {
         return empleadoCategoria;
     }
 
-    public void setUsuarioId(String idUsuario) {
-        this.usuario.setUsuarioId(idUsuario);
+    /**
+     * Asigna el id de usuario al método propio de un objeto usuario.
+     *
+     * @param idUsuario
+     */
+    public void setIdUsuario(String idUsuario) {
+        this.usuario.setIdUsuario(idUsuario);
     }
 
     /**
