@@ -38,7 +38,7 @@ public class ProyectoAsignadoDAO {
                 + "TOTAL_PAGAR, STATUS) VALUES "
                 + "(?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?) ";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql,
-                Statement.RETURN_GENERATED_KEYS);) {
+                Statement.RETURN_GENERATED_KEYS)) {
             for (ProyectoAsignado proyectoAsignado : proyectosAsignados) {
                 preparedStatement.setString(1,
                         proyectoAsignado.getEmpleado().getIdEmpleado());
@@ -54,8 +54,7 @@ public class ProyectoAsignadoDAO {
                         proyectoAsignado.getStatusAsBinary());
                 preparedStatement.execute();
             }
-
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 while (resultSet.next()) {
                     System.out.println(
                             String.format("Fue guardada la siguiente "
@@ -80,7 +79,7 @@ public class ProyectoAsignadoDAO {
                 + "TOTAL_PAGAR, STATUS) VALUES "
                 + "(?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?) ";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql,
-                Statement.RETURN_GENERATED_KEYS);) {
+                Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1,
                     proyectoAsignado.getEmpleado().getIdEmpleado());
             preparedStatement.setLong(2,
@@ -94,7 +93,7 @@ public class ProyectoAsignadoDAO {
             preparedStatement.setString(6,
                     proyectoAsignado.getStatusAsBinary());
             preparedStatement.execute();
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 while (resultSet.next()) {
                     System.out.println(
                             String.format("Fue guardada la siguiente "
@@ -127,9 +126,9 @@ public class ProyectoAsignadoDAO {
                 + "INNER JOIN EMPLEADOS "
                 + "ON EMPLEADOS_HAS_PROJECTS.ID_EMPLEADO = EMPLEADOS.ID_EMPLEADO";
 
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.execute();
-            try (ResultSet resultSet = preparedStatement.getResultSet();) {
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     proyectosAsignados.add(
                             new ProyectoAsignado(
@@ -189,7 +188,7 @@ public class ProyectoAsignadoDAO {
         String sql = "UPDATE EMPLEADOS_HAS_PROJECTS "
                 + "SET ID_EMPLEADO = ? "
                 + "WHERE PO_NO = ? AND ID_EMPLEADO = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.setString(1, idEmpleado);
             preparedStatement.setString(2, poNo);
             preparedStatement.setString(3, idEmpleadoAsignado);
