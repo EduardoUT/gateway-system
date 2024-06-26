@@ -32,9 +32,18 @@ public class Excel extends SwingWorker<Void, Integer> {
     private int optionFileChooser = 0;
     private final JProgressBar jProgressBar;
     private final JLabel jLabel;
-
     private final LinkedList<Proyecto> datosExcel;
 
+    /**
+     * Constructor para crear un proceso en segundo plano con SwingWorker.
+     *
+     * @param rutaArchivoExcel Ruta del archivo Excel a importar.
+     * @param optionFileChooser Opción seleccionada por el usuario a través de
+     * en un JFileChooser.
+     * @param jProgressBar Barra de progreso donde se actualizará acorde a la
+     * importación de los datos.
+     * @param jLabel Etiqueta donde se informa el status de la importación.
+     */
     public Excel(String rutaArchivoExcel, int optionFileChooser,
             JProgressBar jProgressBar, JLabel jLabel) {
         this.rutaArchivoExcel = rutaArchivoExcel;
@@ -45,7 +54,8 @@ public class Excel extends SwingWorker<Void, Integer> {
     }
 
     /**
-     * @return the proyectos
+     * @return Devuelve el estado de la lista, en caso de ser una lista vacía o
+     * al no ser proporcionada una ruta.
      */
     public LinkedList<Proyecto> getDatos() {
         return datosExcel == null ? null : datosExcel;
@@ -62,6 +72,10 @@ public class Excel extends SwingWorker<Void, Integer> {
         return numRows;
     }
 
+    /**
+     * Proceso encargado de procesar e importar la información de un archivo
+     * Excel a una lista enlazada de tipo Proyecto.
+     */
     private void processExcel() {
         if (optionFileChooser == JFileChooser.APPROVE_OPTION) {
             File file = new File(rutaArchivoExcel);
@@ -107,6 +121,14 @@ public class Excel extends SwingWorker<Void, Integer> {
         }
     }
 
+    /**
+     * Obtiene el objeto Row y el número de celda ideal para celdas con dato de
+     * tipo texto.
+     *
+     * @param row
+     * @param numCell
+     * @return La representación del dato obtenido en un String.
+     */
     private String getCellValueString(Row row, int numCell) {
         String optionalToString;
         optionalToString = Optional.ofNullable(row.getCell(numCell))
@@ -115,6 +137,14 @@ public class Excel extends SwingWorker<Void, Integer> {
         return optionalToString;
     }
 
+    /**
+     * Obtiene el objeto Row y el número de celda, ideal para celdas con datos
+     * numéicos enteros.
+     *
+     * @param row
+     * @param numCell
+     * @return La reprecentación del dato obtenido en un Integer.
+     */
     private Integer getCellValueInteger(Row row, int numCell) {
         String optionalToString;
         optionalToString = Optional.ofNullable(row.getCell(numCell))
@@ -127,6 +157,14 @@ public class Excel extends SwingWorker<Void, Integer> {
         return num.intValue();
     }
 
+    /**
+     * Obtiene el objeto Row y el número de celda, ideal para campos con números
+     * grandes.
+     *
+     * @param row
+     * @param numCell
+     * @return La representación del valor obtenido en un Long.
+     */
     private Long getCellValueLong(Row row, int numCell) {
         String optionalToString;
         optionalToString = Optional.ofNullable(row.getCell(numCell))
@@ -139,6 +177,14 @@ public class Excel extends SwingWorker<Void, Integer> {
                 .longValue();
     }
 
+    /**
+     * Obtiene el objeto Row y el número de celda, ideal para datos de tipo
+     * decimal.
+     *
+     * @param row
+     * @param numCell
+     * @return La representación del dato obrenido en BigDecimal.
+     */
     private BigDecimal getCellValueBigDecimal(Row row, int numCell) {
         String optionalToString;
         optionalToString = Optional.ofNullable(row.getCell(numCell))
@@ -150,6 +196,14 @@ public class Excel extends SwingWorker<Void, Integer> {
         return new BigDecimal(optionalToString);
     }
 
+    /**
+     * Obtiene el objeto Row y el número de celda, ideal para celdas con fechas
+     * en estandar Timestamp.
+     *
+     * @param row
+     * @param numCell
+     * @return La representación de una fecha en un LocalDateTime.
+     */
     private LocalDateTime getCellValueTimestamp(Row row, int numCell) {
         String optionalToString;
         optionalToString = Optional.
@@ -159,12 +213,24 @@ public class Excel extends SwingWorker<Void, Integer> {
         return Timestamp.valueOf(optionalToString).toLocalDateTime();
     }
 
+    /**
+     * Ejecuta el proceso de importación de datos de un archivo Excel.
+     *
+     * @return
+     * @throws Exception
+     */
     @Override
     protected Void doInBackground() throws Exception {
         processExcel();
         return null;
     }
 
+    /**
+     * Actualiza la barra de progreso acorde a la información que está siendo
+     * importada y informa el estatus del progreso en la etiqueta JLabel.
+     *
+     * @param chunks
+     */
     @Override
     protected void process(List<Integer> chunks) {
         int latestProgress = chunks.get(chunks.size() - 1);
@@ -172,6 +238,10 @@ public class Excel extends SwingWorker<Void, Integer> {
         jLabel.setText("Procesando datos de la hoja de Excel.");
     }
 
+    /**
+     * Reestablece la barra de progreso e informa la finalización en la etiqueta
+     * JLabel.
+     */
     @Override
     protected void done() {
         jProgressBar.setValue(0);
