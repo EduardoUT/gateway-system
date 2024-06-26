@@ -26,6 +26,11 @@ public class ProyectoDAO {
         this.con = con;
     }
 
+    /**
+     * Guarda un objeto Proyecto en la Base de Datos.
+     *
+     * @param proyecto
+     */
     public void guardar(Proyecto proyecto) {
         String sql = "INSERT INTO PROJECTS "
                 + "(ID_PROJECT, PROJECT_CODE, PROJECT_NAME, CUSTOMER, "
@@ -35,9 +40,8 @@ public class ProyectoDAO {
                 + "UNIT_PRICE, LINE_AMOUNT, UNIT, PAYMENT_TERMS, "
                 + "CATEGORY, BIDDING_AREA, PUBLISH_DATE) "
                 + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-
         try (PreparedStatement preparedStatement = con.prepareStatement(sql,
-                Statement.RETURN_GENERATED_KEYS);) {
+                Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setLong(1, proyecto.getIdProyecto());
             preparedStatement.setString(2, proyecto.getProjectCode());
             preparedStatement.setString(3, proyecto.getProjectName());
@@ -61,8 +65,7 @@ public class ProyectoDAO {
             preparedStatement.setString(21, proyecto.getBiddingArea());
             preparedStatement.setTimestamp(22, Timestamp.valueOf(proyecto.getPublishDate()));
             preparedStatement.execute();
-
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 while (resultSet.next()) {
                     System.out.println(String.format("Fue guardado "
                             + "el proyecto %s", proyecto));
@@ -73,12 +76,17 @@ public class ProyectoDAO {
         }
     }
 
+    /**
+     * Lista con objetos de tipo Proyecto.
+     *
+     * @return
+     */
     public List<Proyecto> listar() {
         List<Proyecto> resultado = new ArrayList<>();
         String sql = "SELECT * FROM PROJECTS";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.execute();
-            try (ResultSet resultSet = preparedStatement.getResultSet();) {
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     resultado.add(
                             new Proyecto(
