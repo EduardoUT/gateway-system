@@ -20,7 +20,6 @@ import javax.swing.SwingWorker;
  *
  * @author eduar
  */
-//Renombrar a ExcelDAO y recibir conección por Controller para mantener arquitectura MVC
 public class ExcelDAO extends SwingWorker<Void, Integer> {
 
     private final Connection con;
@@ -37,6 +36,16 @@ public class ExcelDAO extends SwingWorker<Void, Integer> {
 
     }
 
+    /**
+     * Proceso de ejecución en segundo plano que realiza la importación de
+     * información obtenida del archivo de Excel a la Base de Datos.
+     *
+     * La ejecución SQL se ejecuta una vez completado el lote de información
+     * contenido en la lista de proyecto.
+     *
+     * @return
+     * @throws Exception
+     */
     @Override
     protected Void doInBackground() throws Exception {
         int progressCounter = 0;
@@ -51,7 +60,7 @@ public class ExcelDAO extends SwingWorker<Void, Integer> {
                 + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
         try (PreparedStatement preparedStatement = con.prepareStatement(sql,
-                Statement.RETURN_GENERATED_KEYS);) {
+                Statement.RETURN_GENERATED_KEYS)) {
             for (Proyecto proyecto : listaProyectos) {
                 preparedStatement.setLong(1, proyecto.getIdProyecto());
                 preparedStatement.setString(2, proyecto.getProjectCode());
@@ -84,13 +93,17 @@ public class ExcelDAO extends SwingWorker<Void, Integer> {
             }
             preparedStatement.executeBatch();
         } catch (SQLException e) {
-            //System.err.println("Error en la inserción de datos: " + e.getMessage());
             throw new RuntimeException(e);
-
         }
         return null;
     }
 
+    /**
+     * Realiza la actualización del hilo, se informa en la barra de progreso y
+     * en la etiqueta JLabel se informa el status de importación.
+     *
+     * @param chunks
+     */
     @Override
     protected void process(List<Integer> chunks) {
         int latestProgress = chunks.get(chunks.size() - 1);
@@ -98,6 +111,9 @@ public class ExcelDAO extends SwingWorker<Void, Integer> {
         jLabel.setText("Importando a la Base da Datos.");
     }
 
+    /**
+     * Informa en la etiqueta la finalización del proceso de importación.
+     */
     @Override
     protected void done() {
         jLabel.setText("Importación de datos finalizada.");
