@@ -20,49 +20,16 @@ public final class ProyectoAsignado extends Proyecto {
     private Boolean status; //<------
     private Empleado empleado;
 
-    public ProyectoAsignado(Timestamp fechaAsignacion, BigDecimal importe,
-            BigDecimal totalPagar, Boolean status,
-            Proyecto proyecto, Empleado empleado) {
-        super(
-                proyecto.getIdProyecto(),
-                proyecto.getProjectCode(),
-                proyecto.getProjectName(),
-                proyecto.getCustomer(),
-                proyecto.getPoStatus(),
-                proyecto.getPoNo(),
-                proyecto.getPoLineNo(),
-                proyecto.getShipmentNo(),
-                proyecto.getSiteCode(),
-                proyecto.getSiteName(),
-                proyecto.getItemCode(),
-                proyecto.getItemDesc(),
-                proyecto.getRequestedQty(),
-                proyecto.getDueQty(),
-                proyecto.getBilledQty(),
-                proyecto.getUnitPrice(),
-                proyecto.getLineAmount(),
-                proyecto.getUnit(),
-                proyecto.getPaymentTerms(),
-                proyecto.getCategory(),
-                proyecto.getBiddingArea(),
-                proyecto.getPublishDate()
-        );
-        this.fechaAsignacion = fechaAsignacion;
-        this.importe = importe;
-        this.totalPagar = totalPagar;
-        this.status = status;
-        this.empleado = empleado;
-    }
-
-    public ProyectoAsignado(Long idProyecto, String poNo,Empleado empleado) {
-        super(idProyecto, poNo);
-        this.empleado = empleado;
-        setFechaAsignacion(fechaAsignacion);
-        this.importe = new BigDecimal("0.0");
-        this.totalPagar = new BigDecimal("0.0");
-        this.status = false;
-    }
-
+    /**
+     * Constructor para representar este objeto en una lista.
+     *
+     * @param fechaAsignacion
+     * @param importe
+     * @param totalPagar
+     * @param status
+     * @param proyecto
+     * @param empleado
+     */
     public ProyectoAsignado(Timestamp fechaAsignacion, BigDecimal importe,
             BigDecimal totalPagar, String status, Proyecto proyecto,
             Empleado empleado) {
@@ -94,6 +61,23 @@ public final class ProyectoAsignado extends Proyecto {
     }
 
     /**
+     * Constructor para almacenar una nueva asignación de proyecto asociado a un
+     * empleado.
+     *
+     * @param idProyecto
+     * @param poNo Clave del proyecto, puede ser una o más.
+     * @param empleado Datos del empleado.
+     */
+    public ProyectoAsignado(Long idProyecto, String poNo, Empleado empleado) {
+        super(idProyecto, poNo);
+        this.empleado = empleado;
+        setFechaAsignacion(fechaAsignacion);
+        this.importe = new BigDecimal("0.0");
+        this.totalPagar = new BigDecimal("0.0");
+        this.status = false;
+    }
+
+    /**
      * @return the fechaAsignacion
      */
     public Timestamp getFechaAsignacion() {
@@ -112,6 +96,13 @@ public final class ProyectoAsignado extends Proyecto {
      */
     public Empleado getEmpleado() {
         return empleado;
+    }
+
+    /**
+     * @param empleado the empleado to set
+     */
+    public void setEmpleado(Empleado empleado) {
+        this.empleado = empleado;
     }
 
     /**
@@ -149,14 +140,29 @@ public final class ProyectoAsignado extends Proyecto {
         return status;
     }
 
+    /**
+     * Tranforma el status a binario, para ser almacenado en la BD.
+     *
+     * @return 1 o 0
+     */
     public String getStatusAsBinary() {
         return (this.status ? "1" : "0");
     }
-    
+
+    /**
+     * Toma el estatus y lo define por defecto con 1 "false", esto al ser creada
+     * una nueva asignación.
+     *
+     * @param status
+     * @return
+     */
     public boolean getStatusAsBoolean(String status) {
         return status.equals("1");
     }
 
+    /**
+     * Crea un Timestamp con la fecha y tiempo actual.
+     */
     public void setLocalDateTime() {
         this.fechaAsignacion = new Timestamp(new Date().getTime());
     }
@@ -173,12 +179,5 @@ public final class ProyectoAsignado extends Proyecto {
                 this.importe,
                 this.totalPagar,
                 this.status);
-    }
-
-    /**
-     * @param empleado the empleado to set
-     */
-    public void setEmpleado(Empleado empleado) {
-        this.empleado = empleado;
     }
 }
