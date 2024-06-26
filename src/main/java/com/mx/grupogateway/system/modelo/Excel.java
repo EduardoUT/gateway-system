@@ -247,5 +247,4 @@ public class Excel extends SwingWorker<Void, Integer> {
         jProgressBar.setValue(0);
         jLabel.setText("Procesamiento de datos finalizado.");
     }
-
 }
