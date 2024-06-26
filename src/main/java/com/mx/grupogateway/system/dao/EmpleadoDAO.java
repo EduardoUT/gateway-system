@@ -76,7 +76,7 @@ public class EmpleadoDAO {
                 + "OR NOMBRE_CATEGORIA = 'Operador Facturación'";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.execute();
-            try (ResultSet resultSet = preparedStatement.getResultSet();) {
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     resultado.add(
                             new Empleado(
