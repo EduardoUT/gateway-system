@@ -25,18 +25,25 @@ public class EmpleadoCategoriaDAO {
         this.con = con;
     }
 
+    /**
+     * Guarda los datos de una nueva categoría de empleado.
+     *
+     * @param empleadoCategoria
+     */
     public void guardar(EmpleadoCategoria empleadoCategoria) {
         String sql = "INSERT INTO EMPLEADO_CATEGORIA "
                 + "(ID_CATEGORIA_EMPLEADO, NOMBRE_CATEGORIA) "
                 + "VALUES (?, ?)";
 
         try (PreparedStatement preparedStatement = con.prepareStatement(sql,
-                Statement.RETURN_GENERATED_KEYS);) {
-            preparedStatement.setString(1, empleadoCategoria.getCategoriaId());
-            preparedStatement.setString(2, empleadoCategoria.getNombreCategoria());
+                Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setString(1,
+                    empleadoCategoria.getidCategoria());
+            preparedStatement.setString(2,
+                    empleadoCategoria.getNombreCategoria());
             preparedStatement.execute();
 
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 while (resultSet.next()) {
                     System.out.println(
                             String.format("Fue a la categoría %s",
@@ -57,15 +64,16 @@ public class EmpleadoCategoriaDAO {
         String sql = "SELECT ID_CATEGORIA_EMPLEADO, NOMBRE_CATEGORIA "
                 + "FROM CATEGORIA_EMPLEADO";
 
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.execute();
-            try (ResultSet resultSet = preparedStatement.getResultSet();) {
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    EmpleadoCategoria fila = new EmpleadoCategoria(
-                            resultSet.getString("ID_CATEGORIA_EMPLEADO"),
-                            resultSet.getString("NOMBRE_CATEGORIA")
-                    );
-                    empleadoCategorias.add(fila);
+                    empleadoCategorias.add(new EmpleadoCategoria(
+                            resultSet
+                                    .getString("ID_CATEGORIA_EMPLEADO"),
+                            resultSet
+                                    .getString("NOMBRE_CATEGORIA")
+                    ));
                 }
                 return empleadoCategorias;
             }
@@ -74,11 +82,19 @@ public class EmpleadoCategoriaDAO {
         }
     }
 
-    public int modificar(String idCategoria, String nombreCategoria) {
+    /**
+     * Realiza la actualización del nombre de una categoría de empleado según el
+     * id proporcionado.
+     *
+     * @param idCategoria
+     * @param nombreCategoria
+     * @return
+     */
+    public int actualizar(String idCategoria, String nombreCategoria) {
         String sql = "UPDATE CATEGORIA_EMPLEADO "
                 + "SET NOMBRE_CATEGORIA = ?"
                 + "WHERE ID_CATEGORIA_EMPLEADO = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.setString(1, nombreCategoria);
             preparedStatement.setString(2, idCategoria);
             preparedStatement.execute();
@@ -89,11 +105,17 @@ public class EmpleadoCategoriaDAO {
         }
     }
 
+    /**
+     * Elimina una categoría de empleado.
+     *
+     * @param idCategoria
+     * @return
+     */
     public int eliminar(String idCategoria) {
         eliminarRelacionEmpleado(idCategoria);
         String sql = "DELETE FROM CATEGORIA_EMPLEADO "
                 + "WHERE ID_CATEGORIA_EMPLEADO = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.setString(1, idCategoria);
             preparedStatement.execute();
             int updateCount = preparedStatement.getUpdateCount();
@@ -112,7 +134,7 @@ public class EmpleadoCategoriaDAO {
     private void eliminarRelacionEmpleado(String idEmpleado) {
         String sql = "UPDATE EMPLEADOS SET ID_CATEGORIA_EMPLEADO = ? "
                 + "WHERE ID_CATEGORIA_EMPLEADO = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.setString(1, "Sin Categoria");
             preparedStatement.setString(2, idEmpleado);
             preparedStatement.execute();
@@ -120,5 +142,4 @@ public class EmpleadoCategoriaDAO {
             throw new RuntimeException(e);
         }
     }
-
 }
