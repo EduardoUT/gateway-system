@@ -133,7 +133,7 @@ public class UsuarioDAO {
                         String clave = registro.getKey();
                         if (SecurityPassword.assertData(clave, usuario.getPassword())) {
                             String valor = registro.getValue();
-                            usuario.setUsuarioId(valor);
+                            usuario.setIdUsuario(valor);
                             break;
                         }
                     }
