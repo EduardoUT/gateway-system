@@ -5,8 +5,9 @@
 package com.mx.grupogateway.system.dao;
 
 import com.mx.grupogateway.system.modelo.Empleado;
+import com.mx.grupogateway.system.modelo.EmpleadoCategoria;
 import com.mx.grupogateway.system.modelo.Usuario;
-import com.mx.grupogateway.system.security.ProtectorData;
+import com.mx.grupogateway.system.security.SecurityPassword;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.apache.poi.hssf.record.ProtectRecord;
 
 /**
  *
@@ -32,42 +32,26 @@ public class UsuarioDAO {
     }
 
     /**
-     * Ejecuta dos operaciones:
-     *
-     * 1. Guarda los valores de los atributos de Usuario en la tabla usuario.
-     *
-     * 2. Consulta el nuevo id_usuario almacenado.
-     *
-     * 2. Actualiza el id_usuario obtenido de la consulta.
-     *
-     *
-     * TODO Encriptar contraseña al almacenar.
+     * Se invoca en EmpleadoDAO, se ejecuta antes de insertar un nuevo empleado
+     * en la BD, a fin de poder asegurar la integridad y relación con la tabla
+     * empleados.
      *
      * @param usuario
      * @param idEmpleado
      */
     public void guardar(Usuario usuario, String idEmpleado) {
-        String idUsuarioGenerado = "";
-        String sql = "INSERT INTO USUARIOS (NOMBRE_USUARIO, PASSWORD)"
-                + "VALUES (?, ?)";
+        String sql = "INSERT INTO USUARIOS (ID_USUARIO, NOMBRE_USUARIO, PASSWORD)"
+                + "VALUES (?, ?, ?)";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql,
-                Statement.RETURN_GENERATED_KEYS);) {
-            preparedStatement.setString(1, usuario.getNombreUsuario());
-            preparedStatement.setString(2, usuario.getPassword());
+                Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setString(1, usuario.getIdUsuario());
+            preparedStatement.setString(2, usuario.getNombreUsuario());
+            preparedStatement.setString(3, usuario.getPassword());
             preparedStatement.execute();
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys();) {
-                while (resultSet.next()) {
-                    System.out.println(
-                            String.format("Fue guardado el usuaro %s ",
-                                    usuario)
-                    );
-                    idUsuarioGenerado = resultSet.getString(1);
-                }
-            }
         } catch (SQLException e) {
+            System.out.println(e.getMessage());
             throw new RuntimeException(e);
         }
-        modificarUsuarioIdEnTablaEmpleado(idUsuarioGenerado, idEmpleado);
     }
 
     /**
@@ -77,8 +61,7 @@ public class UsuarioDAO {
     public List<Usuario> listar() {
         List<Usuario> resultado = new ArrayList<>();
         String sql = "SELECT ID_USUARIO, NOMBRE_USUARIO FROM USUARIOS";
-
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet();) {
                 while (resultSet.next()) {
@@ -95,81 +78,180 @@ public class UsuarioDAO {
         }
     }
 
-    private boolean esPasswordValida(String password) {
-        ArrayList<String> claves = new ArrayList<>();
-        String sql = "SELECT PASSWORD FROM USUARIOS";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+    /**
+     * Permite validar que una contraseña contenga el valor NULL en la BD, lo
+     * cual índica que es un nuevo usuario que aún no ha registrado su
+     * contraseña.
+     *
+     * @param idUsuario
+     * @return
+     */
+    public boolean esPasswordNula(String idUsuario) {
+        String passwordNula = "";
+        String sql = "SELECT PASSWORD FROM USUARIOS WHERE ID_USUARIO = ?";
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+            preparedStatement.setString(1, idUsuario);
             preparedStatement.execute();
-            try (ResultSet resultSet = preparedStatement.getResultSet();) {
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    claves.add(resultSet.getString("PASSWORD"));
+                    passwordNula = resultSet.getString("PASSWORD");
                 }
-
-                for (String clave : claves) {
-                    if (ProtectorData.assertData(clave, password)) {
-                        System.out.println("Clave encontrada");
-                        return true;
-                    }
-                }
-                return false;
+                return passwordNula.equals("NULL");
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
             throw new RuntimeException(e);
         }
     }
 
-    public ArrayList<String> consultarUsuario(String nombreUsuario,
-            String password) {
-        ArrayList<String> datosObtenidos = new ArrayList<>();
-        if (esPasswordValida(password)) {
-            String sql = "SELECT NOMBRE_USUARIO, ID_CATEGORIA_EMPLEADO "
-                    + "FROM EMPLEADOS "
-                    + "INNER JOIN USUARIOS "
-                    + "ON EMPLEADOS.ID_USUARIO = USUARIOS.ID_USUARIO "
-                    + "WHERE USUARIOS.NOMBRE_USUARIO = ?";
-            try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
-                preparedStatement.setString(1, nombreUsuario);
+    /**
+     * Evalúa que la password se encuentre en la BD, comparando la ingresada por
+     * el usuario con la encriptada.<br>
+     * Si es NULL se omite la consulta SQL.
+     *
+     * @param usuario
+     * @return
+     */
+    public boolean esPasswordValida(Usuario usuario) {
+        if (usuario.getPassword().equals("NULL")) {
+            return false;
+        }
+        if (usuario.getIdUsuario() == null && !usuario.getNombreUsuario().isEmpty()) {
+            HashMap<String, String> registros;
+            registros = new HashMap<>();
+            String sql = "SELECT PASSWORD, ID_USUARIO FROM USUARIOS WHERE NOMBRE_USUARIO = ?";
+            try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+                preparedStatement.setString(1, usuario.getNombreUsuario());
                 preparedStatement.execute();
                 try (ResultSet resultSet = preparedStatement.getResultSet();) {
                     while (resultSet.next()) {
-                        datosObtenidos = new ArrayList<>();
-                        datosObtenidos.add(resultSet.getString("NOMBRE_USUARIO"));
-                        datosObtenidos.add(resultSet.getString("ID_CATEGORIA_EMPLEADO"));
+                        registros.put(
+                                resultSet.getString("PASSWORD"),
+                                resultSet.getString("ID_USUARIO")
+                        );
                     }
-                    return datosObtenidos;
+                    for (Map.Entry<String, String> registro : registros.entrySet()) {
+                        String clave = registro.getKey();
+                        if (SecurityPassword.assertData(clave, usuario.getPassword())) {
+                            String valor = registro.getValue();
+                            usuario.setUsuarioId(valor);
+                            break;
+                        }
+                    }
+                    return (usuario.getIdUsuario() != null);
+                }
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                throw new RuntimeException(e);
+            }
+        } else {
+            Usuario usuarioPassword = new Usuario();
+            String sql = "SELECT PASSWORD FROM USUARIOS WHERE ID_USUARIO = ?";
+            try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+                preparedStatement.setString(1, usuario.getIdUsuario());
+                preparedStatement.execute();
+                try (ResultSet resultSet = preparedStatement.getResultSet()) {
+                    while (resultSet.next()) {
+                        usuarioPassword.setPassword(resultSet.getString("PASSWORD"));
+                    }
+                    return SecurityPassword.assertData(
+                            usuarioPassword.getPassword(),
+                            usuario.getPassword());
                 }
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
                 throw new RuntimeException(e);
             }
         }
-        return datosObtenidos;
+    }
+
+    /**
+     * Consulta los identificadores de usuario y la categoría a la que pertenece
+     * un empleado.
+     *
+     * @param usuario
+     * @return
+     */
+    public Empleado consultarPerfilUsuario(Usuario usuario) {
+        Empleado empleado = null;
+        EmpleadoCategoria empleadoCategoria = new EmpleadoCategoria();
+        if (esPasswordValida(usuario)) {
+            String sql = "SELECT USUARIOS.ID_USUARIO, ID_CATEGORIA_EMPLEADO "
+                    + "FROM EMPLEADOS "
+                    + "INNER JOIN USUARIOS "
+                    + "ON EMPLEADOS.ID_USUARIO = USUARIOS.ID_USUARIO "
+                    + "WHERE USUARIOS.NOMBRE_USUARIO = ? AND USUARIOS.ID_USUARIO = ?";
+            try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+                preparedStatement.setString(1, usuario.getNombreUsuario());
+                preparedStatement.setString(2, usuario.getIdUsuario());
+                preparedStatement.execute();
+                try (ResultSet resultSet = preparedStatement.getResultSet();) {
+                    while (resultSet.next()) {
+                        empleadoCategoria.setIdCategoria(resultSet.getString("ID_CATEGORIA_EMPLEADO"));
+                        empleado = new Empleado(
+                                new Usuario(resultSet.getString("ID_USUARIO")),
+                                empleadoCategoria
+                        );
+                    }
+                }
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
+        return empleado;
     }
 
     /**
      * Consulta el id_usuario del empleado.
      *
-     * @param empleado
+     * @param idUsuario
      * @return Como puede o no devolver un valor la BD, se envuelve el resultado
-     * de getUsuarioId() en un Optional, si no devuelve nada el empleado no
-     * existe, si devuelve cero el empleado no posee una cuenta y si devueslve
-     * un id de usuario entonces ya fue asignada una cuenta de usuario a ese
-     * empleado.
+     * de idUsuarioObtenido en un Optional.
      */
-    public Optional consultarIdUsuario(Empleado empleado) {
-        String sql = "SELECT ID_USUARIO FROM EMPLEADOS WHERE ID_EMPLEADO = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
-            preparedStatement.setString(1, empleado.getIdEmpleado());
+    public Optional consultarIdUsuario(String idUsuario) {
+        String idUsuarioObtenido = null;
+        String sql = "SELECT ID_USUARIO FROM USUARIOS WHERE ID_USUARIO = ?";
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+            preparedStatement.setString(1, idUsuario);
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    empleado.setUsuarioId(resultSet.getString("ID_USUARIO"));
+                    idUsuarioObtenido = resultSet.getString("ID_USUARIO");
                 }
-                return Optional.ofNullable(empleado.getUsuario().getIdUsuario());
+                return Optional.ofNullable(idUsuarioObtenido);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Actualiza la password dado el nombre y el id del usuario.
+     *
+     * @param usuario
+     */
+    public void actualizarPassword(Usuario usuario) {
+        if (usuario.getNombreUsuario() == null) {
+            String sql = "UPDATE USUARIOS SET PASSWORD = ? WHERE ID_USUARIO = ?";
+            try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+                preparedStatement.setString(1, usuario.getPassword());
+                preparedStatement.setString(2, usuario.getIdUsuario());
+                preparedStatement.execute();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                throw new RuntimeException(e);
+            }
+        } else {
+            String sql = "UPDATE USUARIOS SET PASSWORD = ? WHERE ID_USUARIO = ? "
+                    + "AND NOMBRE_USUARIO = ?";
+            try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+                preparedStatement.setString(1, usuario.getPassword());
+                preparedStatement.setString(2, usuario.getIdUsuario());
+                preparedStatement.setString(3, usuario.getNombreUsuario());
+                preparedStatement.execute();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -179,11 +261,28 @@ public class UsuarioDAO {
      * @param idUsuario
      * @param idEmpleado
      */
-    public void modificarUsuarioIdEnTablaEmpleado(String idUsuario, String idEmpleado) {
+    public void actualizarIdUsuarioEnTablaEmpleado(String idUsuario, String idEmpleado) {
         String sql = "UPDATE EMPLEADOS SET ID_USUARIO = ? WHERE ID_EMPLEADO = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.setString(1, idUsuario);
             preparedStatement.setString(2, idEmpleado);
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Actualiza el id_usuario en la tabla empleado asociada a la tabla de
+     * usuario a fin de poder eliminarlo.
+     *
+     * @param idUsuario
+     */
+    private void actualizarRelacionEmpleadoUsuario(String idUsuario) {
+        String sql = "UPDATE EMPLEADOS SET ID_USUARIO = ? WHERE ID_USUARIO = ?";
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+            preparedStatement.setString(1, "NULL");
+            preparedStatement.setString(2, idUsuario);
             preparedStatement.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -198,30 +297,13 @@ public class UsuarioDAO {
      * @return
      */
     public int eliminar(String idUsuario) {
-        eliminarRelacionEmpleadoUsuario(idUsuario);
+        actualizarRelacionEmpleadoUsuario(idUsuario);
         String sql = "DELETE FROM USUARIOS WHERE ID_USUARIO = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.setString(1, idUsuario);
             preparedStatement.execute();
             int updateCount = preparedStatement.getUpdateCount();
             return updateCount;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Actualiza el id_usuario en la tabla empleado asociada a la tabla de
-     * usuario a fin de poder eliminarlo.
-     *
-     * @param idUsuario
-     */
-    private void eliminarRelacionEmpleadoUsuario(String idUsuario) {
-        String sql = "UPDATE EMPLEADOS SET ID_USUARIO = ? WHERE ID_USUARIO = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql);) {
-            preparedStatement.setString(1, "NULL");
-            preparedStatement.setString(2, idUsuario);
-            preparedStatement.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
