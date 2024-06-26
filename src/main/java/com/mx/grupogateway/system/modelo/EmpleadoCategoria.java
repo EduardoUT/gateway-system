@@ -13,21 +13,34 @@ public class EmpleadoCategoria {
     private String idCategoria;
     private String nombreCategoria;
 
+    /**
+     * Constructor para la creación y asignación de una categoría en un nuevo
+     * empleado.
+     *
+     * @param idCategoria
+     * @param nombreCategoria
+     */
     public EmpleadoCategoria(String idCategoria, String nombreCategoria) {
         validarCategoriaEmpleado(idCategoria, nombreCategoria);
         this.idCategoria = idCategoria;
         this.nombreCategoria = nombreCategoria;
     }
 
-    public EmpleadoCategoria(String nombreCategoria) {
-        this.nombreCategoria = nombreCategoria;
+    public EmpleadoCategoria() {
     }
 
     /**
      * @return the categoriaId
      */
-    public String getCategoriaId() {
+    public String getidCategoria() {
         return idCategoria;
+    }
+
+    /**
+     * @param idCategoria the idCategoria to set
+     */
+    public void setIdCategoria(String idCategoria) {
+        this.idCategoria = idCategoria;
     }
 
     /**
@@ -56,12 +69,4 @@ public class EmpleadoCategoria {
                 this.idCategoria,
                 this.nombreCategoria);
     }
-
-    /**
-     * @param idCategoria the idCategoria to set
-     */
-    public void setIdCategoria(String idCategoria) {
-        this.idCategoria = idCategoria;
-    }
-
 }
