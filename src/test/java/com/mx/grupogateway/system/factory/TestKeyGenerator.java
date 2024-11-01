@@ -2,9 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mx.grupogateway.system.security;
+package com.mx.grupogateway.system.factory;
 
 import com.mx.grupogateway.system.modelo.Usuario;
+import java.sql.Timestamp;
+import java.util.Date;
 import javax.swing.ImageIcon;
 
 /**
@@ -14,28 +16,18 @@ import javax.swing.ImageIcon;
 public class TestKeyGenerator {
 
     public static void main(String[] args) {
-        /*
-        Usuario u = new Usuario("Admin", "riverdale21");
-        System.out.println(u.getClaveSeguridad());
-        Usuario us = new Usuario("User12", "pasteur");
-        System.out.println(us.getClaveSeguridad());
-        Usuario use = new Usuario("randomiuser", "micaedrous");
-        Usuario pe = new Usuario("plateur", "espiralmar34");
-        System.out.println(use.getClaveSeguridad());
-        System.out.println(pe.getClaveSeguridad());
-         */
- /*
-        ProtectorKey passwordSegura = new ProtectorKey("ac33-2177c62e02b");
-        ProtectorKey passwordSegura1 = new ProtectorKey("b762-d04a2c9d2d1");
-        ProtectorKey passwordSegura2 = new ProtectorKey("abcd-a4a322ead02");
-        ProtectorKey passwordSegura3 = new ProtectorKey("b8bd-b3165faa6b4");
-
-        System.out.println(passwordSegura.encriptarString());
-        System.out.println(passwordSegura1.encriptarString());
-        System.out.println(passwordSegura2.encriptarString());
-        System.out.println(passwordSegura3.encriptarString());
-         */
-
+        //Usuario usuario = new Usuario("Lalo", "1234");
+        //System.out.println(usuario.getPassword());
+        //System.out.println(usuario.checkUser("Lalo", "1234"));
+        //System.out.println(ProtectorData.encriptar("rtp333"));
         
+        // Obtén la fecha y hora actual en milisegundos desde la Época Unix (1 de enero de 1970)
+        long tiempoActualEnMilisegundos = new Date().getTime();
+
+        // Crea un objeto Timestamp a partir del tiempo actual en milisegundos
+        Timestamp timestamp = new Timestamp(tiempoActualEnMilisegundos);
+
+        // Imprime el Timestamp
+        System.out.println("Timestamp actual: " + timestamp);
     }
 }
