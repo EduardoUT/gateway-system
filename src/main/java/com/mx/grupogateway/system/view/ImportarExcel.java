@@ -7,7 +7,7 @@ package com.mx.grupogateway.system.view;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.ExcelController;
 import com.mx.grupogateway.system.modelo.Excel;
-import com.mx.grupogateway.system.modelo.Proyecto;
+import com.mx.grupogateway.system.modelo.Project;
 import com.mx.grupogateway.system.view.util.IconoVentana;
 import java.awt.event.MouseEvent;
 import java.util.LinkedList;
@@ -22,7 +22,7 @@ public class ImportarExcel extends javax.swing.JFrame {
 
     private static Excel excel;
     private ExcelController excelController;
-    private static LinkedList<Proyecto> listaProyectos;
+    private static LinkedList<Project> listaProyectos;
     private JFrame jFrame;
 
     /**

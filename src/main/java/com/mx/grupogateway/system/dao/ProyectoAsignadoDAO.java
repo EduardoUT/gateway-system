@@ -5,7 +5,7 @@
 package com.mx.grupogateway.system.dao;
 
 import com.mx.grupogateway.system.modelo.Empleado;
-import com.mx.grupogateway.system.modelo.Proyecto;
+import com.mx.grupogateway.system.modelo.Project;
 import com.mx.grupogateway.system.modelo.ProyectoAsignado;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -130,13 +130,12 @@ public class ProyectoAsignadoDAO {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    proyectosAsignados.add(
-                            new ProyectoAsignado(
+                    proyectosAsignados.add(new ProyectoAsignado(
                                     resultSet.getTimestamp("FECHA_ASIGNACION"),
                                     resultSet.getBigDecimal("IMPORTE"),
                                     resultSet.getBigDecimal("TOTAL_PAGAR"),
                                     resultSet.getString("STATUS"),
-                                    new Proyecto(
+                                    new Project(
                                             resultSet.getLong("ID_PROJECT"),
                                             resultSet.getString("CUSTOMER"),
                                             resultSet.getString("PROJECT_NAME"),

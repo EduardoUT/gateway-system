@@ -6,7 +6,7 @@ package com.mx.grupogateway.system.controller;
 
 import com.mx.grupogateway.system.dao.ExcelDAO;
 import com.mx.grupogateway.system.factory.ConnectionFactory;
-import com.mx.grupogateway.system.modelo.Proyecto;
+import com.mx.grupogateway.system.modelo.Project;
 import java.util.LinkedList;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
@@ -29,7 +29,7 @@ public class ExcelController {
      * @param jLabel Estatus del progreso que será informado a través del
      * SwingWorker.
      */
-    public ExcelController(LinkedList<Proyecto> proyectos,
+    public ExcelController(LinkedList<Project> proyectos,
             JProgressBar jProgressBar, JLabel jLabel) {
         this.excelSwingWorker = new ExcelDAO(
                 new ConnectionFactory().realizarConexion(),

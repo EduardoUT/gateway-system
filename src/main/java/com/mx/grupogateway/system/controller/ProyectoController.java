@@ -6,7 +6,7 @@ package com.mx.grupogateway.system.controller;
 
 import com.mx.grupogateway.system.dao.ProyectoDAO;
 import com.mx.grupogateway.system.factory.ConnectionFactory;
-import com.mx.grupogateway.system.modelo.Proyecto;
+import com.mx.grupogateway.system.modelo.Project;
 import java.util.List;
 
 /**
@@ -28,7 +28,7 @@ public class ProyectoController {
      *
      * @param proyecto
      */
-    public void guardar(Proyecto proyecto) {
+    public void guardar(Project proyecto) {
         this.proyectoDAO.guardar(proyecto);
     }
 
@@ -37,7 +37,7 @@ public class ProyectoController {
      *
      * @return
      */
-    public List<Proyecto> listar() {
+    public List<Project> listar() {
         return this.proyectoDAO.listar();
     }
 }

@@ -7,7 +7,7 @@ package com.mx.grupogateway.system.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.ProyectoController;
-import com.mx.grupogateway.system.modelo.Proyecto;
+import com.mx.grupogateway.system.modelo.Project;
 import com.mx.grupogateway.system.modelo.Usuario;
 import com.mx.grupogateway.system.view.util.IconoVentana;
 import com.mx.grupogateway.system.view.util.MargenTabla;
@@ -54,7 +54,7 @@ public final class Facturacion extends javax.swing.JFrame {
     private void cargarTablaProyectos() {
         tablaProyectos.setModel(new Asignaciones().tablaProyectos.getModel());
         modeloTablaProyectos = (DefaultTableModel) tablaProyectos.getModel();
-        List<Proyecto> listaProyecto = this.proyectoController.listar();
+        List<Project> listaProyecto = this.proyectoController.listar();
         tableDataModelProyecto = new TableDataModelProyecto(
                 modeloTablaProyectos, tablaProyectos, listaProyecto
         );

@@ -4,7 +4,7 @@
  */
 package com.mx.grupogateway.system.dao;
 
-import com.mx.grupogateway.system.modelo.Proyecto;
+import com.mx.grupogateway.system.modelo.Project;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,7 +31,7 @@ public class ProyectoDAO {
      *
      * @param proyecto
      */
-    public void guardar(Proyecto proyecto) {
+    public void guardar(Project proyecto) {
         String sql = "INSERT INTO PROJECTS "
                 + "(ID_PROJECT, PROJECT_CODE, PROJECT_NAME, CUSTOMER, "
                 + "PO_STATUS, PO_NO, PO_LINE_NO, SHIPMENT_NO, "
@@ -81,15 +81,14 @@ public class ProyectoDAO {
      *
      * @return
      */
-    public List<Proyecto> listar() {
-        List<Proyecto> resultado = new ArrayList<>();
+    public List<Project> listar() {
+        List<Project> resultado = new ArrayList<>();
         String sql = "SELECT * FROM PROJECTS";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    resultado.add(
-                            new Proyecto(
+                    resultado.add(new Project(
                                     resultSet.getLong("ID_PROJECT"),
                                     resultSet.getString("PROJECT_CODE"),
                                     resultSet.getString("PROJECT_NAME"),

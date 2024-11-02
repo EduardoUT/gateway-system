@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  *
  * @author eduar
  */
-public class Proyecto {
+public class Project {
 
     private final Long idProyecto;
     private String projectCode;
@@ -62,7 +62,7 @@ public class Proyecto {
      * @param biddingArea
      * @param publishDate
      */
-    public Proyecto(Long idProyecto, String projectCode, String projectName,
+    public Project(Long idProyecto, String projectCode, String projectName,
             String customer, String poStatus, String poNo, Integer poLineNo,
             Integer shipmentNo, String siteCode, String siteName,
             Long itemCode, String itemDesc, String requestedQty,
@@ -116,7 +116,7 @@ public class Proyecto {
      * @param category
      * @param publishDate
      */
-    public Proyecto(Long idProyecto, String customer, String projectName, String poNo,
+    public Project(Long idProyecto, String customer, String projectName, String poNo,
             String poStatus, Integer poLineNo, String siteCode, String siteName,
             String itemDesc, String requestedQty, String dueQty, String billedQty,
             BigDecimal unitPrice, BigDecimal lineAmount, String unit,
@@ -148,7 +148,7 @@ public class Proyecto {
      * @param idProyecto
      * @param poNo
      */
-    public Proyecto(Long idProyecto, String poNo) {
+    public Project(Long idProyecto, String poNo) {
         this.idProyecto = idProyecto;
         this.poNo = poNo;
     }

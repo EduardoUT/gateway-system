@@ -4,7 +4,7 @@
  */
 package com.mx.grupogateway.system.dao;
 
-import com.mx.grupogateway.system.modelo.Proyecto;
+import com.mx.grupogateway.system.modelo.Project;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -25,9 +25,9 @@ public class ExcelDAO extends SwingWorker<Void, Integer> {
     private final Connection con;
     private final JProgressBar jProgressBar;
     private final JLabel jLabel;
-    private final LinkedList<Proyecto> listaProyectos;
+    private final LinkedList<Project> listaProyectos;
 
-    public ExcelDAO(Connection con, LinkedList<Proyecto> listaProyectos,
+    public ExcelDAO(Connection con, LinkedList<Project> listaProyectos,
             JProgressBar jProgressBar, JLabel jLabel) {
         this.listaProyectos = listaProyectos;
         this.jProgressBar = jProgressBar;
@@ -61,7 +61,7 @@ public class ExcelDAO extends SwingWorker<Void, Integer> {
 
         try (PreparedStatement preparedStatement = con.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
-            for (Proyecto proyecto : listaProyectos) {
+            for (Project proyecto : listaProyectos) {
                 preparedStatement.setLong(1, proyecto.getIdProyecto());
                 preparedStatement.setString(2, proyecto.getProjectCode());
                 preparedStatement.setString(3, proyecto.getProjectName());

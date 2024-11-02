@@ -12,7 +12,7 @@ import java.sql.Timestamp;
  *
  * @author eduar
  */
-public final class ProyectoAsignado extends Proyecto {
+public final class ProyectoAsignado extends Project {
 
     private Timestamp fechaAsignacion;
     private BigDecimal importe;
@@ -31,7 +31,7 @@ public final class ProyectoAsignado extends Proyecto {
      * @param empleado
      */
     public ProyectoAsignado(Timestamp fechaAsignacion, BigDecimal importe,
-            BigDecimal totalPagar, String status, Proyecto proyecto,
+            BigDecimal totalPagar, String status, Project proyecto,
             Empleado empleado) {
         super(
                 proyecto.getIdProyecto(),

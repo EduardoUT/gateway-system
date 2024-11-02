@@ -4,7 +4,7 @@
  */
 package com.mx.grupogateway.system.view.model;
 
-import com.mx.grupogateway.system.modelo.Proyecto;
+import com.mx.grupogateway.system.modelo.Project;
 import com.mx.grupogateway.system.view.util.AccionesTabla;
 import java.util.List;
 import javax.swing.JTable;
@@ -18,10 +18,10 @@ public class TableDataModelProyecto {
 
     private DefaultTableModel modeloTabla;
     private final JTable tabla;
-    private final List<Proyecto> proyectos;
+    private final List<Project> proyectos;
 
     public TableDataModelProyecto(DefaultTableModel modeloTabla, JTable tabla,
-            List<Proyecto> proyectos) {
+            List<Project> proyectos) {
         this.tabla = tabla;
         this.modeloTabla = modeloTabla;
         this.proyectos = proyectos;

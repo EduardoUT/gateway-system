@@ -32,7 +32,7 @@ public class Excel extends SwingWorker<Void, Integer> {
     private int optionFileChooser = 0;
     private final JProgressBar jProgressBar;
     private final JLabel jLabel;
-    private final LinkedList<Proyecto> datosExcel;
+    private final LinkedList<Project> datosExcel;
 
     /**
      * Constructor para crear un proceso en segundo plano con SwingWorker.
@@ -57,7 +57,7 @@ public class Excel extends SwingWorker<Void, Integer> {
      * @return Devuelve el estado de la lista, en caso de ser una lista vacía o
      * al no ser proporcionada una ruta.
      */
-    public LinkedList<Proyecto> getDatos() {
+    public LinkedList<Project> getDatos() {
         return datosExcel == null ? null : datosExcel;
     }
 
@@ -86,7 +86,7 @@ public class Excel extends SwingWorker<Void, Integer> {
                 for (int i = 1; i <= numLastRow; i++) {
                     Row row = hoja.getRow(i);
                     datosExcel.add(
-                            new Proyecto(
+                            new Project(
                                     getCellValueLong(row, 0),
                                     getCellValueString(row, 5),
                                     getCellValueString(row, 4),

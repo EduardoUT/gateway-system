@@ -10,7 +10,7 @@ import com.mx.grupogateway.system.controller.EmpleadoController;
 import com.mx.grupogateway.system.controller.ProyectoAsignadoController;
 import com.mx.grupogateway.system.controller.ProyectoController;
 import com.mx.grupogateway.system.modelo.Empleado;
-import com.mx.grupogateway.system.modelo.Proyecto;
+import com.mx.grupogateway.system.modelo.Project;
 import com.mx.grupogateway.system.modelo.ProyectoAsignado;
 import com.mx.grupogateway.system.view.util.IconoVentana;
 import com.mx.grupogateway.system.view.util.MargenTabla;
@@ -43,7 +43,7 @@ public final class Asignaciones extends javax.swing.JFrame {
     private EmpleadoController empleadoController;
     private ProyectoAsignadoController proyectosAsignadosController;
     private LinkedList<ProyectoAsignado> filtroProyectosAsignados;
-    private List<Proyecto> listaProyectos;
+    private List<Project> listaProyectos;
     private int filaTablaProyectos;
     private int filaTablaEmpleados;
     private int filaTablaAsignaciones;
