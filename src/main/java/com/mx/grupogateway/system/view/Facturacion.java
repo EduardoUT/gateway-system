@@ -6,7 +6,7 @@
 package com.mx.grupogateway.system.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import com.mx.grupogateway.system.controller.ProyectoController;
+import com.mx.grupogateway.system.controller.ProjectController;
 import com.mx.grupogateway.system.modelo.Project;
 import com.mx.grupogateway.system.modelo.Usuario;
 import com.mx.grupogateway.system.view.util.IconoVentana;
@@ -28,7 +28,7 @@ public final class Facturacion extends javax.swing.JFrame {
 
     private DefaultTableModel modeloTablaProyectos;
     private TableDataModelProyecto tableDataModelProyecto;
-    private ProyectoController proyectoController;
+    private ProjectController proyectoController;
     private Usuario usuario;
 
     public Facturacion() {
@@ -38,7 +38,7 @@ public final class Facturacion extends javax.swing.JFrame {
 
     private void iniciarProcesos() {
         cargarIconoVentana();
-        this.proyectoController = new ProyectoController();
+        this.proyectoController = new ProjectController();
         cargarTablaProyectos();
         AccionesTabla.filtrarResultados(tablaProyectos, buscadorProyecto, filtroProyecto);
     }

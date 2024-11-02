@@ -8,7 +8,7 @@ package com.mx.grupogateway.system.view;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.EmpleadoController;
 import com.mx.grupogateway.system.controller.ProyectoAsignadoController;
-import com.mx.grupogateway.system.controller.ProyectoController;
+import com.mx.grupogateway.system.controller.ProjectController;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Project;
 import com.mx.grupogateway.system.modelo.ProyectoAsignado;
@@ -39,7 +39,7 @@ public final class Asignaciones extends javax.swing.JFrame {
     private TableDataModelProyecto tableDataModelProyecto;
     private TableDataModelEmpleado tableDataModelEmpleado;
     private TableDataModelAsignacion tableDataModelAsignacion;
-    private ProyectoController proyectoController;
+    private ProjectController proyectoController;
     private EmpleadoController empleadoController;
     private ProyectoAsignadoController proyectosAsignadosController;
     private LinkedList<ProyectoAsignado> filtroProyectosAsignados;
@@ -59,7 +59,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         filaTablaProyectos = tablaProyectos.getSelectedRow();
         filaTablaEmpleados = tablaEmpleados.getSelectedRow();
         filaTablaAsignaciones = tablaAsignaciones.getSelectedRow();
-        this.proyectoController = new ProyectoController();
+        this.proyectoController = new ProjectController();
         this.empleadoController = new EmpleadoController();
         this.proyectosAsignadosController = new ProyectoAsignadoController();
         cargarTablaEmpleados();

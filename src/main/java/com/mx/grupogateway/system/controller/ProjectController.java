@@ -13,11 +13,11 @@ import java.util.List;
  *
  * @author eduar
  */
-public class ProyectoController {
+public class ProjectController {
 
     private final ProyectoDAO proyectoDAO;
 
-    public ProyectoController() {
+    public ProjectController() {
         this.proyectoDAO = new ProyectoDAO(
                 new ConnectionFactory().realizarConexion()
         );
