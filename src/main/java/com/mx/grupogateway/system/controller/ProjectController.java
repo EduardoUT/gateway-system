@@ -4,7 +4,7 @@
  */
 package com.mx.grupogateway.system.controller;
 
-import com.mx.grupogateway.system.dao.ProyectoDAO;
+import com.mx.grupogateway.system.dao.ProjectDAO;
 import com.mx.grupogateway.system.factory.ConnectionFactory;
 import com.mx.grupogateway.system.modelo.Project;
 import java.util.List;
@@ -15,10 +15,10 @@ import java.util.List;
  */
 public class ProjectController {
 
-    private final ProyectoDAO proyectoDAO;
+    private final ProjectDAO proyectoDAO;
 
     public ProjectController() {
-        this.proyectoDAO = new ProyectoDAO(
+        this.proyectoDAO = new ProjectDAO(
                 new ConnectionFactory().realizarConexion()
         );
     }
