@@ -7,6 +7,7 @@ package com.mx.grupogateway.system.controller;
 import com.mx.grupogateway.system.dao.SiteDAO;
 import com.mx.grupogateway.system.factory.ConnectionFactory;
 import com.mx.grupogateway.system.modelo.Site;
+import java.util.List;
 
 /**
  *
@@ -27,5 +28,16 @@ public class SiteController {
      */
     public void guardar(Site site) {
         this.siteDAO.guardar(site);
+    }
+
+    /**
+     * Consulta el listado de identificadores de Site, de acuerdo al mismo
+     * identificador.
+     *
+     * @param idSite
+     * @return
+     */
+    public List<Long> listarSiteIdentifiers(Long idSite) {
+        return this.siteDAO.listarSiteIdentifiers(idSite);
     }
 }

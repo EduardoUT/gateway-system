@@ -40,4 +40,15 @@ public class ProjectController {
     public List<Project> listar() {
         return this.proyectoDAO.listar();
     }
+
+    /**
+     * Lista los identificadores de proyectos existentes de cuerdo al id
+     * ingresado.
+     *
+     * @param projectId
+     * @return Lista de identificadores,
+     */
+    public List<Long> listarProjectIdentifiers(Long projectId) {
+        return this.proyectoDAO.listarProjectId(projectId);
+    }
 }

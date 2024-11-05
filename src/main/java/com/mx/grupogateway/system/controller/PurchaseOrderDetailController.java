@@ -7,6 +7,7 @@ package com.mx.grupogateway.system.controller;
 import com.mx.grupogateway.system.dao.PurchaseOrderDetailDAO;
 import com.mx.grupogateway.system.factory.ConnectionFactory;
 import com.mx.grupogateway.system.modelo.PurchaseOrderDetail;
+import java.util.List;
 
 /**
  *
@@ -29,5 +30,19 @@ public class PurchaseOrderDetailController {
      */
     public void guardar(PurchaseOrderDetail purchaseOrderDetail) {
         this.purchaseOrderDetailDAO.guardar(purchaseOrderDetail);
+    }
+
+    /**
+     * Consulta el listado de purchaseOrderIdentifier de acuerdo al mismo
+     * identificador proporcionado.
+     *
+     * @param purchaseOrderIdentifier
+     * @return
+     */
+    public List<String> listarPurchaseOrderDetailIdentifiers(
+            String purchaseOrderIdentifier) {
+        return this.purchaseOrderDetailDAO.listarPurchaseOrderDetailIdentifiers(
+                purchaseOrderIdentifier
+        );
     }
 }

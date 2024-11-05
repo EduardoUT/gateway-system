@@ -7,11 +7,11 @@ package com.mx.grupogateway.system.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.EmpleadoController;
-import com.mx.grupogateway.system.controller.ProyectoAsignadoController;
+import com.mx.grupogateway.system.controller.PurchaseOrderAssignmentController;
 import com.mx.grupogateway.system.controller.ProjectController;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Project;
-import com.mx.grupogateway.system.modelo.ProyectoAsignado;
+import com.mx.grupogateway.system.modelo.PurchaseOrderAssignment;
 import com.mx.grupogateway.system.view.util.IconoVentana;
 import com.mx.grupogateway.system.view.util.MargenTabla;
 import com.mx.grupogateway.system.view.model.TableDataModelAsignacion;
@@ -41,8 +41,8 @@ public final class Asignaciones extends javax.swing.JFrame {
     private TableDataModelAsignacion tableDataModelAsignacion;
     private ProjectController proyectoController;
     private EmpleadoController empleadoController;
-    private ProyectoAsignadoController proyectosAsignadosController;
-    private LinkedList<ProyectoAsignado> filtroProyectosAsignados;
+    private PurchaseOrderAssignmentController proyectosAsignadosController;
+    private LinkedList<PurchaseOrderAssignment> filtroProyectosAsignados;
     private List<Project> listaProyectos;
     private int filaTablaProyectos;
     private int filaTablaEmpleados;
@@ -61,7 +61,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         filaTablaAsignaciones = tablaAsignaciones.getSelectedRow();
         this.proyectoController = new ProjectController();
         this.empleadoController = new EmpleadoController();
-        this.proyectosAsignadosController = new ProyectoAsignadoController();
+        this.proyectosAsignadosController = new PurchaseOrderAssignmentController();
         cargarTablaEmpleados();
         cargarTablaProyectos();
         cargarTablaProyectosAsignados();
@@ -97,7 +97,7 @@ public final class Asignaciones extends javax.swing.JFrame {
 
     private void cargarTablaProyectosAsignados() {
         modeloTablaAsignaciones = (DefaultTableModel) tablaAsignaciones.getModel();
-        List<ProyectoAsignado> listaProyectosAsignados
+        List<PurchaseOrderAssignment> listaProyectosAsignados
                 = this.proyectosAsignadosController.listar();
         tableDataModelAsignacion = new TableDataModelAsignacion(
                 modeloTablaAsignaciones, tablaAsignaciones, listaProyectosAsignados);
@@ -129,6 +129,7 @@ public final class Asignaciones extends javax.swing.JFrame {
     /**
      * Crea una nueva asignación de proyecto a un empleado.
      */
+    /*
     private void guardarAsignacion() {
         if (filaTablaProyectos == -1 || filaTablaEmpleados == -1) {
             JOptionPane.showMessageDialog(null, "Por favor, "
@@ -144,7 +145,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                     filaTablaEmpleados, 0)
                     .toString();
             listaProyectos.forEach((proyecto) -> {
-                Long idProyecto = proyecto.getIdProyecto();
+                Long idProyecto = proyecto.getProjectId();
                 if (proyecto.getPoNo().equals(poNo)) {
                     filtroProyectosAsignados.add(
                             new ProyectoAsignado(idProyecto, poNo,
@@ -155,7 +156,7 @@ public final class Asignaciones extends javax.swing.JFrame {
             this.proyectosAsignadosController.guardar(filtroProyectosAsignados);
             filtroProyectosAsignados = null;
         }
-    }
+    }*/
 
     /**
      * Actualiza el empleado asignado a un proyecto con uno diferente, el
@@ -673,7 +674,7 @@ public final class Asignaciones extends javax.swing.JFrame {
 
     private void botonGuardarAsignacionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonGuardarAsignacionMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1) {
-            guardarAsignacion();
+            //guardarAsignacion();
             cargarTablaProyectosAsignados();
         }
     }//GEN-LAST:event_botonGuardarAsignacionMouseClicked

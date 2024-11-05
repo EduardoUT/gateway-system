@@ -5,6 +5,7 @@
 package com.mx.grupogateway.system.dao;
 
 import com.mx.grupogateway.system.modelo.Project;
+import com.mx.grupogateway.system.modelo.Site;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,6 +14,8 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -29,35 +32,38 @@ public class ProjectDAO {
     /**
      * Guarda un objeto Proyecto en la Base de Datos.
      *
-     * @param proyecto
+     * @param project
      */
-    public void guardar(Project proyecto) {
+    public void guardar(Project project) {
         String sql = "INSERT INTO PROJECT "
-                + "(ID_PROJECT, PROJECT_CODE, PROJECT_NAME, CUSTOMER, "
+                + "(ID_PROJECT, ID_SITE, PROJECT_CODE, PROJECT_NAME, CUSTOMER, "
                 + "CATEGORY, PUBLISH_DATE) "
-                + "VALUES(?,?,?,?,?,?)";
+                + "VALUES(?,?,?,?,?,?,?)";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setLong(1, proyecto.getIdProyecto());
-            preparedStatement.setString(2, proyecto.getProjectCode());
-            preparedStatement.setString(3, proyecto.getProjectName());
-            preparedStatement.setString(4, proyecto.getCustomer());
-            preparedStatement.setString(5, proyecto.getCategory());
-            preparedStatement.setTimestamp(6, Timestamp.valueOf(proyecto.getPublishDate()));
+            preparedStatement.setLong(1, project.getProjectId());
+            preparedStatement.setLong(2, project.getSite().getSiteId());
+            preparedStatement.setString(3, project.getProjectCode());
+            preparedStatement.setString(4, project.getProjectName());
+            preparedStatement.setString(5, project.getCustomer());
+            preparedStatement.setString(6, project.getCategory());
+            preparedStatement.setTimestamp(7, Timestamp.valueOf(project.getPublishDate()));
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 while (resultSet.next()) {
                     System.out.println(String.format("Fue guardado "
-                            + "el proyecto %s", proyecto));
+                            + "el proyecto %s", project));
                 }
             }
         } catch (SQLException e) {
+            System.out.println(project.getProjectName());
+            System.out.println("Error al guardar project: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
 
     /**
-     * Lista con objetos de tipo Proyecto.
+     * Lista con objetos de tipo Project.
      *
      * @return
      */
@@ -70,6 +76,7 @@ public class ProjectDAO {
                 while (resultSet.next()) {
                     resultado.add(new Project(
                             resultSet.getLong("ID_PROJECT"),
+                            new Site(resultSet.getLong("ID_SITE")),
                             resultSet.getString("PROJECT_CODE"),
                             resultSet.getString("PROJECT_NAME"),
                             resultSet.getString("CUSTOMER"),
@@ -82,5 +89,31 @@ public class ProjectDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Consulta los identificadores de project.
+     *
+     * @param projectIdentifier
+     * @return
+     */
+    public List<Long> listarProjectId(Long projectIdentifier) {
+        List<Long> projectIdList = new ArrayList<>();
+        String sql = "SELECT ID_PROJECT FROM PROJECT WHERE ID_PROJECT = ?";
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+            preparedStatement.setLong(1, projectIdentifier);
+            preparedStatement.execute();
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
+                while (resultSet.next()) {
+                    Project projectId = new Project(resultSet.getLong("ID_PROJECT"));
+                    projectIdList.add(projectId.getProjectId());
+                }
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(ProjectDAO.class.getName()).log(Level.SEVERE, null, e);
+            System.out.println("Error al consultad los ids de PROJECT: " + e.getMessage());
+        }
+
+        return projectIdList;
     }
 }

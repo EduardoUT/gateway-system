@@ -6,7 +6,7 @@ package com.mx.grupogateway.system.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.ExcelController;
-import com.mx.grupogateway.system.controller.Excel;
+import com.mx.grupogateway.system.modelo.DataImport;
 import com.mx.grupogateway.system.modelo.Project;
 import com.mx.grupogateway.system.view.util.IconoVentana;
 import java.awt.event.MouseEvent;
@@ -20,9 +20,8 @@ import javax.swing.JFrame;
  */
 public class ImportarExcel extends javax.swing.JFrame {
 
-    private static Excel excel;
     private ExcelController excelController;
-    private static LinkedList<Project> listaProyectos;
+    private DataImport dataImport;
     private JFrame jFrame;
 
     /**
@@ -43,7 +42,7 @@ public class ImportarExcel extends javax.swing.JFrame {
     }
 
     private void lockButtonImportExcel() {
-        if (listaProyectos == null) {
+        if (dataImport == null) {
             botonImportarExcel.setVisible(false);
         } else {
             botonImportarExcel.setVisible(true);
@@ -55,36 +54,32 @@ public class ImportarExcel extends javax.swing.JFrame {
      * posteriormente importa la información en una Lista de objetos Excel
      * mientras informa al usuario el progreso.
      */
-    private void ejecutarSwingWorkerImportarArchivoExcel() {
+    private void importExcelFile() {
+        String filePath;
         ExcelFileChooser excelFileChooser = new ExcelFileChooser(
                 new JFileChooser(".")
         );
-        if (!excelFileChooser.getRutaArchivo().isEmpty()) {
-            nombreArchivo.setText(excelFileChooser.getRutaArchivo());
-            excel = new Excel(excelFileChooser.getRutaArchivo(),
-                    excelFileChooser.getOptionValueSelected(),
-                    progressBar, textoProgreso
-            );
-            excel.execute();
-            listaProyectos = excel.getDatos();
+        if (excelFileChooser.isAnyFileSelected()) {
+            filePath = excelFileChooser.getRutaArchivo();
+            nombreArchivo.setText(filePath);
+            excelController = new ExcelController(filePath, progressBar, tituloStatus);
+            excelController.execute();
+            dataImport = excelController.getDataImport();
             lockButtonImportExcel();
         }
+    }
+    
+    private void exportExcelFile() {
+        if(dataImport != null) {
+            excelController.exportData();
+        }
+        lockButtonImportExcel();
     }
 
     /**
      * Cuando la lista contiene la información extraida del archivo, informa al
      * usuario el progreso y envía la información a la Base de Datos.
      */
-    private void ejecutarSwingWorkerExcelController() {
-        if (listaProyectos != null) {
-            excelController = new ExcelController(listaProyectos,
-                    progressBar, textoProgreso
-            );
-            excelController.getExecuteSwingWorker();
-            listaProyectos = null;
-            lockButtonImportExcel();
-        }
-    }
 
     protected void setJFrame(JFrame jFrame) {
         this.jFrame = jFrame;
@@ -231,13 +226,13 @@ public class ImportarExcel extends javax.swing.JFrame {
 
     private void botonImportarExcelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonImportarExcelMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1) {
-            ejecutarSwingWorkerExcelController();
+            exportExcelFile();
         }
     }//GEN-LAST:event_botonImportarExcelMouseClicked
 
     private void botonExaminarArchivoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonExaminarArchivoMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1) {
-            ejecutarSwingWorkerImportarArchivoExcel();
+            importExcelFile();
         }
     }//GEN-LAST:event_botonExaminarArchivoMouseClicked
 

@@ -16,12 +16,15 @@ public class PurchaseOrder {
     private Project project;
     private Integer poLineNo;
     private String dueQty;
-    private String billedQty;
+    private BigDecimal billedQty;
     private String unit;
     private BigDecimal unitPrice;
 
+    public PurchaseOrder() {
+    }
+
     public PurchaseOrder(PurchaseOrderDetail purchaseOrderDetail,
-            Project project, Integer poLineNo, String dueQty, String billedQty,
+            Project project, Integer poLineNo, String dueQty, BigDecimal billedQty,
             String unit, BigDecimal unitPrice) {
         this.purchaseOrderDetail = purchaseOrderDetail;
         this.project = project;
@@ -91,14 +94,14 @@ public class PurchaseOrder {
     /**
      * @return the billedQty
      */
-    public String getBilledQty() {
+    public BigDecimal getBilledQty() {
         return billedQty;
     }
 
     /**
      * @param billedQty the billedQty to set
      */
-    public void setBilledQty(String billedQty) {
+    public void setBilledQty(BigDecimal billedQty) {
         this.billedQty = billedQty;
     }
 

@@ -20,6 +20,9 @@ public class PurchaseOrderDetail {
     private BigDecimal lineAmount;
     private String paymentTerms;
 
+    public PurchaseOrderDetail() {
+    }
+
     public PurchaseOrderDetail(String poNo, String poStatus, Long itemCode,
             String itemDesc, String requestedQty, BigDecimal lineAmount,
             String paymentTerms) {
@@ -30,6 +33,10 @@ public class PurchaseOrderDetail {
         this.requestedQty = requestedQty;
         this.lineAmount = lineAmount;
         this.paymentTerms = paymentTerms;
+    }
+
+    public PurchaseOrderDetail(String poNo) {
+        this.poNo = poNo;
     }
 
     /**

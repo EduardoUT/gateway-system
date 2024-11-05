@@ -11,15 +11,23 @@ package com.mx.grupogateway.system.modelo;
 public class Site {
     
     private Long siteId;
-    private Project project;
     private String siteCode;
     private String siteName;
+    private String biddigArea;
+    private Integer shipmentNo;
     
-    public Site(Long siteId, Project project, String siteCode, String siteName) {
+    public Site() {}
+    
+    public Site(Long siteId, String siteCode, String siteName, String biddingArea, Integer shiplmentNo) {
         this.siteId = siteId;
-        this.project = project;
         this.siteCode = siteCode;
         this.siteName = siteName;
+        this.biddigArea = biddingArea;
+        this.shipmentNo = shiplmentNo;
+    }
+    
+    public Site(Long siteId) {
+        this.siteId = siteId;
     }
 
     /**
@@ -34,20 +42,6 @@ public class Site {
      */
     public void setSiteId(Long siteId) {
         this.siteId = siteId;
-    }
-
-    /**
-     * @return the project
-     */
-    public Project getProject() {
-        return project;
-    }
-
-    /**
-     * @param project the project to set
-     */
-    public void setProject(Project project) {
-        this.project = project;
     }
 
     /**
@@ -76,6 +70,34 @@ public class Site {
      */
     public void setSiteName(String siteName) {
         this.siteName = siteName;
+    }
+
+    /**
+     * @return the biddigArea
+     */
+    public String getBiddigArea() {
+        return biddigArea;
+    }
+
+    /**
+     * @param biddigArea the biddigArea to set
+     */
+    public void setBiddigArea(String biddigArea) {
+        this.biddigArea = biddigArea;
+    }
+
+    /**
+     * @return the shipmentNo
+     */
+    public Integer getShipmentNo() {
+        return shipmentNo;
+    }
+
+    /**
+     * @param shipmentNo the shipmentNo to set
+     */
+    public void setShipmentNo(Integer shipmentNo) {
+        this.shipmentNo = shipmentNo;
     }
     
 }

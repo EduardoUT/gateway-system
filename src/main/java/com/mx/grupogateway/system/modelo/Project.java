@@ -12,26 +12,38 @@ import java.time.LocalDateTime;
  */
 public class Project {
 
-    private final Long projectId;
+    private Long projectId;
+    private Site site;
     private String projectCode;
     private String projectName;
     private String customer;
     private String category;
     private LocalDateTime publishDate;
 
+    public Project() {
+        this.projectId = 0L;
+        this.site = new Site(0L);
+        this.projectCode = "0";
+        this.projectName = "Unsigned";
+        this.category = "None";
+        this.publishDate = LocalDateTime.now();
+    }
+
     /**
      * Constructor para la creación de un Proyecto.
      *
      * @param projectId
+     * @param site
      * @param projectCode
      * @param projectName
      * @param projectCustomer
      * @param projectCategory
      * @param publishDate
      */
-    public Project(Long projectId, String projectCode, String projectName,
+    public Project(Long projectId, Site site, String projectCode, String projectName,
             String projectCustomer, String projectCategory, LocalDateTime publishDate) {
         this.projectId = projectId;
+        this.site = site;
         this.projectCode = projectCode;
         this.projectName = projectName;
         this.customer = projectCustomer;
@@ -39,11 +51,33 @@ public class Project {
         this.publishDate = publishDate;
     }
 
+    public Project(Long projectId) {
+        this.projectId = projectId;
+    }
+
     /**
      * @return the projectId
      */
-    public Long getIdProyecto() {
+    public Long getProjectId() {
         return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    /**
+     * @return the site
+     */
+    public Site getSite() {
+        return site;
+    }
+
+    /**
+     * @param site the site to set
+     */
+    public void setSite(Site site) {
+        this.site = site;
     }
 
     /**
