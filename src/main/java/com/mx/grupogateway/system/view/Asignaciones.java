@@ -8,7 +8,6 @@ package com.mx.grupogateway.system.view;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.EmpleadoController;
 import com.mx.grupogateway.system.controller.PurchaseOrderAssignmentController;
-import com.mx.grupogateway.system.controller.ProjectController;
 import com.mx.grupogateway.system.controller.PurchaseOrderController;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Project;
@@ -17,12 +16,9 @@ import com.mx.grupogateway.system.modelo.PurchaseOrderAssignment;
 import com.mx.grupogateway.system.modelo.PurchaseOrderDetail;
 import com.mx.grupogateway.system.view.util.IconoVentana;
 import com.mx.grupogateway.system.view.util.MargenTabla;
-import com.mx.grupogateway.system.view.model.TableDataModelAsignacion;
-import com.mx.grupogateway.system.view.model.TableDataModelEmpleado;
-import com.mx.grupogateway.system.view.model.TableDataModelProyecto;
+import com.mx.grupogateway.system.view.model.TableDataModel;
 import com.mx.grupogateway.system.view.util.AccionesTabla;
 import java.awt.event.KeyEvent;
-import java.util.LinkedList;
 import java.util.List;
 import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
@@ -39,14 +35,10 @@ public final class Asignaciones extends javax.swing.JFrame {
     private DefaultTableModel modeloTablaProyectos;
     private DefaultTableModel modeloTablaEmpleados;
     private DefaultTableModel modeloTablaAsignaciones;
-    private TableDataModelProyecto tableDataModelProyecto;
-    private TableDataModelEmpleado tableDataModelEmpleado;
-    private TableDataModelAsignacion tableDataModelAsignacion;
+    private TableDataModel tableDataModel;
     private EmpleadoController empleadoController;
     private PurchaseOrderController purchaseOrderController;
     private PurchaseOrderAssignmentController purchaseOrderAssignmentController;
-
-    private LinkedList<PurchaseOrderAssignment> filtroProyectosAsignados;
     private List<PurchaseOrder> purchaseOrders;
     private int filaTablaProyectos;
     private int filaTablaEmpleados;
@@ -82,20 +74,16 @@ public final class Asignaciones extends javax.swing.JFrame {
     private void cargarTablaEmpleados() {
         modeloTablaEmpleados = (DefaultTableModel) tablaEmpleados.getModel();
         List<Empleado> empleados = this.empleadoController.listar();
-        tableDataModelEmpleado = new TableDataModelEmpleado(
-                modeloTablaEmpleados, tablaEmpleados, empleados
-        );
-        tableDataModelEmpleado.cargarModeloTablaEmpleados();
+        tableDataModel = new TableDataModel();
+        tableDataModel.setTableDataModelEmpleados(modeloTablaEmpleados, tablaEmpleados, empleados);
         MargenTabla.ajustarColumnas(tablaEmpleados);
     }
 
     private void cargarTablaProyectos() {
         modeloTablaProyectos = (DefaultTableModel) tablaProyectos.getModel();
         purchaseOrders = this.purchaseOrderController.listar();
-        tableDataModelProyecto = new TableDataModelProyecto(
-                modeloTablaProyectos, tablaProyectos, purchaseOrders
-        );
-        tableDataModelProyecto.cargarModeloTablaProyecto();
+        tableDataModel = new TableDataModel();
+        tableDataModel.cargarModeloTablaProyecto(modeloTablaProyectos, tablaProyectos, purchaseOrders);
         MargenTabla.ajustarColumnas(tablaProyectos);
     }
 
@@ -103,9 +91,8 @@ public final class Asignaciones extends javax.swing.JFrame {
         modeloTablaAsignaciones = (DefaultTableModel) tablaAsignaciones.getModel();
         List<PurchaseOrderAssignment> purchaseOrderAssignments
                 = this.purchaseOrderAssignmentController.listar();
-        tableDataModelAsignacion = new TableDataModelAsignacion(
-                modeloTablaAsignaciones, tablaAsignaciones, purchaseOrderAssignments);
-        tableDataModelAsignacion.cargarModeloTablaAsignaciones();
+        tableDataModel = new TableDataModel();
+        tableDataModel.cargarModeloTablaAsignaciones(modeloTablaAsignaciones, tablaAsignaciones, purchaseOrderAssignments);
         MargenTabla.ajustarColumnas(tablaAsignaciones);
     }
 

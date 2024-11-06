@@ -11,10 +11,10 @@ import com.mx.grupogateway.system.controller.PurchaseOrderController;
 import com.mx.grupogateway.system.modelo.Project;
 import com.mx.grupogateway.system.modelo.PurchaseOrder;
 import com.mx.grupogateway.system.modelo.Usuario;
+import com.mx.grupogateway.system.view.model.TableDataModel;
 import com.mx.grupogateway.system.view.util.IconoVentana;
 import com.mx.grupogateway.system.view.util.MargenTabla;
 import com.mx.grupogateway.system.view.util.AccionesTabla;
-import com.mx.grupogateway.system.view.model.TableDataModelProyecto;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -29,7 +29,7 @@ import java.util.List;
 public final class Facturacion extends javax.swing.JFrame {
 
     private DefaultTableModel modeloTablaProyectos;
-    private TableDataModelProyecto tableDataModelProyecto;
+    private TableDataModel tableDataModel;
     private PurchaseOrderController purchaseOrderController;
     private Usuario usuario;
 
@@ -52,15 +52,13 @@ public final class Facturacion extends javax.swing.JFrame {
     protected void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
-    
+
     private void cargarTablaProyectos() {
         tablaProyectos.setModel(new Asignaciones().tablaProyectos.getModel());
         modeloTablaProyectos = (DefaultTableModel) tablaProyectos.getModel();
         List<PurchaseOrder> purchaseOrders = this.purchaseOrderController.listar();
-        tableDataModelProyecto = new TableDataModelProyecto(
-                modeloTablaProyectos, tablaProyectos, purchaseOrders
-        );
-        tableDataModelProyecto.cargarModeloTablaProyecto();
+        tableDataModel = new TableDataModel();
+        tableDataModel.cargarModeloTablaProyecto(modeloTablaProyectos, tablaProyectos, purchaseOrders);
         MargenTabla.ajustarColumnas(tablaProyectos);
     }
 

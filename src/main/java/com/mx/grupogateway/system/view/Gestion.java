@@ -13,8 +13,7 @@ import com.mx.grupogateway.system.modelo.EmpleadoCategoria;
 import com.mx.grupogateway.system.modelo.Usuario;
 import com.mx.grupogateway.system.view.util.IconoVentana;
 import com.mx.grupogateway.system.view.util.MargenTabla;
-import com.mx.grupogateway.system.view.model.TableDataModelEmpleado;
-import com.mx.grupogateway.system.view.model.TableDataModelUsuario;
+import com.mx.grupogateway.system.view.model.TableDataModel;
 import com.mx.grupogateway.system.view.util.AccionesTabla;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -32,8 +31,7 @@ public class Gestion extends javax.swing.JFrame {
     private DefaultTableModel modeloTablaEmpleado;
     private DefaultTableModel modeloTablaUsuario;
     private DefaultComboBoxModel modeloComboBoxCargoEmpleado;
-    private TableDataModelEmpleado tableDataModelEmpleado;
-    private TableDataModelUsuario tableDataModelUsuario;
+    private TableDataModel tableDataModel;
     private EmpleadoController empleadoController;
     private EmpleadoCategoriaController empleadoCargoController;
     private UsuarioController usuarioController;
@@ -110,10 +108,8 @@ public class Gestion extends javax.swing.JFrame {
     private void cargarTablaEmpleado() {
         modeloTablaEmpleado = (DefaultTableModel) tablaEmpleado.getModel();
         List<Empleado> empleados = this.empleadoController.listar();
-        tableDataModelEmpleado = new TableDataModelEmpleado(
-                modeloTablaEmpleado, tablaEmpleado, empleados
-        );
-        tableDataModelEmpleado.cargarModeloTablaEmpleados();
+        tableDataModel = new TableDataModel();
+        tableDataModel.setTableDataModelEmpleados(modeloTablaEmpleado, tablaEmpleado, empleados);
         MargenTabla.ajustarColumnas(tablaEmpleado);
     }
 
@@ -226,8 +222,8 @@ public class Gestion extends javax.swing.JFrame {
     private void cargarTablaUsuario() {
         modeloTablaUsuario = (DefaultTableModel) tablaUsuario.getModel();
         List<Usuario> usuarios = this.usuarioController.listar();
-        tableDataModelUsuario = new TableDataModelUsuario(modeloTablaUsuario, tablaUsuario, usuarios);
-        tableDataModelUsuario.cargarModeloTablaUsuario();
+        tableDataModel = new TableDataModel();
+        tableDataModel.cargarModeloTablaUsuario(modeloTablaUsuario, tablaUsuario, usuarios);
         MargenTabla.ajustarColumnas(tablaUsuario);
     }
 
