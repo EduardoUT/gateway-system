@@ -5,8 +5,11 @@
 package com.mx.grupogateway.system.dao;
 
 import com.mx.grupogateway.system.modelo.Empleado;
+import com.mx.grupogateway.system.modelo.Project;
+import com.mx.grupogateway.system.modelo.PurchaseOrder;
 import com.mx.grupogateway.system.modelo.PurchaseOrderAssignment;
 import com.mx.grupogateway.system.modelo.PurchaseOrderDetail;
+import com.mx.grupogateway.system.modelo.Site;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,22 +39,22 @@ public class PurchaseOrderAssignmentDAO {
      * @param purchaseOrderAssignment Varios objetos de asignaciones.
      * @param purchaseOrderProjectIdentifiers
      */
-    public void guardar(PurchaseOrderAssignment purchaseOrderAssignment, List<Long> purchaseOrderProjectIdentifiers) {
+    public void guardar(PurchaseOrderAssignment purchaseOrderAssignment,
+            List<Long> purchaseOrderProjectIdentifiers) {
         String sql = "INSERT INTO EMPLEADOS_HAS_PROJECTS "
                 + "(ID_EMPLEADO, ID_PROJECT, FECHA_ASIGNACION, IMPORTE, "
                 + "TOTAL_PAGAR, STATUS) VALUES "
-                + "(?, ?, ?, CURRENT_TIMESTAMP, ?, ?) ";
+                + "(?, ?, CURRENT_TIMESTAMP, ?, ?, ?) ";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
             for (Long purchaseOrderProjectIdentifier : purchaseOrderProjectIdentifiers) {
-                preparedStatement.setString(1, purchaseOrderAssignment.getEmpleado().getIdEmpleado());
+                preparedStatement.setInt(1, purchaseOrderAssignment.getEmpleado().getIdEmpleado());
                 preparedStatement.setLong(2, purchaseOrderProjectIdentifier);
                 preparedStatement.setBigDecimal(3, purchaseOrderAssignment.getImporte());
                 preparedStatement.setBigDecimal(4, purchaseOrderAssignment.getTotalPagar());
                 preparedStatement.setString(5, purchaseOrderAssignment.getStatusAsBinary());
                 preparedStatement.execute();
             }
-
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 while (resultSet.next()) {
                     System.out.println(
@@ -72,90 +75,115 @@ public class PurchaseOrderAssignmentDAO {
      */
     public List<PurchaseOrderAssignment> listar() {
         LinkedList<PurchaseOrderAssignment> purchaseOrderAssignments = new LinkedList<>();
-        String sql = "SELECT EMPLEADOS_HAS_PROJECTS.ID_EMPLEADO, NOMBRE, APE_PAT, "
-                + "APE_MAT, FECHA_ASIGNACION, EMPLEADOS_HAS_PROJECTS.ID_PROJECT, "
-                + "EMPLEADOS_HAS_PROJECTS.PO_NO, IMPORTE, TOTAL_PAGAR, STATUS, "
-                + "CUSTOMER, PROJECT_NAME, PO_STATUS, PO_LINE_NO, SITE_CODE, "
-                + "SITE_NAME, ITEM_DESC, REQUESTED_QTY, DUE_QTY, BILLED_QTY, "
-                + "UNIT_PRICE, LINE_AMOUNT, UNIT, PAYMENT_TERMS, CATEGORY, "
-                + "PUBLISH_DATE "
+        String sql = "SELECT EMPLEADOS.ID_EMPLEADO, EMPLEADOS.NOMBRE, "
+                + "EMPLEADOS.APE_PAT, EMPLEADOS.APE_MAT, "
+                + "EMPLEADOS_HAS_PROJECTS.FECHA_ASIGNACION, "
+                + "EMPLEADOS_HAS_PROJECTS.ID_PROJECT, PURCHASE_HAS_ORDER.PO_NO, "
+                + "EMPLEADOS_HAS_PROJECTS.IMPORTE, "
+                + "EMPLEADOS_HAS_PROJECTS.TOTAL_PAGAR, "
+                + "EMPLEADOS_HAS_PROJECTS.STATUS, PROJECT.CUSTOMER, "
+                + "PROJECT.PROJECT_NAME, PURCHASE_ORDER.PO_STATUS, "
+                + "PURCHASE_HAS_ORDER.PO_LINE_NO, SITE.SITE_CODE, SITE.SITE_NAME, "
+                + "PURCHASE_ORDER.ITEM_DESC, PURCHASE_ORDER.REQUESTED_QTY, "
+                + "PURCHASE_HAS_ORDER.DUE_QTY, PURCHASE_HAS_ORDER.BILLED_QTY, "
+                + "PURCHASE_HAS_ORDER.UNIT_PRICE, PURCHASE_ORDER.LINE_AMOUNT, "
+                + "PURCHASE_HAS_ORDER.UNIT, PURCHASE_ORDER.PAYMENT_TERMS, "
+                + "PROJECT.CATEGORY, PROJECT.PUBLISH_DATE "
                 + "FROM EMPLEADOS_HAS_PROJECTS "
-                + "INNER JOIN PROJECTS "
-                + "ON EMPLEADOS_HAS_PROJECTS.ID_PROJECT = PROJECTS.ID_PROJECT "
-                + "INNER JOIN EMPLEADOS "
-                + "ON EMPLEADOS_HAS_PROJECTS.ID_EMPLEADO = EMPLEADOS.ID_EMPLEADO";
-
+                + "INNER JOIN EMPLEADOS ON "
+                + "EMPLEADOS_HAS_PROJECTS.ID_EMPLEADO = EMPLEADOS.ID_EMPLEADO "
+                + "INNER JOIN PROJECT ON "
+                + "EMPLEADOS_HAS_PROJECTS.ID_PROJECT = PROJECT.ID_PROJECT "
+                + "INNER JOIN SITE ON PROJECT.ID_SITE = SITE.ID_SITE "
+                + "INNER JOIN PURCHASE_HAS_ORDER ON "
+                + "PURCHASE_HAS_ORDER.ID_PROJECT = PROJECT.ID_PROJECT "
+                + "INNER JOIN PURCHASE_ORDER ON "
+                + "PURCHASE_HAS_ORDER.PO_NO = PURCHASE_ORDER.PO_NO";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    PurchaseOrderAssignment purchaseOrderAssignment = new PurchaseOrderAssignment();
-
-                    purchaseOrderAssignment.setEmpleado(
-                            new Empleado(
-                                    resultSet.getString("ID_EMPLEADO"),
-                                    resultSet.getString("NOMBRE"),
-                                    resultSet.getString("APE_PAT"),
-                                    resultSet.getString("APE_MAT")
-                            ));
-                    
-                     
-                    
+                    Site site = new Site();
+                    site.setSiteCode(resultSet.getString("SITE_CODE"));
+                    site.setSiteName(resultSet.getString("SITE_NAME"));
+                    Project project = new Project();
+                    project.setProjectId(resultSet.getLong("ID_PROJECT"));
+                    project.setSite(site);
+                    project.setProjectName(resultSet.getString("PROJECT_NAME"));
+                    project.setCustomer(resultSet.getString("CUSTOMER"));
+                    project.setCategory(resultSet.getString("CATEGORY"));
+                    project.setPublishDate(resultSet.getTimestamp("PUBLISH_DATE")
+                            .toLocalDateTime());
                     PurchaseOrderDetail purchaseOrderDetail = new PurchaseOrderDetail();
-                    purchaseOrderDetail.setPoNo(resultSet.getString("PO_NO"));
+                    purchaseOrderDetail.setPurchaseOrderIdentifier(resultSet.getString("PO_NO"));
                     purchaseOrderDetail.setPoStatus(resultSet.getString("PO_STATUS"));
                     purchaseOrderDetail.setItemDesc(resultSet.getString("ITEM_DESC"));
                     purchaseOrderDetail.setRequestedQty(resultSet.getString("REQUESTED_QTY"));
-                    purchaseOrderDetail.setLineAmount(resultSet.getBigDecimal("LINE_aMOUNT"));
+                    purchaseOrderDetail.setLineAmount(resultSet.getBigDecimal("LINE_AMOUNT"));
                     purchaseOrderDetail.setPaymentTerms(resultSet.getString("PAYMENT_TERMS"));
-                    
-                    /*
-                    PurchaseOrder purchaseOrder = new PurchaseOrder(
-                            purchaseOrderDetail, 
-                            project, 
-                            Integer.SIZE, 
-                            sql, 
-                            sql, 
-                            sql, 
-                            BigDecimal.ONE);
-                    
-                    purchaseOrderAssignment.setPurchaseOrder();
-
+                    PurchaseOrder purchaseOrder = new PurchaseOrder();
+                    purchaseOrder.setPurchaseOrderDetail(purchaseOrderDetail);
+                    purchaseOrder.setProject(project);
+                    purchaseOrder.setPoLineNo(resultSet.getInt("PO_LINE_NO"));
+                    purchaseOrder.setDueQty(resultSet.getString("DUE_QTY"));
+                    purchaseOrder.setBilledQty(resultSet.getBigDecimal("BILLED_QTY"));
+                    purchaseOrder.setUnit(resultSet.getString("UNIT"));
+                    purchaseOrder.setUnitPrice(resultSet.getBigDecimal("UNIT_PRICE"));
+                    Empleado empleado = new Empleado(
+                            resultSet.getInt("ID_EMPLEADO"),
+                            resultSet.getString("NOMBRE"),
+                            resultSet.getString("APE_PAT"),
+                            resultSet.getString("APE_MAT")
+                    );
+                    PurchaseOrderAssignment purchaseOrderAssignment = new PurchaseOrderAssignment();
+                    purchaseOrderAssignment.setEmpleado(empleado);
+                    purchaseOrderAssignment.setPurchaseOrder(purchaseOrder);
+                    purchaseOrderAssignment.setFechaAsignacion(
+                            resultSet.getTimestamp("FECHA_ASIGNACION")
+                    );
+                    purchaseOrderAssignment.setImporte(resultSet.getBigDecimal("IMPORTE"));
+                    purchaseOrderAssignment.setTotalPagar(resultSet.getBigDecimal("TOTAL_PAGAR"));
+                    purchaseOrderAssignment.setStatus(resultSet.getBoolean("STATUS"));
                     purchaseOrderAssignments.add(purchaseOrderAssignment);
-                    */
                 }
             }
-            return purchaseOrderAssignments;
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            throw new RuntimeException(e);
+            Logger.getLogger(PurchaseOrderAssignmentDAO.class.getName()).log(Level.SEVERE, null, e);
+            System.out.println("Error al consultar EMPLEADOS_HAS_PROJECTS " + e.getMessage());
+            //throw new RuntimeException(e);
         }
+        return purchaseOrderAssignments;
     }
 
     /**
      * Actualiza la asignación de un proyecto o más con la misma clave "PO NO" y
      * cuyo usuario actual este asignado.
      *
-     * @param idEmpleado Clave del usuario de la nueva asignación.
-     * @param poNo Clave de línea del proyecto, esta puede ser una o varias.
-     * @param idEmpleadoAsignado Clave del usuario que esta asignado actualmente
+     * @param empleadoNuevoId Clave del usuario de la nueva asignación.
+     * @param purchaseOrderAssignment Clave de línea del proyecto, esta puede
+     * ser una o varias.
+     * @param empleadoActualId Clave del usuario que esta asignado actualmente
      * al proyecto.
-     * @return Cantidad de registros afectados.
+     * @param purchaseOrderProjectIdentifiers Listado de proyectos que
+     * coincidieron con PO_NO actual asignada.
      */
-    public int actualizar(String idEmpleado, String poNo,
-            String idEmpleadoAsignado) {
+    public void actualizar(Integer empleadoActualId, Integer empleadoNuevoId,
+            PurchaseOrderAssignment purchaseOrderAssignment, List<Long> purchaseOrderProjectIdentifiers) {
         String sql = "UPDATE EMPLEADOS_HAS_PROJECTS "
                 + "SET ID_EMPLEADO = ? "
-                + "WHERE PO_NO = ? AND ID_EMPLEADO = ?";
+                + "WHERE ID_PROJECT = ? AND ID_EMPLEADO = ?";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
-            preparedStatement.setString(1, idEmpleado);
-            preparedStatement.setString(2, poNo);
-            preparedStatement.setString(3, idEmpleadoAsignado);
-            preparedStatement.execute();
-            int updateCount = preparedStatement.getUpdateCount();
-            return updateCount;
+            for (Long purchaseOrderProjectIdentifier : purchaseOrderProjectIdentifiers) {
+                preparedStatement.setInt(1, empleadoNuevoId);
+                preparedStatement.setLong(2, purchaseOrderProjectIdentifier);
+                preparedStatement.setInt(3, empleadoActualId);
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            Logger.getLogger(PurchaseOrderAssignmentDAO.class.getName()).log(Level.SEVERE, null, e);
+            System.out.println("Error al actualizar EMPLEADOS_HAS_PROJECTS " + e.getMessage());
         }
     }
+
 }

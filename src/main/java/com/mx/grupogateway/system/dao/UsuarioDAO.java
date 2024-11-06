@@ -37,9 +37,8 @@ public class UsuarioDAO {
      * empleados.
      *
      * @param usuario
-     * @param idEmpleado
      */
-    public void guardar(Usuario usuario, String idEmpleado) {
+    public void guardar(Usuario usuario) {
         String sql = "INSERT INTO USUARIOS (ID_USUARIO, NOMBRE_USUARIO, PASSWORD)"
                 + "VALUES (?, ?, ?)";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql,

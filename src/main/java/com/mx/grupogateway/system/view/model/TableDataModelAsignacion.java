@@ -37,7 +37,28 @@ public class TableDataModelAsignacion {
                         purchaseOrderAssignment.getEmpleado().getNombre(),
                         purchaseOrderAssignment.getEmpleado().getApellidoPaterno(),
                         purchaseOrderAssignment.getEmpleado().getApellidoMaterno(),
-                        purchaseOrderAssignment.getFechaAsignacion()
+                        purchaseOrderAssignment.getFechaAsignacion(),
+                        purchaseOrderAssignment.getPurchaseOrder().getProject().getProjectId(),
+                        purchaseOrderAssignment.getPurchaseOrder().getPurchaseOrderDetail().getPurchaseOrderIdentifier(),
+                        purchaseOrderAssignment.getImporte(),
+                        purchaseOrderAssignment.getTotalPagar(),
+                        purchaseOrderAssignment.getStatus(),
+                        purchaseOrderAssignment.getPurchaseOrder().getProject().getCustomer(),
+                        purchaseOrderAssignment.getPurchaseOrder().getProject().getProjectName(),
+                        purchaseOrderAssignment.getPurchaseOrder().getPurchaseOrderDetail().getPoStatus(),
+                        purchaseOrderAssignment.getPurchaseOrder().getPoLineNo(),
+                        purchaseOrderAssignment.getPurchaseOrder().getProject().getSite().getSiteCode(),
+                        purchaseOrderAssignment.getPurchaseOrder().getProject().getSite().getSiteName(),
+                        purchaseOrderAssignment.getPurchaseOrder().getPurchaseOrderDetail().getItemDesc(),
+                        purchaseOrderAssignment.getPurchaseOrder().getPurchaseOrderDetail().getRequestedQty(),
+                        purchaseOrderAssignment.getPurchaseOrder().getDueQty(),
+                        purchaseOrderAssignment.getPurchaseOrder().getBilledQty(),
+                        purchaseOrderAssignment.getPurchaseOrder().getUnitPrice(),
+                        purchaseOrderAssignment.getPurchaseOrder().getPurchaseOrderDetail().getLineAmount(),
+                        purchaseOrderAssignment.getPurchaseOrder().getUnit(),
+                        purchaseOrderAssignment.getPurchaseOrder().getPurchaseOrderDetail().getPaymentTerms(),
+                        purchaseOrderAssignment.getPurchaseOrder().getProject().getCategory(),
+                        purchaseOrderAssignment.getPurchaseOrder().getProject().getPublishDate()
                     }
             );
         });

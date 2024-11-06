@@ -14,12 +14,12 @@ import java.sql.Timestamp;
  */
 public final class PurchaseOrderAssignment {
 
+    private Empleado empleado;
+    private PurchaseOrder purchaseOrder;
     private Timestamp fechaAsignacion;
     private BigDecimal importe;
     private BigDecimal totalPagar;
     private Boolean status = false;
-    private Empleado empleado;
-    private PurchaseOrder purchaseOrder;
 
     public PurchaseOrderAssignment() {
     }
@@ -27,18 +27,18 @@ public final class PurchaseOrderAssignment {
     /**
      * Constructor para representar una asignación de proyecto-empleado.
      *
-     * @param purchaseOrder
      * @param empleado
+     * @param purchaseOrder
      * @param fechaAsignacion
      * @param importe
      * @param totalPagar
      * @param status
      */
-    public PurchaseOrderAssignment(PurchaseOrder purchaseOrder,
-            Empleado empleado, Timestamp fechaAsignacion, BigDecimal importe,
+    public PurchaseOrderAssignment(Empleado empleado, PurchaseOrder purchaseOrder,
+            Timestamp fechaAsignacion, BigDecimal importe,
             BigDecimal totalPagar, String status) {
-        this.purchaseOrder = purchaseOrder;
         this.empleado = empleado;
+        this.purchaseOrder = purchaseOrder;
         this.fechaAsignacion = fechaAsignacion;
         this.importe = importe;
         this.totalPagar = totalPagar;
@@ -52,30 +52,16 @@ public final class PurchaseOrderAssignment {
      * @param purchaseOrder
      * @param empleado Datos del empleado.
      */
-    public PurchaseOrderAssignment(PurchaseOrder purchaseOrder, Empleado empleado) {
-        this.purchaseOrder = purchaseOrder;
+    public PurchaseOrderAssignment(Empleado empleado, PurchaseOrder purchaseOrder) {
         this.empleado = empleado;
+        this.purchaseOrder = purchaseOrder;
         setFechaAsignacion(fechaAsignacion);
         this.importe = new BigDecimal("0.0");
         this.totalPagar = new BigDecimal("0.0");
     }
 
     /**
-     * @return the fechaAsignacion
-     */
-    public Timestamp getFechaAsignacion() {
-        return fechaAsignacion;
-    }
-
-    /**
-     * @param fechaAsignacion the fechaAsignacion to set
-     */
-    public void setFechaAsignacion(Timestamp fechaAsignacion) {
-        this.fechaAsignacion = fechaAsignacion;
-    }
-
-    /**
-     * @return the usuario
+     * @return the empleado
      */
     public Empleado getEmpleado() {
         return empleado;
@@ -100,6 +86,20 @@ public final class PurchaseOrderAssignment {
      */
     public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
         this.purchaseOrder = purchaseOrder;
+    }
+
+    /**
+     * @return the fechaAsignacion
+     */
+    public Timestamp getFechaAsignacion() {
+        return fechaAsignacion;
+    }
+
+    /**
+     * @param fechaAsignacion the fechaAsignacion to set
+     */
+    public void setFechaAsignacion(Timestamp fechaAsignacion) {
+        this.fechaAsignacion = fechaAsignacion;
     }
 
     /**
@@ -138,12 +138,19 @@ public final class PurchaseOrderAssignment {
     }
 
     /**
+     * @param status the status to set
+     */
+    public void setStatus(Boolean status) {
+        this.status = status;
+    }
+
+    /**
      * Tranforma el status a binario, para ser almacenado en la BD.
      *
      * @return 1 o 0
      */
     public String getStatusAsBinary() {
-        return (this.status ? "1" : "0");
+        return (this.getStatus() ? "1" : "0");
     }
 
     /**
@@ -174,7 +181,6 @@ public final class PurchaseOrderAssignment {
                 this.getPurchaseOrder().getProject().getProjectId(),
                 this.fechaAsignacion,
                 this.importe,
-                this.totalPagar,
-                this.status);
+                this.totalPagar, this.getStatus());
     }
 }

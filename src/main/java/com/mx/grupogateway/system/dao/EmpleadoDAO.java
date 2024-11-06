@@ -37,8 +37,7 @@ public class EmpleadoDAO {
     public void guardar(Empleado empleado) {
         usuarioDAO = new UsuarioDAO(con);
         usuarioDAO.guardar(
-                empleado.getUsuario(),
-                empleado.getIdEmpleado()
+                empleado.getUsuario()
         );
         String sql = "INSERT INTO EMPLEADOS "
                 + "(ID_EMPLEADO, NOMBRE, APE_PAT, "
@@ -46,7 +45,7 @@ public class EmpleadoDAO {
                 + "VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, empleado.getIdEmpleado());
+            preparedStatement.setInt(1, empleado.getIdEmpleado());
             preparedStatement.setString(2, empleado.getNombre());
             preparedStatement.setString(3, empleado.getApellidoPaterno());
             preparedStatement.setString(4, empleado.getApellidoMaterno());
@@ -80,7 +79,7 @@ public class EmpleadoDAO {
                 while (resultSet.next()) {
                     resultado.add(
                             new Empleado(
-                                    resultSet.getString("ID_EMPLEADO"),
+                                    resultSet.getInt("ID_EMPLEADO"),
                                     resultSet.getString("NOMBRE"),
                                     resultSet.getString("APE_PAT"),
                                     resultSet.getString("APE_MAT"),

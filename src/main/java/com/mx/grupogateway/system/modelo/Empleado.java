@@ -4,15 +4,13 @@
  */
 package com.mx.grupogateway.system.modelo;
 
-import com.mx.grupogateway.system.util.GeneradorUUID;
-
 /**
  *
  * @author Eduardo Reyes Hernández
  */
 public class Empleado {
 
-    private String idEmpleado;
+    private Integer idEmpleado;
     private String nombre;
     private String apellidoPaterno;
     private String apellidoMaterno;
@@ -29,7 +27,7 @@ public class Empleado {
      * @param empleadoCategoria
      * @param usuario
      */
-    public Empleado(String empleadoId, String nombre, String apellidoPaterno,
+    public Empleado(Integer empleadoId, String nombre, String apellidoPaterno,
             String apellidoMaterno, Usuario usuario,
             EmpleadoCategoria empleadoCategoria) {
         validarEmpleado(nombre, apellidoPaterno, apellidoMaterno);
@@ -52,7 +50,6 @@ public class Empleado {
     public Empleado(String nombre, String apellidoPaterno,
             String apellidoMaterno, EmpleadoCategoria empleadoCategoria) {
         validarEmpleado(nombre, apellidoPaterno, apellidoMaterno);
-        this.idEmpleado = GeneradorUUID.generarIdentificador();
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
@@ -86,7 +83,7 @@ public class Empleado {
      * @param apellidoPaterno
      * @param apellidoMaterno
      */
-    public Empleado(String idEmpleado, String nombre, String apellidoPaterno,
+    public Empleado(Integer idEmpleado, String nombre, String apellidoPaterno,
             String apellidoMaterno) {
         validarEmpleado(nombre, apellidoPaterno, apellidoMaterno);
         this.idEmpleado = idEmpleado;
@@ -111,14 +108,14 @@ public class Empleado {
      *
      * @param idEmpleado
      */
-    public Empleado(String idEmpleado) {
+    public Empleado(Integer idEmpleado) {
         this.idEmpleado = idEmpleado;
     }
 
     /**
      * @return the idEmpleado
      */
-    public String getIdEmpleado() {
+    public Integer getIdEmpleado() {
         return idEmpleado;
     }
 

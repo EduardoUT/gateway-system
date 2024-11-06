@@ -12,7 +12,7 @@ import java.math.BigDecimal;
  */
 public class PurchaseOrderDetail {
 
-    private String poNo;
+    private String purchaseOrderIdentifier;
     private String poStatus;
     private Long itemCode;
     private String itemDesc;
@@ -26,7 +26,7 @@ public class PurchaseOrderDetail {
     public PurchaseOrderDetail(String poNo, String poStatus, Long itemCode,
             String itemDesc, String requestedQty, BigDecimal lineAmount,
             String paymentTerms) {
-        this.poNo = poNo;
+        this.purchaseOrderIdentifier = poNo;
         this.poStatus = poStatus;
         this.itemCode = itemCode;
         this.itemDesc = itemDesc;
@@ -36,21 +36,21 @@ public class PurchaseOrderDetail {
     }
 
     public PurchaseOrderDetail(String poNo) {
-        this.poNo = poNo;
+        this.purchaseOrderIdentifier = poNo;
     }
 
     /**
-     * @return the poNo
+     * @return the purchaseOrderIdentifier
      */
-    public String getPoNo() {
-        return poNo;
+    public String getPurchaseOrderIdentifier() {
+        return purchaseOrderIdentifier;
     }
 
     /**
-     * @param poNo the poNo to set
+     * @param purchaseOrderIdentifier the purchaseOrderIdentifier to set
      */
-    public void setPoNo(String poNo) {
-        this.poNo = poNo;
+    public void setPurchaseOrderIdentifier(String purchaseOrderIdentifier) {
+        this.purchaseOrderIdentifier = purchaseOrderIdentifier;
     }
 
     /**

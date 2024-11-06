@@ -39,7 +39,7 @@ public class PurchaseOrderDetailDAO {
                 + "VALUES(?,?,?,?,?,?,?)";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, purchaseOrderDetail.getPoNo());
+            preparedStatement.setString(1, purchaseOrderDetail.getPurchaseOrderIdentifier());
             preparedStatement.setString(2, purchaseOrderDetail.getPoStatus());
             preparedStatement.setLong(3, purchaseOrderDetail.getItemCode());
             preparedStatement.setString(4, purchaseOrderDetail.getItemDesc());
@@ -74,7 +74,7 @@ public class PurchaseOrderDetailDAO {
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     PurchaseOrderDetail purchaseOrder = new PurchaseOrderDetail(resultSet.getString("PO_NO"));
-                    purchaseOrderList.add(purchaseOrder.getPoNo());
+                    purchaseOrderList.add(purchaseOrder.getPurchaseOrderIdentifier());
                 }
 
             }

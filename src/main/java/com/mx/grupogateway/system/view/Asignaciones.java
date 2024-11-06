@@ -9,9 +9,12 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.EmpleadoController;
 import com.mx.grupogateway.system.controller.PurchaseOrderAssignmentController;
 import com.mx.grupogateway.system.controller.ProjectController;
+import com.mx.grupogateway.system.controller.PurchaseOrderController;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Project;
+import com.mx.grupogateway.system.modelo.PurchaseOrder;
 import com.mx.grupogateway.system.modelo.PurchaseOrderAssignment;
+import com.mx.grupogateway.system.modelo.PurchaseOrderDetail;
 import com.mx.grupogateway.system.view.util.IconoVentana;
 import com.mx.grupogateway.system.view.util.MargenTabla;
 import com.mx.grupogateway.system.view.model.TableDataModelAsignacion;
@@ -39,11 +42,12 @@ public final class Asignaciones extends javax.swing.JFrame {
     private TableDataModelProyecto tableDataModelProyecto;
     private TableDataModelEmpleado tableDataModelEmpleado;
     private TableDataModelAsignacion tableDataModelAsignacion;
-    private ProjectController proyectoController;
     private EmpleadoController empleadoController;
-    private PurchaseOrderAssignmentController proyectosAsignadosController;
+    private PurchaseOrderController purchaseOrderController;
+    private PurchaseOrderAssignmentController purchaseOrderAssignmentController;
+
     private LinkedList<PurchaseOrderAssignment> filtroProyectosAsignados;
-    private List<Project> listaProyectos;
+    private List<PurchaseOrder> purchaseOrders;
     private int filaTablaProyectos;
     private int filaTablaEmpleados;
     private int filaTablaAsignaciones;
@@ -59,9 +63,9 @@ public final class Asignaciones extends javax.swing.JFrame {
         filaTablaProyectos = tablaProyectos.getSelectedRow();
         filaTablaEmpleados = tablaEmpleados.getSelectedRow();
         filaTablaAsignaciones = tablaAsignaciones.getSelectedRow();
-        this.proyectoController = new ProjectController();
         this.empleadoController = new EmpleadoController();
-        this.proyectosAsignadosController = new PurchaseOrderAssignmentController();
+        this.purchaseOrderController = new PurchaseOrderController();
+        this.purchaseOrderAssignmentController = new PurchaseOrderAssignmentController();
         cargarTablaEmpleados();
         cargarTablaProyectos();
         cargarTablaProyectosAsignados();
@@ -87,9 +91,9 @@ public final class Asignaciones extends javax.swing.JFrame {
 
     private void cargarTablaProyectos() {
         modeloTablaProyectos = (DefaultTableModel) tablaProyectos.getModel();
-        listaProyectos = this.proyectoController.listar();
+        purchaseOrders = this.purchaseOrderController.listar();
         tableDataModelProyecto = new TableDataModelProyecto(
-                modeloTablaProyectos, tablaProyectos, listaProyectos
+                modeloTablaProyectos, tablaProyectos, purchaseOrders
         );
         tableDataModelProyecto.cargarModeloTablaProyecto();
         MargenTabla.ajustarColumnas(tablaProyectos);
@@ -97,10 +101,10 @@ public final class Asignaciones extends javax.swing.JFrame {
 
     private void cargarTablaProyectosAsignados() {
         modeloTablaAsignaciones = (DefaultTableModel) tablaAsignaciones.getModel();
-        List<PurchaseOrderAssignment> listaProyectosAsignados
-                = this.proyectosAsignadosController.listar();
+        List<PurchaseOrderAssignment> purchaseOrderAssignments
+                = this.purchaseOrderAssignmentController.listar();
         tableDataModelAsignacion = new TableDataModelAsignacion(
-                modeloTablaAsignaciones, tablaAsignaciones, listaProyectosAsignados);
+                modeloTablaAsignaciones, tablaAsignaciones, purchaseOrderAssignments);
         tableDataModelAsignacion.cargarModeloTablaAsignaciones();
         MargenTabla.ajustarColumnas(tablaAsignaciones);
     }
@@ -129,7 +133,6 @@ public final class Asignaciones extends javax.swing.JFrame {
     /**
      * Crea una nueva asignación de proyecto a un empleado.
      */
-    /*
     private void guardarAsignacion() {
         if (filaTablaProyectos == -1 || filaTablaEmpleados == -1) {
             JOptionPane.showMessageDialog(null, "Por favor, "
@@ -137,26 +140,27 @@ public final class Asignaciones extends javax.swing.JFrame {
                     + "tabla de empleados.", "Filas no seleccionadas",
                     JOptionPane.INFORMATION_MESSAGE);
         } else {
-            filtroProyectosAsignados = new LinkedList<>();
-            String poNo = tablaProyectos.getValueAt(
-                    filaTablaProyectos, 1)
-                    .toString();
-            String idEmpleado = tablaEmpleados.getValueAt(
-                    filaTablaEmpleados, 0)
-                    .toString();
-            listaProyectos.forEach((proyecto) -> {
-                Long idProyecto = proyecto.getProjectId();
-                if (proyecto.getPoNo().equals(poNo)) {
-                    filtroProyectosAsignados.add(
-                            new ProyectoAsignado(idProyecto, poNo,
-                                    new Empleado(idEmpleado))
-                    );
-                }
-            });
-            this.proyectosAsignadosController.guardar(filtroProyectosAsignados);
-            filtroProyectosAsignados = null;
+            Project project = new Project();
+            project.setProjectId(Long.valueOf(tablaProyectos.getValueAt(filaTablaProyectos, 0).toString()));
+            PurchaseOrderDetail purchaseOrderDetail = new PurchaseOrderDetail(
+                    tablaProyectos.getValueAt(filaTablaProyectos, 5).toString()
+            );
+            PurchaseOrder purchaseOrder = new PurchaseOrder();
+            purchaseOrder.setProject(project);
+            purchaseOrder.setPurchaseOrderDetail(purchaseOrderDetail);
+            PurchaseOrderAssignment purchaseOrderAssignment = new PurchaseOrderAssignment(
+                    new Empleado(
+                            Integer.valueOf(
+                                    tablaEmpleados.getValueAt(filaTablaEmpleados, 0).toString()
+                            ),
+                            tablaEmpleados.getValueAt(filaTablaEmpleados, 1).toString(),
+                            tablaEmpleados.getValueAt(filaTablaEmpleados, 2).toString(),
+                            tablaEmpleados.getValueAt(filaTablaEmpleados, 3).toString()),
+                    purchaseOrder
+            );
+            this.purchaseOrderAssignmentController.guardar(purchaseOrderAssignment);
         }
-    }*/
+    }
 
     /**
      * Actualiza el empleado asignado a un proyecto con uno diferente, el
@@ -170,23 +174,26 @@ public final class Asignaciones extends javax.swing.JFrame {
                     "Filas no seleccionadas",
                     JOptionPane.INFORMATION_MESSAGE);
         } else {
-            String idEmpleadoAsignado = tablaAsignaciones.getValueAt(
-                    filaTablaAsignaciones, 0).toString();
-            String idEmpleado = tablaEmpleados.getValueAt(
+            Integer empleadoActualId = Integer.valueOf(tablaAsignaciones.getValueAt(
+                    filaTablaAsignaciones, 0).toString());
+            Integer empleadoNuevoId = Integer.valueOf(tablaEmpleados.getValueAt(
                     filaTablaEmpleados, 0)
-                    .toString();
-            String poNo = tablaAsignaciones.getValueAt(
+                    .toString());
+            String purchaseOrderIdentifier = tablaAsignaciones.getValueAt(
                     filaTablaAsignaciones, 6)
                     .toString();
-            if (idEmpleadoAsignado.equals(idEmpleado)) {
+            PurchaseOrderAssignment purchaseOrderAssignment = new PurchaseOrderAssignment();
+            PurchaseOrder purchaseOrder = new PurchaseOrder();
+            purchaseOrder.setPurchaseOrderDetail(new PurchaseOrderDetail(purchaseOrderIdentifier));
+            purchaseOrderAssignment.setPurchaseOrder(purchaseOrder);
+            if (empleadoActualId.equals(empleadoNuevoId)) {
                 JOptionPane.showMessageDialog(null, "Por favor, "
                         + "seleccione un empleado diferente.", "Asignación existente.",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
-                int filasActualizadas = this.proyectosAsignadosController.actualizar(
-                        idEmpleado, poNo, idEmpleadoAsignado
+                this.purchaseOrderAssignmentController.actualizar(
+                        empleadoActualId, empleadoNuevoId, purchaseOrderAssignment
                 );
-                System.out.println(filasActualizadas);
             }
         }
     }
@@ -674,7 +681,7 @@ public final class Asignaciones extends javax.swing.JFrame {
 
     private void botonGuardarAsignacionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonGuardarAsignacionMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1) {
-            //guardarAsignacion();
+            guardarAsignacion();
             cargarTablaProyectosAsignados();
         }
     }//GEN-LAST:event_botonGuardarAsignacionMouseClicked

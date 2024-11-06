@@ -58,17 +58,25 @@ public class PurchaseOrderAssignmentController {
     }
 
     /**
-     * Actualiza la asignación de un proyectoa otro empleado.
+     * Consulta el listado de projectId que coinciden con el
+     * purchaseOrderIdentifier, posteriormente realiza la actualización para los
+     * registros coincidentes.
      *
-     * @param idEmpleado
-     * @param poNo
-     * @param idEmpleadoAsignado
-     * @return
+     * @param empleadoNuevoId
+     * @param empleadoActualId
+     * @param purchaseOrderAssignment
      */
-    public int actualizar(String idEmpleado, String poNo,
-            String idEmpleadoAsignado) {
-        return this.purchaseOrderAssignmentDAO.actualizar(
-                idEmpleado, poNo, idEmpleadoAsignado
-        );
+    public void actualizar(Integer empleadoActualId, Integer empleadoNuevoId,
+            PurchaseOrderAssignment purchaseOrderAssignment) {
+        List<Long> purchaseOrderProjectIdentifiers
+                = this.purchaseOrderController
+                        .listarPurchaseOrderProjectIdentifiers(
+                                purchaseOrderAssignment.getPurchaseOrder()
+                        );
+        if (!purchaseOrderProjectIdentifiers.isEmpty()) {
+            this.purchaseOrderAssignmentDAO.actualizar(
+                    empleadoActualId, empleadoNuevoId, purchaseOrderAssignment, purchaseOrderProjectIdentifiers
+            );
+        }
     }
 }

@@ -4,10 +4,9 @@
  */
 package com.mx.grupogateway.system.view.model;
 
-import com.mx.grupogateway.system.modelo.Project;
+import com.mx.grupogateway.system.modelo.PurchaseOrder;
 import com.mx.grupogateway.system.view.util.AccionesTabla;
 import java.util.List;
-import java.util.function.Consumer;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
@@ -19,27 +18,44 @@ public class TableDataModelProyecto {
 
     private DefaultTableModel modeloTabla;
     private final JTable tabla;
-    private final List<Project> projects;
+    private final List<PurchaseOrder> purchaseOrders;
 
     public TableDataModelProyecto(DefaultTableModel modeloTabla, JTable tabla,
-            List<Project> projects) {
+            List<PurchaseOrder> purchaseOrders) {
         this.tabla = tabla;
         this.modeloTabla = modeloTabla;
-        this.projects = projects;
+        this.purchaseOrders = purchaseOrders;
     }
 
     public void cargarModeloTablaProyecto() {
         AccionesTabla.limpiarTabla(modeloTabla, tabla);
         modeloTabla = (DefaultTableModel) tabla.getModel();
         tabla.getTableHeader().setFont(tabla.getFont());
-        projects.forEach((project) -> {
+        purchaseOrders.forEach((purchaseOrder) -> {
             modeloTabla.addRow(
                     new Object[]{
-                        project.getProjectId(),
-                        project.getProjectCode(),
-                        project.getProjectName(),
-                        project.getCustomer(),
-                        project.getPublishDate()
+                        purchaseOrder.getProject().getProjectId(),
+                        purchaseOrder.getProject().getProjectCode(),
+                        purchaseOrder.getProject().getProjectName(),
+                        purchaseOrder.getProject().getCustomer(),
+                        purchaseOrder.getPurchaseOrderDetail().getPoStatus(),
+                        purchaseOrder.getPurchaseOrderDetail().getPurchaseOrderIdentifier(),
+                        purchaseOrder.getProject().getSite().getShipmentNo(),
+                        purchaseOrder.getPoLineNo(),
+                        purchaseOrder.getProject().getSite().getSiteCode(),
+                        purchaseOrder.getProject().getSite().getSiteName(),
+                        purchaseOrder.getPurchaseOrderDetail().getItemCode(),
+                        purchaseOrder.getPurchaseOrderDetail().getItemDesc(),
+                        purchaseOrder.getPurchaseOrderDetail().getRequestedQty(),
+                        purchaseOrder.getDueQty(),
+                        purchaseOrder.getBilledQty(),
+                        purchaseOrder.getUnitPrice(),
+                        purchaseOrder.getPurchaseOrderDetail().getLineAmount(),
+                        purchaseOrder.getUnit(),
+                        purchaseOrder.getPurchaseOrderDetail().getPaymentTerms(),
+                        purchaseOrder.getProject().getCategory(),
+                        purchaseOrder.getProject().getSite().getBiddigArea(),
+                        purchaseOrder.getProject().getPublishDate()
                     }
             );
         });

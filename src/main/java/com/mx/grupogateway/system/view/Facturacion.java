@@ -7,7 +7,9 @@ package com.mx.grupogateway.system.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.ProjectController;
+import com.mx.grupogateway.system.controller.PurchaseOrderController;
 import com.mx.grupogateway.system.modelo.Project;
+import com.mx.grupogateway.system.modelo.PurchaseOrder;
 import com.mx.grupogateway.system.modelo.Usuario;
 import com.mx.grupogateway.system.view.util.IconoVentana;
 import com.mx.grupogateway.system.view.util.MargenTabla;
@@ -28,7 +30,7 @@ public final class Facturacion extends javax.swing.JFrame {
 
     private DefaultTableModel modeloTablaProyectos;
     private TableDataModelProyecto tableDataModelProyecto;
-    private ProjectController proyectoController;
+    private PurchaseOrderController purchaseOrderController;
     private Usuario usuario;
 
     public Facturacion() {
@@ -38,7 +40,7 @@ public final class Facturacion extends javax.swing.JFrame {
 
     private void iniciarProcesos() {
         cargarIconoVentana();
-        this.proyectoController = new ProjectController();
+        this.purchaseOrderController = new PurchaseOrderController();
         cargarTablaProyectos();
         AccionesTabla.filtrarResultados(tablaProyectos, buscadorProyecto, filtroProyecto);
     }
@@ -54,9 +56,9 @@ public final class Facturacion extends javax.swing.JFrame {
     private void cargarTablaProyectos() {
         tablaProyectos.setModel(new Asignaciones().tablaProyectos.getModel());
         modeloTablaProyectos = (DefaultTableModel) tablaProyectos.getModel();
-        List<Project> listaProyecto = this.proyectoController.listar();
+        List<PurchaseOrder> purchaseOrders = this.purchaseOrderController.listar();
         tableDataModelProyecto = new TableDataModelProyecto(
-                modeloTablaProyectos, tablaProyectos, listaProyecto
+                modeloTablaProyectos, tablaProyectos, purchaseOrders
         );
         tableDataModelProyecto.cargarModeloTablaProyecto();
         MargenTabla.ajustarColumnas(tablaProyectos);

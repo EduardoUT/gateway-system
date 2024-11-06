@@ -63,32 +63,47 @@ public class ProjectDAO {
     }
 
     /**
-     * Lista con objetos de tipo Project.
+     * Lista con la información SQL en objetos de tipo Project.
      *
      * @return
      */
     public List<Project> listar() {
-        List<Project> resultado = new ArrayList<>();
-        String sql = "SELECT * FROM PROJECT";
+        List<Project> projects = new ArrayList<>();
+        String sql = "SELECT PROJECT.ID_PROJECT, PROJECT.PROJECT_CODE, "
+                + "PROJECT.PROJECT_NAME, PROJECT.CUSTOMER, "
+                + "PROJECT.CATEGORY, PROJECT.PUBLISH_DATE "
+                + "SITE.SITE_ID, SITE.SITE_CODE, SITE.SITE_NAME, "
+                + "SITE.BIDDING_AREA SITE.SHIPMENT_NO "
+                + "FROM PROJECT "
+                + "INNER JOIN SITE ON PROJECT.ID_SITE = SITE.ID_SITE";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    resultado.add(new Project(
-                            resultSet.getLong("ID_PROJECT"),
-                            new Site(resultSet.getLong("ID_SITE")),
-                            resultSet.getString("PROJECT_CODE"),
-                            resultSet.getString("PROJECT_NAME"),
-                            resultSet.getString("CUSTOMER"),
-                            resultSet.getString("CATEGORY"),
-                            resultSet.getTimestamp("PUBLISH_DATE").toLocalDateTime())
-                    );
+                    Site site = new Site();
+                    site.setSiteId(resultSet.getLong("ID_SITE"));
+                    site.setSiteCode(resultSet.getString("SITE_CODE"));
+                    site.setSiteName(resultSet.getString("SITE_NAME"));
+                    site.setBiddigArea(resultSet.getString("BIDDING_AREA"));
+                    site.setShipmentNo(resultSet.getInt("SHIPMENT_NO"));
+                    
+                    Project project = new Project();
+                    project.setProjectId(resultSet.getLong("ID_PROJECT"));
+                    project.setSite(site);
+                    project.setProjectCode(resultSet.getString("PROJECT_CODE"));
+                    project.setProjectName(resultSet.getString("PROJECT_NAME"));
+                    project.setCustomer(resultSet.getString("CUSTOMER"));
+                    project.setCategory(resultSet.getString("CATEGORY"));
+                    project.setPublishDate(resultSet.getTimestamp("PUBLISH_DATE")
+                            .toLocalDateTime());
+                    projects.add(project);
                 }
-                return resultado;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            Logger.getLogger(ProjectDAO.class.getName()).log(Level.SEVERE, null, e);
+            System.out.println("Error al consultad los ids de PROJECT: " + e.getMessage());
         }
+        return projects;
     }
 
     /**

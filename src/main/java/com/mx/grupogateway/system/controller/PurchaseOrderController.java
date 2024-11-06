@@ -34,6 +34,16 @@ public class PurchaseOrderController {
     }
 
     /**
+     * Lista el modelo PurchaseOrder almacenados en la Base de Datos, el cual
+     * contiene el modelo completo de datos importados de Excel.
+     *
+     * @return
+     */
+    public List<PurchaseOrder> listar() {
+        return this.purchaseOrderDAO.listar();
+    }
+
+    /**
      * Consulta los identificadores idProject y purchaseOrderIdentifier en un
      * HashMap al ser estos dos identificadores parte de una tabla compuesta.
      *

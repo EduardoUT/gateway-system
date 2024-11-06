@@ -7,6 +7,7 @@ package com.mx.grupogateway.system.dao;
 import com.mx.grupogateway.system.modelo.Project;
 import com.mx.grupogateway.system.modelo.PurchaseOrder;
 import com.mx.grupogateway.system.modelo.PurchaseOrderDetail;
+import com.mx.grupogateway.system.modelo.Site;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,6 +27,7 @@ import java.util.logging.Logger;
 public class PurchaseOrderDAO {
 
     private final Connection con;
+    private static final String ID_PROJECT = "ID_PROJECT";
 
     public PurchaseOrderDAO(Connection con) {
         this.con = con;
@@ -38,12 +40,12 @@ public class PurchaseOrderDAO {
      */
     public void guardar(PurchaseOrder purchaseOrder) {
         String sql = "INSERT INTO PURCHASE_HAS_ORDER "
-                + "(PO_NO, ID_PROJECT, PO_LINE_NO, DUE_QTY, BILLED_QTY, UNIT, "
+                + "(PO_NO," + ID_PROJECT + ", PO_LINE_NO, DUE_QTY, BILLED_QTY, UNIT, "
                 + "UNIT_PRICE) "
                 + "VALUES(?,?,?,?,?,?,?)";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, purchaseOrder.getPurchaseOrderDetail().getPoNo());
+            preparedStatement.setString(1, purchaseOrder.getPurchaseOrderDetail().getPurchaseOrderIdentifier());
             preparedStatement.setLong(2, purchaseOrder.getProject().getProjectId());
             preparedStatement.setInt(3, purchaseOrder.getPoLineNo());
             preparedStatement.setString(4, purchaseOrder.getDueQty());
@@ -60,6 +62,72 @@ public class PurchaseOrderDAO {
             Logger.getLogger(SiteDAO.class.getName()).log(Level.SEVERE, null, e);
             System.out.println("Error al guardar Purchase Order: " + e.getMessage());
         }
+    }
+
+    public List<PurchaseOrder> listar() {
+        List<PurchaseOrder> purchaseOrders = new ArrayList<>();
+        String sql = "SELECT PROJECT.ID_PROJECT, PROJECT.PROJECT_CODE, "
+                + "PROJECT.PROJECT_NAME, PROJECT.CUSTOMER, "
+                + "PURCHASE_ORDER.PO_STATUS, PURCHASE_HAS_ORDER.PO_NO, "
+                + "PURCHASE_HAS_ORDER.PO_LINE_NO, SITE.SHIPMENT_NO, "
+                + "SITE.SITE_CODE, SITE.SITE_NAME, PURCHASE_ORDER.ITEM_CODE, "
+                + "PURCHASE_ORDER.ITEM_DESC, PURCHASE_ORDER.REQUESTED_QTY, "
+                + "PURCHASE_HAS_ORDER.DUE_QTY, PURCHASE_HAS_ORDER.BILLED_QTY, "
+                + "PURCHASE_HAS_ORDER.UNIT_PRICE, PURCHASE_ORDER.LINE_AMOUNT, "
+                + "PURCHASE_HAS_ORDER.UNIT, PURCHASE_ORDER.PAYMENT_TERMS, "
+                + "PROJECT.CATEGORY, SITE.BIDDING_AREA, PROJECT.PUBLISH_DATE "
+                + "FROM PURCHASE_HAS_ORDER "
+                + "INNER JOIN PROJECT ON PROJECT.ID_PROJECT = "
+                + "PURCHASE_HAS_ORDER.ID_PROJECT "
+                + "INNER JOIN PURCHASE_ORDER ON PURCHASE_HAS_ORDER.PO_NO = "
+                + "PURCHASE_ORDER.PO_NO "
+                + "INNER JOIN SITE ON PROJECT.ID_SITE = SITE.ID_SITE";
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+            preparedStatement.execute();
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
+                while (resultSet.next()) {
+                    Site site = new Site();
+                    site.setSiteCode(resultSet.getString("SITE_CODE"));
+                    site.setSiteName(resultSet.getString("SITE_NAME"));
+                    site.setBiddigArea(resultSet.getString("BIDDING_AREA"));
+                    site.setShipmentNo(resultSet.getInt("SHIPMENT_NO"));
+
+                    Project project = new Project();
+                    project.setProjectId(resultSet.getLong(ID_PROJECT));
+                    project.setSite(site);
+                    project.setProjectCode(resultSet.getString("PROJECT_CODE"));
+                    project.setProjectName(resultSet.getString("PROJECT_NAME"));
+                    project.setCustomer(resultSet.getString("CUSTOMER"));
+                    project.setCategory(resultSet.getString("CATEGORY"));
+                    project.setPublishDate(resultSet.getTimestamp("PUBLISH_DATE")
+                            .toLocalDateTime());
+
+                    PurchaseOrderDetail purchaseOrderDetail = new PurchaseOrderDetail();
+                    purchaseOrderDetail.setPurchaseOrderIdentifier(resultSet.getString("PO_NO"));
+                    purchaseOrderDetail.setPoStatus(resultSet.getString("PO_STATUS"));
+                    purchaseOrderDetail.setItemCode(resultSet.getLong("ITEM_CODE"));
+                    purchaseOrderDetail.setItemDesc(resultSet.getString("ITEM_DESC"));
+                    purchaseOrderDetail.setRequestedQty(resultSet.getString("REQUESTED_QTY"));
+                    purchaseOrderDetail.setLineAmount(resultSet.getBigDecimal("LINE_AMOUNT"));
+                    purchaseOrderDetail.setPaymentTerms(resultSet.getString("PAYMENT_TERMS"));
+
+                    PurchaseOrder purchaseOrder = new PurchaseOrder();
+                    purchaseOrder.setPurchaseOrderDetail(purchaseOrderDetail);
+                    purchaseOrder.setProject(project);
+                    purchaseOrder.setPoLineNo(resultSet.getInt("PO_LINE_NO"));
+                    purchaseOrder.setDueQty(resultSet.getString("DUE_QTY"));
+                    purchaseOrder.setBilledQty(resultSet.getBigDecimal("BILLED_QTY"));
+                    purchaseOrder.setUnit(resultSet.getString("UNIT"));
+                    purchaseOrder.setUnitPrice(resultSet.getBigDecimal("UNIT_PRICE"));
+
+                    purchaseOrders.add(purchaseOrder);
+                }
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(PurchaseOrderDetailDAO.class.getName()).log(Level.SEVERE, null, e);
+            System.out.println("Error al consultar INNER JOIN: " + e.getMessage());
+        }
+        return purchaseOrders;
     }
 
     /**
@@ -85,7 +153,7 @@ public class PurchaseOrderDAO {
                     purchaseOrder.setProject(new Project(resultSet.getLong("ID_PROJECT")));
                     purchaseOrderIdentifiers.put(
                             purchaseOrder.getProject().getProjectId(),
-                            purchaseOrder.getPurchaseOrderDetail().getPoNo()
+                            purchaseOrder.getPurchaseOrderDetail().getPurchaseOrderIdentifier()
                     );
                 }
 
@@ -105,9 +173,9 @@ public class PurchaseOrderDAO {
      */
     public List<Long> listarPurchaseOrderProjectIdentifiers(PurchaseOrder purchaseOrder) {
         List<Long> purchaseOrderProjectIdentifiers = new ArrayList<>();
-        String sql = "SELECT PROJECT_ID FROM PURCHASE_HAS_ORDER WHERE PO_NO = ?";
+        String sql = "SELECT ID_PROJECT FROM PURCHASE_HAS_ORDER WHERE PO_NO = ?";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
-            preparedStatement.setString(1, purchaseOrder.getPurchaseOrderDetail().getPoNo());
+            preparedStatement.setString(1, purchaseOrder.getPurchaseOrderDetail().getPurchaseOrderIdentifier());
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {

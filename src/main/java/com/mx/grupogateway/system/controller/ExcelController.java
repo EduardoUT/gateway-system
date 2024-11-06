@@ -83,7 +83,7 @@ public class ExcelController extends SwingWorker<Void, Integer> {
                 project.setPublishDate(getCellValueTimestamp(row, 41));
 
                 PurchaseOrderDetail purchaseOrderDetail = new PurchaseOrderDetail();
-                purchaseOrderDetail.setPoNo(getCellValueString(row, 11));
+                purchaseOrderDetail.setPurchaseOrderIdentifier(getCellValueString(row, 11));
                 purchaseOrderDetail.setPoStatus(getCellValueString(row, 10));
                 purchaseOrderDetail.setItemCode(getCellValueLong(row, 17));
                 purchaseOrderDetail.setItemDesc(getCellValueString(row, 18));
