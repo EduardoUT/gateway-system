@@ -4,6 +4,8 @@
  */
 package com.mx.grupogateway.system;
 
+import com.mx.grupogateway.system.view.Login;
+
 /**
  *
  * @author Eduardo Reyes Hernández
@@ -11,6 +13,7 @@ package com.mx.grupogateway.system;
 public class GrupoGatewayApp {
     
     public static void main(String[] args) {
-        System.out.println("Hola.");
+        Login login = new Login();
+        login.setVisible(true);
     }
 }
