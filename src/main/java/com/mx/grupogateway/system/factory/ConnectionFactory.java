@@ -37,7 +37,6 @@ public class ConnectionFactory {
         try {
             return this.dataSource.getConnection();
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

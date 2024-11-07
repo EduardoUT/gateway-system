@@ -114,15 +114,8 @@ public class ExcelDAO extends SwingWorker<Void, Integer> {
      * en Project.
      */
     private void exportData() {
-
         int progressCounter = 0;
         int projectsSize = dataImport.getProjects().size();
-
-        /*
-        int siteSize = dataImport.getSites().size();
-        int purchasOrderDetailsSize = dataImport.getPurchaseOrderDetails().size();
-        int purchaseOrderSize = dataImport.getPurchaseOrders().size();
-         */
         for (Site site : dataImport.getSites()) {
             if (isSiteNotStoredInDatabase(site)) {
                 siteController.guardar(site);
@@ -149,7 +142,6 @@ public class ExcelDAO extends SwingWorker<Void, Integer> {
                 purchaseOrderController.guardar(purchaseOrder);
             }
         }
-
     }
 
     @Override

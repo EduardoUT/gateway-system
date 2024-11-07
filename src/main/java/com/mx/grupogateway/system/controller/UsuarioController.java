@@ -30,7 +30,6 @@ public class UsuarioController {
      * empleado asociado.
      *
      * @param usuario
-     * @param idEmpleado
      */
     public void guardar(Usuario usuario) {
         this.usuarioDAO.guardar(usuario);

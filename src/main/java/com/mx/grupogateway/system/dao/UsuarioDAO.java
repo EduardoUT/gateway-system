@@ -7,7 +7,7 @@ package com.mx.grupogateway.system.dao;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.EmpleadoCategoria;
 import com.mx.grupogateway.system.modelo.Usuario;
-import com.mx.grupogateway.system.security.SecurityPassword;
+import com.mx.grupogateway.system.util.SecurityPassword;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

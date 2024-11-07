@@ -4,7 +4,7 @@
  */
 package com.mx.grupogateway.system.modelo;
 
-import com.mx.grupogateway.system.security.SecurityPassword;
+import com.mx.grupogateway.system.util.SecurityPassword;
 import com.mx.grupogateway.system.util.GeneradorUUID;
 import java.util.UUID;
 

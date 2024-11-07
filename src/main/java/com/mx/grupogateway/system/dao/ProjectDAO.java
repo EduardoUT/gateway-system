@@ -56,7 +56,6 @@ public class ProjectDAO {
                 }
             }
         } catch (SQLException e) {
-            System.out.println(project.getProjectName());
             System.out.println("Error al guardar project: " + e.getMessage());
             throw new RuntimeException(e);
         }
