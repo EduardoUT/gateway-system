@@ -84,4 +84,23 @@ public class PurchaseOrderDetailDAO {
         }
         return purchaseOrderList;
     }
+
+    /**
+     * Actualiza el PO_STATUS correspondiente al purchaseOrderIdentifier
+     * proporcionado.
+     *
+     * @param purchaseOrderDetail
+     */
+    public void actualizarPurchaseOrderDetailStatus(
+            PurchaseOrderDetail purchaseOrderDetail) {
+        String sql = "UPDATE PURCHASE_ORDER SET PO_STATUS = ? WHERE PO_NO = ?";
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+            preparedStatement.setString(1, purchaseOrderDetail.getPoStatus());
+            preparedStatement.setString(2, purchaseOrderDetail.getPurchaseOrderIdentifier());
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            Logger.getLogger(PurchaseOrderDetailDAO.class.getName()).log(Level.SEVERE, null, e);
+            System.out.println("Error al actualizar PO_STATUS " + e.getMessage());
+        }
+    }
 }

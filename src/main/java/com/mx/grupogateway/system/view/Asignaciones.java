@@ -669,6 +669,7 @@ public final class Asignaciones extends javax.swing.JFrame {
     private void botonGuardarAsignacionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonGuardarAsignacionMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1) {
             guardarAsignacion();
+            cargarTablaProyectos();
             cargarTablaProyectosAsignados();
         }
     }//GEN-LAST:event_botonGuardarAsignacionMouseClicked

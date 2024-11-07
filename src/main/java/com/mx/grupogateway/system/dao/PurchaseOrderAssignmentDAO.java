@@ -43,7 +43,7 @@ public class PurchaseOrderAssignmentDAO {
             List<Long> purchaseOrderProjectIdentifiers) {
         String sql = "INSERT INTO EMPLEADOS_HAS_PROJECTS "
                 + "(ID_EMPLEADO, ID_PROJECT, FECHA_ASIGNACION, IMPORTE, "
-                + "TOTAL_PAGAR, STATUS) VALUES "
+                + "TOTAL_PAGAR, STATUS_PAYMENT) VALUES "
                 + "(?, ?, CURRENT_TIMESTAMP, ?, ?, ?) ";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
@@ -81,7 +81,7 @@ public class PurchaseOrderAssignmentDAO {
                 + "EMPLEADOS_HAS_PROJECTS.ID_PROJECT, PURCHASE_HAS_ORDER.PO_NO, "
                 + "EMPLEADOS_HAS_PROJECTS.IMPORTE, "
                 + "EMPLEADOS_HAS_PROJECTS.TOTAL_PAGAR, "
-                + "EMPLEADOS_HAS_PROJECTS.STATUS, PROJECT.CUSTOMER, "
+                + "EMPLEADOS_HAS_PROJECTS.STATUS_PAYMENT, PROJECT.CUSTOMER, "
                 + "PROJECT.PROJECT_NAME, PURCHASE_ORDER.PO_STATUS, "
                 + "PURCHASE_HAS_ORDER.PO_LINE_NO, SITE.SITE_CODE, SITE.SITE_NAME, "
                 + "PURCHASE_ORDER.ITEM_DESC, PURCHASE_ORDER.REQUESTED_QTY, "
@@ -143,7 +143,7 @@ public class PurchaseOrderAssignmentDAO {
                     );
                     purchaseOrderAssignment.setImporte(resultSet.getBigDecimal("IMPORTE"));
                     purchaseOrderAssignment.setTotalPagar(resultSet.getBigDecimal("TOTAL_PAGAR"));
-                    purchaseOrderAssignment.setStatus(resultSet.getBoolean("STATUS"));
+                    purchaseOrderAssignment.setStatus(resultSet.getBoolean("STATUS_PAYMENT"));
                     purchaseOrderAssignments.add(purchaseOrderAssignment);
                 }
             }
@@ -185,5 +185,4 @@ public class PurchaseOrderAssignmentDAO {
             System.out.println("Error al actualizar EMPLEADOS_HAS_PROJECTS " + e.getMessage());
         }
     }
-
 }

@@ -7,6 +7,7 @@ package com.mx.grupogateway.system.controller;
 import com.mx.grupogateway.system.dao.PurchaseOrderDetailDAO;
 import com.mx.grupogateway.system.factory.ConnectionFactory;
 import com.mx.grupogateway.system.modelo.PurchaseOrderDetail;
+import com.mx.grupogateway.system.modelo.PurchaseOrderStatus;
 import java.util.List;
 
 /**
@@ -43,6 +44,22 @@ public class PurchaseOrderDetailController {
             String purchaseOrderIdentifier) {
         return this.purchaseOrderDetailDAO.listarPurchaseOrderDetailIdentifiers(
                 purchaseOrderIdentifier
+        );
+    }
+
+    /**
+     * Realiza el cambio del Status a ASSIGNED correspondiente al
+     * purchasOrderIdentifier proporcionado, útil para el manoejo y control de
+     * nuevas asignaciones.
+     *
+     * @param purchaseOrderDetail
+     */
+    public void actualizarPurchaseOrderDetailStatus(
+            PurchaseOrderDetail purchaseOrderDetail) {
+        purchaseOrderDetail
+                .setPoStatus(PurchaseOrderStatus.ASSIGNED.toString());
+        this.purchaseOrderDetailDAO.actualizarPurchaseOrderDetailStatus(
+                purchaseOrderDetail
         );
     }
 }

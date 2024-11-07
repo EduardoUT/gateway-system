@@ -64,6 +64,12 @@ public class PurchaseOrderDAO {
         }
     }
 
+    /**
+     * Retorna un listado de tipo PurchaseOrder de los proyectos cuyo status sea
+     * NEW.
+     *
+     * @return
+     */
     public List<PurchaseOrder> listar() {
         List<PurchaseOrder> purchaseOrders = new ArrayList<>();
         String sql = "SELECT PROJECT.ID_PROJECT, PROJECT.PROJECT_CODE, "
@@ -81,7 +87,8 @@ public class PurchaseOrderDAO {
                 + "PURCHASE_HAS_ORDER.ID_PROJECT "
                 + "INNER JOIN PURCHASE_ORDER ON PURCHASE_HAS_ORDER.PO_NO = "
                 + "PURCHASE_ORDER.PO_NO "
-                + "INNER JOIN SITE ON PROJECT.ID_SITE = SITE.ID_SITE";
+                + "INNER JOIN SITE ON PROJECT.ID_SITE = SITE.ID_SITE "
+                + "WHERE PURCHASE_ORDER.PO_STATUS = 'NEW'";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {

@@ -17,12 +17,14 @@ public class PurchaseOrderAssignmentController {
 
     private final PurchaseOrderAssignmentDAO purchaseOrderAssignmentDAO;
     private final PurchaseOrderController purchaseOrderController;
+    private final PurchaseOrderDetailController purchaseOrderDetailController;
 
     public PurchaseOrderAssignmentController() {
         this.purchaseOrderAssignmentDAO = new PurchaseOrderAssignmentDAO(
                 new ConnectionFactory().realizarConexion()
         );
         this.purchaseOrderController = new PurchaseOrderController();
+        this.purchaseOrderDetailController = new PurchaseOrderDetailController();
     }
 
     /**
@@ -31,6 +33,9 @@ public class PurchaseOrderAssignmentController {
      *
      * Guarda una lista de tipo ProjectAssignment de acuerdo alas
      * purchasOrderIdentifier obtenidas en el listado consultado.
+     *
+     * Actualiza el PO_STATUS correspondiente al purchaseOrderIdentifier
+     * proporcionado.
      *
      * @param purchaseOrderAssignment
      */
@@ -45,6 +50,12 @@ public class PurchaseOrderAssignmentController {
                     purchaseOrderAssignment,
                     purchaseOrderProjectIdentifiers
             );
+            this.purchaseOrderDetailController
+                    .actualizarPurchaseOrderDetailStatus(
+                            purchaseOrderAssignment
+                                    .getPurchaseOrder()
+                                    .getPurchaseOrderDetail()
+                    );
         }
     }
 
@@ -75,7 +86,10 @@ public class PurchaseOrderAssignmentController {
                         );
         if (!purchaseOrderProjectIdentifiers.isEmpty()) {
             this.purchaseOrderAssignmentDAO.actualizar(
-                    empleadoActualId, empleadoNuevoId, purchaseOrderAssignment, purchaseOrderProjectIdentifiers
+                    empleadoActualId,
+                    empleadoNuevoId,
+                    purchaseOrderAssignment,
+                    purchaseOrderProjectIdentifiers
             );
         }
     }

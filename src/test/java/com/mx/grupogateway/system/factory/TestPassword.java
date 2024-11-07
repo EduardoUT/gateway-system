@@ -5,6 +5,7 @@
 package com.mx.grupogateway.system.factory;
 
 import com.mx.grupogateway.system.modelo.Empleado;
+import com.mx.grupogateway.system.modelo.PurchaseOrderStatus;
 
 /**
  *
@@ -12,5 +13,6 @@ import com.mx.grupogateway.system.modelo.Empleado;
  */
 public class TestPassword {
     public static void main(String[] args) {
+        System.out.println(PurchaseOrderStatus.ASSIGNED.toString());
     }
 }
