@@ -9,7 +9,7 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.PurchaseOrderController;
 import com.mx.grupogateway.system.modelo.PurchaseOrder;
 import com.mx.grupogateway.system.modelo.Usuario;
-import com.mx.grupogateway.system.view.model.TableDataModel;
+import com.mx.grupogateway.system.controller.TableDataModelController;
 import com.mx.grupogateway.system.view.util.IconoVentana;
 import com.mx.grupogateway.system.view.util.MargenTabla;
 import com.mx.grupogateway.system.view.util.AccionesTabla;
@@ -27,7 +27,7 @@ import java.util.List;
 public final class Facturacion extends javax.swing.JFrame {
 
     private DefaultTableModel modeloTablaProyectos;
-    private TableDataModel tableDataModel;
+    private TableDataModelController tableDataModel;
     private PurchaseOrderController purchaseOrderController;
     private Usuario usuario;
 
@@ -55,7 +55,7 @@ public final class Facturacion extends javax.swing.JFrame {
         tablaProyectos.setModel(new Asignaciones().tablaProyectos.getModel());
         modeloTablaProyectos = (DefaultTableModel) tablaProyectos.getModel();
         List<PurchaseOrder> purchaseOrders = this.purchaseOrderController.listar();
-        tableDataModel = new TableDataModel();
+        tableDataModel = new TableDataModelController();
         tableDataModel.cargarModeloTablaProyecto(modeloTablaProyectos, tablaProyectos, purchaseOrders);
         MargenTabla.ajustarColumnas(tablaProyectos);
     }

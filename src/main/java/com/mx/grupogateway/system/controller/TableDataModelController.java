@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mx.grupogateway.system.view.model;
+package com.mx.grupogateway.system.controller;
 
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.PurchaseOrder;
@@ -17,7 +17,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author eduar
  */
-public class TableDataModel {
+public class TableDataModelController {
 
     public void setTableDataModelEmpleados(DefaultTableModel modeloTablaEmpleados,
             JTable tablaEmpleados, List<Empleado> empleados) {
