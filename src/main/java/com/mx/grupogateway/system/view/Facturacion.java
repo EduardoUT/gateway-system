@@ -6,9 +6,7 @@
 package com.mx.grupogateway.system.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import com.mx.grupogateway.system.controller.ProjectController;
 import com.mx.grupogateway.system.controller.PurchaseOrderController;
-import com.mx.grupogateway.system.modelo.Project;
 import com.mx.grupogateway.system.modelo.PurchaseOrder;
 import com.mx.grupogateway.system.modelo.Usuario;
 import com.mx.grupogateway.system.view.model.TableDataModel;
@@ -53,7 +51,7 @@ public final class Facturacion extends javax.swing.JFrame {
         this.usuario = usuario;
     }
 
-    private void cargarTablaProyectos() {
+    protected void cargarTablaProyectos() {
         tablaProyectos.setModel(new Asignaciones().tablaProyectos.getModel());
         modeloTablaProyectos = (DefaultTableModel) tablaProyectos.getModel();
         List<PurchaseOrder> purchaseOrders = this.purchaseOrderController.listar();

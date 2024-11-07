@@ -7,10 +7,8 @@ package com.mx.grupogateway.system.view;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.ExcelController;
 import com.mx.grupogateway.system.modelo.DataImport;
-import com.mx.grupogateway.system.modelo.Project;
 import com.mx.grupogateway.system.view.util.IconoVentana;
 import java.awt.event.MouseEvent;
-import java.util.LinkedList;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
@@ -79,8 +77,8 @@ public class ImportarExcel extends javax.swing.JFrame {
     /**
      * Cuando la lista contiene la información extraida del archivo, informa al
      * usuario el progreso y envía la información a la Base de Datos.
+     * @param jFrame
      */
-
     protected void setJFrame(JFrame jFrame) {
         this.jFrame = jFrame;
     }
