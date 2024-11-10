@@ -21,10 +21,10 @@ public class Project {
     private LocalDateTime publishDate;
 
     public Project() {
-        this.projectId = 0L;
-        this.site = new Site(0L);
+        this.projectId = Long.MAX_VALUE;
+        this.site = new Site();
         this.projectCode = "0";
-        this.projectName = "Unsigned";
+        this.projectName = "No Name";
         this.category = "None";
         this.publishDate = LocalDateTime.now();
     }
@@ -42,6 +42,8 @@ public class Project {
      */
     public Project(Long projectId, Site site, String projectCode, String projectName,
             String projectCustomer, String projectCategory, LocalDateTime publishDate) {
+        validateProject(projectId, site, projectCode, projectName,
+                projectCustomer, projectCategory, publishDate);
         this.projectId = projectId;
         this.site = site;
         this.projectCode = projectCode;
@@ -52,6 +54,7 @@ public class Project {
     }
 
     public Project(Long projectId) {
+        validateProjectId(projectId);
         this.projectId = projectId;
     }
 
@@ -63,6 +66,7 @@ public class Project {
     }
 
     public void setProjectId(Long projectId) {
+        validateProjectId(projectId);
         this.projectId = projectId;
     }
 
@@ -77,6 +81,7 @@ public class Project {
      * @param site the site to set
      */
     public void setSite(Site site) {
+        validateProjectSite(site);
         this.site = site;
     }
 
@@ -91,6 +96,7 @@ public class Project {
      * @param projectCode the projectCode to set
      */
     public void setProjectCode(String projectCode) {
+        validateProjectCode(projectCode);
         this.projectCode = projectCode;
     }
 
@@ -105,6 +111,7 @@ public class Project {
      * @param projectName the projectName to set
      */
     public void setProjectName(String projectName) {
+        validateProjectName(projectName);
         this.projectName = projectName;
     }
 
@@ -119,6 +126,7 @@ public class Project {
      * @param customer the customer to set
      */
     public void setCustomer(String customer) {
+        validateCustomer(customer);
         this.customer = customer;
     }
 
@@ -133,6 +141,7 @@ public class Project {
      * @param category the category to set
      */
     public void setCategory(String category) {
+        validateCategory(category);
         this.category = category;
     }
 
@@ -147,7 +156,66 @@ public class Project {
      * @param publishDate the publishDate to set
      */
     public void setPublishDate(LocalDateTime publishDate) {
+        validatePublishDate(publishDate);
         this.publishDate = publishDate;
+    }
+
+    private void validateProjectId(Long projectId) {
+        if (projectId == null) {
+            throw new NullPointerException("projectId no puede ser null.");
+        }
+        if (projectId <= 0 || projectId > Long.MAX_VALUE) {
+            throw new IllegalArgumentException("id menor o igual a 0, o mayor "
+                    + "al limite permitido.");
+        }
+    }
+
+    private void validateProjectSite(Site site) {
+        if (site == null) {
+            throw new NullPointerException("Site no puede ser null.");
+        }
+    }
+
+    private void validateProjectCode(String projectCode) {
+        if (projectCode == null) {
+            throw new NullPointerException("projectCode no puede ser null.");
+        }
+    }
+
+    private void validateProjectName(String projectName) {
+        if (projectName == null) {
+            throw new NullPointerException("projectName no puede ser null.");
+        }
+    }
+
+    private void validateCustomer(String projectCustomer) {
+        if (projectCustomer == null) {
+            throw new NullPointerException("projectCustomer no puede ser null.");
+        }
+    }
+
+    private void validateCategory(String projectCategory) {
+        if (projectCategory == null) {
+            throw new NullPointerException("projectCategory no puede ser null.");
+        }
+    }
+
+    private void validatePublishDate(LocalDateTime publishDate) {
+        if (publishDate == null) {
+            throw new NullPointerException("publishDate no puede ser null.");
+        }
+    }
+
+    private void validateProject(Long projectId, Site site, String projectCode,
+            String projectName, String customer, String category,
+            LocalDateTime publishDate) {
+        validateProjectId(projectId);
+        validateProjectSite(site);
+        validateProjectCode(projectCode);
+        validateProjectName(projectName);
+        validateCustomer(customer);
+        validateCategory(category);
+        validatePublishDate(publishDate);
     }
 
     @Override

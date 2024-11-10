@@ -4,20 +4,28 @@
  */
 package com.mx.grupogateway.system.modelo;
 
+import java.util.Objects;
+
 /**
  *
  * @author eduar
  */
 public class Site {
-    
+
     private Long siteId;
     private String siteCode;
     private String siteName;
     private String biddigArea;
     private Integer shipmentNo;
-    
-    public Site() {}
-    
+
+    public Site() {
+        this.siteId = Long.MAX_VALUE;
+        this.siteCode = "No Site";
+        this.siteName = "No Name Site";
+        this.biddigArea = "No Bidding Area";
+        this.shipmentNo = Integer.MAX_VALUE;
+    }
+
     public Site(Long siteId, String siteCode, String siteName, String biddingArea, Integer shiplmentNo) {
         this.siteId = siteId;
         this.siteCode = siteCode;
@@ -25,7 +33,7 @@ public class Site {
         this.biddigArea = biddingArea;
         this.shipmentNo = shiplmentNo;
     }
-    
+
     public Site(Long siteId) {
         this.siteId = siteId;
     }
@@ -99,5 +107,30 @@ public class Site {
     public void setShipmentNo(Integer shipmentNo) {
         this.shipmentNo = shipmentNo;
     }
-    
+
+    /**
+     *
+     * @param site
+     * @return
+     */
+    @Override
+    public boolean equals(Object site) {
+        if (this == site) {
+            return true;
+        }
+        if (site == null || getClass() != site.getClass()) {
+            return false;
+        }
+        Site otherSite = (Site) site;
+        if (siteId.equals(otherSite.getSiteId())) {
+            return true;
+        }
+        return site instanceof Site;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(siteId);
+    }
+
 }
