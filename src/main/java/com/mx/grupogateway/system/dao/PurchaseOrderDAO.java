@@ -4,6 +4,7 @@
  */
 package com.mx.grupogateway.system.dao;
 
+import com.mx.grupogateway.system.LoggerConfig;
 import com.mx.grupogateway.system.modelo.Project;
 import com.mx.grupogateway.system.modelo.PurchaseOrder;
 import com.mx.grupogateway.system.modelo.PurchaseOrderDetail;
@@ -24,13 +25,13 @@ import java.util.logging.Logger;
  *
  * @author eduar
  */
-public class PurchaseOrderDAO {
+public class PurchaseOrderDAO extends AbstractDAO {
 
-    private final Connection con;
+    private static final Logger logger = LoggerConfig.getLogger();
     private static final String ID_PROJECT = "ID_PROJECT";
 
     public PurchaseOrderDAO(Connection con) {
-        this.con = con;
+        super(con);
     }
 
     /**
@@ -43,7 +44,7 @@ public class PurchaseOrderDAO {
                 + "(PO_NO," + ID_PROJECT + ", PO_LINE_NO, DUE_QTY, BILLED_QTY, UNIT, "
                 + "UNIT_PRICE) "
                 + "VALUES(?,?,?,?,?,?,?)";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql,
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, purchaseOrder.getPurchaseOrderDetail().getPurchaseOrderIdentifier());
             preparedStatement.setLong(2, purchaseOrder.getProject().getProjectId());
@@ -53,14 +54,8 @@ public class PurchaseOrderDAO {
             preparedStatement.setString(6, purchaseOrder.getUnit());
             preparedStatement.setBigDecimal(7, purchaseOrder.getUnitPrice());
             preparedStatement.execute();
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                while (resultSet.next()) {
-                    System.out.println(String.format("Fue guardado Purchase Order %s", purchaseOrder));
-                }
-            }
         } catch (SQLException e) {
-            Logger.getLogger(SiteDAO.class.getName()).log(Level.SEVERE, null, e);
-            System.out.println("Error al guardar Purchase Order: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error al guardar PurchasOrder: {0}", e.getMessage());
         }
     }
 
@@ -89,7 +84,7 @@ public class PurchaseOrderDAO {
                 + "PURCHASE_ORDER.PO_NO "
                 + "INNER JOIN SITE ON PROJECT.ID_SITE = SITE.ID_SITE "
                 + "WHERE PURCHASE_ORDER.PO_STATUS = 'NEW'";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
@@ -131,8 +126,7 @@ public class PurchaseOrderDAO {
                 }
             }
         } catch (SQLException e) {
-            Logger.getLogger(PurchaseOrderDetailDAO.class.getName()).log(Level.SEVERE, null, e);
-            System.out.println("Error al consultar INNER JOIN: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error al consultar PurchasOrder compuesta: {0}", e.getMessage());
         }
         return purchaseOrders;
     }
@@ -149,7 +143,7 @@ public class PurchaseOrderDAO {
         Map<Long, String> purchaseOrderIdentifiers = new HashMap<>();
         String sql = "SELECT PO_NO, ID_PROJECT FROM PURCHASE_HAS_ORDER "
                 + "WHERE PO_NO = ? AND ID_PROJECT = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, purchaseOrderIdentifier);
             preparedStatement.setLong(2, purchaseOrderProjectId);
             preparedStatement.execute();
@@ -157,17 +151,15 @@ public class PurchaseOrderDAO {
                 while (resultSet.next()) {
                     PurchaseOrder purchaseOrder = new PurchaseOrder();
                     purchaseOrder.setPurchaseOrderDetail(new PurchaseOrderDetail(resultSet.getString("PO_NO")));
-                    purchaseOrder.setProject(new Project(resultSet.getLong("ID_PROJECT")));
+                    purchaseOrder.setProject(new Project(resultSet.getLong(ID_PROJECT)));
                     purchaseOrderIdentifiers.put(
                             purchaseOrder.getProject().getProjectId(),
                             purchaseOrder.getPurchaseOrderDetail().getPurchaseOrderIdentifier()
                     );
                 }
-
             }
         } catch (SQLException e) {
-            Logger.getLogger(PurchaseOrderDetailDAO.class.getName()).log(Level.SEVERE, null, e);
-            System.out.println("Error al consultad los ids de PURCHASE_ORDER: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error al consultar PurchasOrder: {0}", e.getMessage());
         }
         return purchaseOrderIdentifiers;
     }
@@ -181,22 +173,19 @@ public class PurchaseOrderDAO {
     public List<Long> listarPurchaseOrderProjectIdentifiers(PurchaseOrder purchaseOrder) {
         List<Long> purchaseOrderProjectIdentifiers = new ArrayList<>();
         String sql = "SELECT ID_PROJECT FROM PURCHASE_HAS_ORDER WHERE PO_NO = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, purchaseOrder.getPurchaseOrderDetail().getPurchaseOrderIdentifier());
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     PurchaseOrder purchaseOrderProject = new PurchaseOrder();
-                    purchaseOrderProject.setProject(new Project(resultSet.getLong("ID_PROJECT")));
+                    purchaseOrderProject.setProject(new Project(resultSet.getLong(ID_PROJECT)));
                     purchaseOrderProjectIdentifiers.add(purchaseOrderProject.getProject().getProjectId());
                 }
-
             }
         } catch (SQLException e) {
-            Logger.getLogger(PurchaseOrderDetailDAO.class.getName()).log(Level.SEVERE, null, e);
-            System.out.println("Error al consultad los ids de PURCHASE_ORDER: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error al consultar PurchasOrder: {0}", e.getMessage());
         }
         return purchaseOrderProjectIdentifiers;
     }
-
 }
