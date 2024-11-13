@@ -50,6 +50,7 @@ public class Empleado {
     public Empleado(String nombre, String apellidoPaterno,
             String apellidoMaterno, EmpleadoCategoria empleadoCategoria) {
         validarEmpleado(nombre, apellidoPaterno, apellidoMaterno);
+        this.idEmpleado = 0;
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
@@ -118,6 +119,10 @@ public class Empleado {
     public Integer getIdEmpleado() {
         return idEmpleado;
     }
+    
+    public void setIdEmpleado(Integer idEmpleado) {
+        this.idEmpleado = idEmpleado;
+    }
 
     /**
      * @return the nombre
@@ -180,7 +185,7 @@ public class Empleado {
      *
      * @param idUsuario
      */
-    public void setIdUsuario(String idUsuario) {
+    public void setIdUsuario(Integer idUsuario) {
         this.usuario.setIdUsuario(idUsuario);
     }
 

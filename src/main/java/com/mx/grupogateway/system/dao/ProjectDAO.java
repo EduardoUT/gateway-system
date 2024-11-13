@@ -23,10 +23,12 @@ import java.util.logging.Logger;
  */
 public class ProjectDAO {
 
-    private final Connection con;
+    private Connection con;
 
     public ProjectDAO(Connection con) {
-        this.con = con;
+        if(con != null) {
+            this.con = con;
+        }
     }
 
     /**
@@ -85,7 +87,7 @@ public class ProjectDAO {
                     site.setSiteName(resultSet.getString("SITE_NAME"));
                     site.setBiddigArea(resultSet.getString("BIDDING_AREA"));
                     site.setShipmentNo(resultSet.getInt("SHIPMENT_NO"));
-                    
+
                     Project project = new Project();
                     project.setProjectId(resultSet.getLong("ID_PROJECT"));
                     project.setSite(site);

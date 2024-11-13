@@ -28,9 +28,6 @@ import javax.swing.table.DefaultTableModel;
  */
 public class Gestion extends javax.swing.JFrame {
 
-    private DefaultTableModel modeloTablaEmpleado;
-    private DefaultTableModel modeloTablaUsuario;
-    private DefaultComboBoxModel modeloComboBoxCargoEmpleado;
     private TableDataModelController tableDataModel;
     private EmpleadoController empleadoController;
     private EmpleadoCategoriaController empleadoCargoController;
@@ -85,9 +82,15 @@ public class Gestion extends javax.swing.JFrame {
                             empleadoCargos.getSelectedItem().toString()
                     )
             );
-            this.empleadoController.guardar(empleado);
-            JOptionPane.showMessageDialog(null, "Empleado guardado "
-                    + "éxitosamente.");
+            int idEmpleado = this.empleadoController.guardar(empleado);
+            if (idEmpleado != -1) {
+                JOptionPane.showMessageDialog(null, "Empleado guardado "
+                        + "éxitosamente.");
+            } else {
+                JOptionPane.showMessageDialog(null, "Hubo un problema al "
+                        + "guardar el empleado, intente más tarde.",
+                        "Error en la conexión.", JOptionPane.ERROR_MESSAGE);
+            }
             botonGuardar.setVisible(false);
             botonCancelarNuevoRegistro.setVisible(false);
             limpiarCamposFormularioEmpleado();
@@ -106,6 +109,7 @@ public class Gestion extends javax.swing.JFrame {
      * EmpleadoController y asignando registros en la tablaEmpleado.
      */
     private void cargarTablaEmpleado() {
+        DefaultTableModel modeloTablaEmpleado;
         modeloTablaEmpleado = (DefaultTableModel) tablaEmpleado.getModel();
         List<Empleado> empleados = this.empleadoController.listar();
         tableDataModel = new TableDataModelController();
@@ -206,6 +210,7 @@ public class Gestion extends javax.swing.JFrame {
      * Cargo"
      */
     private void configurarComboBoxEmpleado() {
+        DefaultComboBoxModel<String> modeloComboBoxCargoEmpleado;
         modeloComboBoxCargoEmpleado = (DefaultComboBoxModel) empleadoCargos.getModel();
         modeloComboBoxCargoEmpleado.addElement("Seleccione un cargo");
         List<EmpleadoCategoria> listaCargos = this.empleadoCargoController
@@ -220,6 +225,7 @@ public class Gestion extends javax.swing.JFrame {
      * registros en la TablaUsuario.
      */
     private void cargarTablaUsuario() {
+        DefaultTableModel modeloTablaUsuario;
         modeloTablaUsuario = (DefaultTableModel) tablaUsuario.getModel();
         List<Usuario> usuarios = this.usuarioController.listar();
         tableDataModel = new TableDataModelController();
@@ -233,8 +239,8 @@ public class Gestion extends javax.swing.JFrame {
      */
     private void eliminarUsuario() {
         int cantidadEliminada = this.usuarioController
-                .eliminar(String.valueOf(AccionesTabla
-                        .obtenerID(tablaUsuario, 0)));
+                .eliminar(AccionesTabla
+                        .obtenerID(tablaUsuario, 0));
         JOptionPane.showMessageDialog(null, cantidadEliminada
                 + " registro eliminado exitosamente.");
         cargarTablaUsuario();

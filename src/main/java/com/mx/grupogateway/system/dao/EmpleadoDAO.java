@@ -4,6 +4,7 @@
  */
 package com.mx.grupogateway.system.dao;
 
+import com.mx.grupogateway.system.LoggerConfig;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.EmpleadoCategoria;
 import com.mx.grupogateway.system.modelo.Usuario;
@@ -13,7 +14,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -22,8 +26,8 @@ import javax.swing.JOptionPane;
  */
 public class EmpleadoDAO {
 
+    private static final Logger logger = LoggerConfig.getLogger();
     private final Connection con;
-    private UsuarioDAO usuarioDAO;
 
     public EmpleadoDAO(Connection con) {
         this.con = con;
@@ -34,27 +38,31 @@ public class EmpleadoDAO {
      *
      * @param empleado
      */
-    public void guardar(Empleado empleado) {
-        usuarioDAO = new UsuarioDAO(con);
-        usuarioDAO.guardar(
-                empleado.getUsuario()
-        );
+    public int guardar(Empleado empleado) {
+        int idEmpleado = -1;
         String sql = "INSERT INTO EMPLEADOS "
-                + "(ID_EMPLEADO, NOMBRE, APE_PAT, "
+                + "(NOMBRE, APE_PAT, "
                 + "APE_MAT, ID_USUARIO, ID_CATEGORIA_EMPLEADO) "
-                + "VALUES (?, ?, ?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement preparedStatement = con.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setInt(1, empleado.getIdEmpleado());
-            preparedStatement.setString(2, empleado.getNombre());
-            preparedStatement.setString(3, empleado.getApellidoPaterno());
-            preparedStatement.setString(4, empleado.getApellidoMaterno());
-            preparedStatement.setString(5, empleado.getUsuario().getIdUsuario());
-            preparedStatement.setString(6, empleado.getEmpleadoCategoria().getidCategoria());
+            preparedStatement.setString(1, empleado.getNombre());
+            preparedStatement.setString(2, empleado.getApellidoPaterno());
+            preparedStatement.setString(3, empleado.getApellidoMaterno());
+            preparedStatement.setInt(4, empleado.getUsuario().getIdUsuario());
+            preparedStatement.setString(5, empleado.getEmpleadoCategoria().getidCategoria());
             preparedStatement.execute();
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    idEmpleado = resultSet.getInt(1);
+                    empleado.setIdEmpleado(idEmpleado);
+                }
+            }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println(Arrays.toString(logger.getHandlers()));
+            logger.log(Level.SEVERE, "Error al guardar empleado: {0}", e.getMessage());
         }
+        return idEmpleado;
     }
 
     /**
@@ -83,7 +91,7 @@ public class EmpleadoDAO {
                                     resultSet.getString("NOMBRE"),
                                     resultSet.getString("APE_PAT"),
                                     resultSet.getString("APE_MAT"),
-                                    new Usuario(resultSet.getString("ID_USUARIO")),
+                                    new Usuario(resultSet.getInt("ID_USUARIO")),
                                     new EmpleadoCategoria(
                                             resultSet.getString("ID_CATEGORIA_EMPLEADO"),
                                             resultSet.getString("NOMBRE_CATEGORIA")
@@ -91,11 +99,12 @@ public class EmpleadoDAO {
                             )
                     );
                 }
-                return resultado;
+
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.log(Level.SEVERE, "Error al consultar empleado: {0}", e.getMessage());
         }
+        return resultado;
     }
 
     /**
@@ -111,6 +120,7 @@ public class EmpleadoDAO {
      */
     public int actualizar(String idEmpleado, String nombre, String apellidoP,
             String apellidoM, String idCategoria) {
+        int updateCount = 0;
         String sql = "UPDATE EMPLEADOS "
                 + "SET NOMBRE = ?, APE_PAT = ?, APE_MAT = ?, "
                 + "ID_CATEGORIA_EMPLEADO = ? "
@@ -122,11 +132,11 @@ public class EmpleadoDAO {
             preparedStatement.setString(4, idCategoria);
             preparedStatement.setString(5, idEmpleado);
             preparedStatement.execute();
-            int updateCount = preparedStatement.getUpdateCount();
-            return updateCount;
+            updateCount = preparedStatement.getUpdateCount();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.log(Level.SEVERE, "Error al actualizar datos de empleado: {0}", e.getMessage());
         }
+        return updateCount;
     }
 
     /**
@@ -142,7 +152,7 @@ public class EmpleadoDAO {
             preparedStatement.setString(1, idEmpleado);
             preparedStatement.execute();
         } catch (SQLException e) {
-            statusCode = e.getErrorCode();
+            logger.log(Level.SEVERE, "Error al eliminar empleado: {0}", e.getMessage());
             JOptionPane.showMessageDialog(null, "Error al "
                     + "eliminar este empleado, es posible que aún cuente con "
                     + "proyectos asignados, o la conexión a la base de datos "

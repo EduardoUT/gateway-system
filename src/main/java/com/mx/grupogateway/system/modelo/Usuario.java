@@ -5,7 +5,6 @@
 package com.mx.grupogateway.system.modelo;
 
 import com.mx.grupogateway.system.util.SecurityPassword;
-import com.mx.grupogateway.system.util.GeneradorUUID;
 import java.util.UUID;
 
 /**
@@ -14,12 +13,13 @@ import java.util.UUID;
  */
 public class Usuario {
 
-    private String idUsuario;
+    private Integer idUsuario;
     private String nombreUsuario;
     private String password;
     private String claveSeguridad;
 
     public Usuario() {
+        idUsuario = 0;
     }
 
     /**
@@ -29,7 +29,7 @@ public class Usuario {
      * @param nombreUsuario
      * @param password
      */
-    public Usuario(String idUsuario, String nombreUsuario,
+    public Usuario(Integer idUsuario, String nombreUsuario,
             char[] password) {
         this.idUsuario = idUsuario;
         this.nombreUsuario = nombreUsuario;
@@ -44,7 +44,6 @@ public class Usuario {
      * @param password
      */
     public Usuario(String nombreUsuario, char[] password) {
-        this.idUsuario = GeneradorUUID.generarIdentificador();
         this.nombreUsuario = nombreUsuario;
         this.password = encriptarPass(password);
         this.claveSeguridad = generarClaveSeguridad();
@@ -56,7 +55,7 @@ public class Usuario {
      * @param idUsuario
      * @param nombreUsuario
      */
-    public Usuario(String idUsuario, String nombreUsuario) {
+    public Usuario(Integer idUsuario, String nombreUsuario) {
         this.idUsuario = idUsuario;
         this.nombreUsuario = nombreUsuario;
     }
@@ -69,7 +68,7 @@ public class Usuario {
      * con el nombre del empleado.
      */
     public Usuario(Empleado empleado) {
-        this.idUsuario = GeneradorUUID.generarIdentificador();
+        this.idUsuario = 0;
         this.nombreUsuario = generarNombreUsuario(
                 empleado.getNombre(),
                 empleado.getApellidoPaterno(),
@@ -83,21 +82,21 @@ public class Usuario {
      *
      * @param idUsuario
      */
-    public Usuario(String idUsuario) {
+    public Usuario(Integer idUsuario) {
         this.idUsuario = idUsuario;
     }
 
     /**
      * @return the usuarioId
      */
-    public String getIdUsuario() {
+    public Integer getIdUsuario() {
         return idUsuario;
     }
 
     /**
      * @param idUsuario the usuarioId to set
      */
-    public void setIdUsuario(String idUsuario) {
+    public void setIdUsuario(Integer idUsuario) {
         this.idUsuario = idUsuario;
     }
 

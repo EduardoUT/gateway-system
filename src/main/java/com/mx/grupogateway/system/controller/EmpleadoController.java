@@ -16,21 +16,32 @@ import java.util.List;
 public class EmpleadoController {
 
     private final EmpleadoDAO empleadoDAO;
+    private final UsuarioController usuarioController;
 
     public EmpleadoController() {
         this.empleadoDAO = new EmpleadoDAO(
                 new ConnectionFactory().realizarConexion()
         );
+        usuarioController = new UsuarioController();
     }
 
     /**
-     * Pasando por parámetros el objeto empleado a ser guardado y asignando el
-     * id de la categoría a la que pertenece.
+     * Guarda el Usuario generado, si la operación es éxitosa obtiene el nuevo
+     * identificador generado y guarda los datos necesarios para el Empleado.
      *
      * @param empleado Objeto de tipo Empleado.
+     * @return Devuelve el id generado, si es -1 el empleado no fue almacenado.
      */
-    public void guardar(Empleado empleado) {
-        empleadoDAO.guardar(empleado);
+    public int guardar(Empleado empleado) {
+        int idEmpleado = -1;
+        int idUsuario = this.usuarioController.guardar(empleado.getUsuario());
+        if (idUsuario != -1 || empleado.getUsuario().getIdUsuario() != 0) {
+            idEmpleado = this.empleadoDAO.guardar(empleado);
+            if (idEmpleado == -1 || empleado.getIdEmpleado() == 0) {
+                this.usuarioController.eliminar(empleado.getUsuario().getIdUsuario());
+            }
+        }
+        return idEmpleado;
     }
 
     /**

@@ -33,6 +33,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class ExcelController extends SwingWorker<Void, Integer> {
 
+    private static final Logger logger = Logger.getLogger(ExcelController.class.getName());
     private int numRows;
     private final ExcelDAO excelDAO;
     private final String excelFilePath;
@@ -109,7 +110,7 @@ public class ExcelController extends SwingWorker<Void, Integer> {
             }
 
         } catch (InvalidFormatException | IOException | RuntimeException e) {
-            Logger.getLogger(ExcelController.class.getName()).log(Level.SEVERE, null, e);
+            logger.log(Level.SEVERE, null, e);
             System.out.println("Error al procesar archivo" + e.getMessage());
         }
     }

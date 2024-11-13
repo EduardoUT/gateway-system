@@ -25,14 +25,18 @@ public class UsuarioController {
         );
     }
 
+    public boolean isConnectionStatusNotActive() {
+        return this.usuarioDAO.isStatusConnectionNotActive();
+    }
+
     /**
-     * Obtiene el usuario recopilado del formulario de registro, y el ID del
-     * empleado asociado.
+     * Almacena un nuevo usuario y obtiene el identificador generado si la
+     * ejecución fue exitosa, devuelve -1 en caso contrario.
      *
      * @param usuario
      */
-    public void guardar(Usuario usuario) {
-        this.usuarioDAO.guardar(usuario);
+    public int guardar(Usuario usuario) {
+        return this.usuarioDAO.guardar(usuario);
     }
 
     /**
@@ -50,7 +54,7 @@ public class UsuarioController {
      * @param idUsuario
      * @return
      */
-    public Optional consultarIdUsuario(String idUsuario) {
+    public Integer consultarIdUsuario(Integer idUsuario) {
         return this.usuarioDAO.consultarIdUsuario(idUsuario);
     }
 
@@ -71,7 +75,7 @@ public class UsuarioController {
      * @param idUsuario
      * @return
      */
-    public boolean esPasswordNula(String idUsuario) {
+    public boolean esPasswordNula(Integer idUsuario) {
         return this.usuarioDAO.esPasswordNula(idUsuario);
     }
 
@@ -91,7 +95,16 @@ public class UsuarioController {
      * usuario
      *
      * @param usuario
+     * @return 
      */
+    public int actualizarPasswordNula(Usuario usuario) {
+        int idUsuario = this.consultarIdUsuario(usuario.getIdUsuario());
+        if (idUsuario != 1 && this.esPasswordNula(idUsuario)) {
+            this.usuarioDAO.actualizarPasswordNula(usuario);
+        }
+        return idUsuario;
+    }
+    
     public void actualizarPassword(Usuario usuario) {
         this.usuarioDAO.actualizarPassword(usuario);
     }
@@ -102,7 +115,7 @@ public class UsuarioController {
      * @param idUsuario
      * @return
      */
-    public int eliminar(String idUsuario) {
+    public int eliminar(Integer idUsuario) {
         return this.usuarioDAO.eliminar(idUsuario);
     }
 }
