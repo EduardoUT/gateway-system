@@ -8,7 +8,6 @@ import com.mx.grupogateway.system.LoggerConfig;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.EmpleadoCategoria;
 import com.mx.grupogateway.system.modelo.Usuario;
-import com.mx.grupogateway.system.util.AbstractDAO;
 import com.mx.grupogateway.system.util.SecurityPassword;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,6 +27,8 @@ import java.util.logging.Logger;
  */
 public class UsuarioDAO extends AbstractDAO {
 
+    private static final String ID_USUARIO = "ID_USUARIO";
+    private static final String PASSWORD_USUARIO = "PASSWORD_USUARIO";
     private static final Logger logger = LoggerConfig.getLogger();
 
     public UsuarioDAO(Connection con) {
@@ -44,7 +45,7 @@ public class UsuarioDAO extends AbstractDAO {
      */
     public int guardar(Usuario usuario) {
         int idUsuario = -1;
-        String sql = "INSERT INTO USUARIOS (NOMBRE_USUARIO, PASSWORD_USUARIO)"
+        String sql = "INSERT INTO USUARIOS (NOMBRE_USUARIO, " + PASSWORD_USUARIO + ")"
                 + "VALUES (?, ?)";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
@@ -70,13 +71,13 @@ public class UsuarioDAO extends AbstractDAO {
      */
     public List<Usuario> listar() {
         List<Usuario> resultado = new ArrayList<>();
-        String sql = "SELECT ID_USUARIO, NOMBRE_USUARIO FROM USUARIOS";
+        String sql = "SELECT " + ID_USUARIO + ", NOMBRE_USUARIO FROM USUARIOS";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     Usuario fila = new Usuario(
-                            resultSet.getInt("ID_USUARIO"),
+                            resultSet.getInt(ID_USUARIO),
                             resultSet.getString("NOMBRE_USUARIO")
                     );
                     resultado.add(fila);
@@ -90,15 +91,15 @@ public class UsuarioDAO extends AbstractDAO {
 
     public boolean esPerfilValido(Usuario usuario) {
         HashMap<String, Integer> hashMap = new HashMap<>();
-        String sql = "SELECT PASSWORD_USUARIO, ID_USUARIO FROM USUARIOS WHERE NOMBRE_USUARIO = ?";
+        String sql = "SELECT " + PASSWORD_USUARIO + ", " + ID_USUARIO + " FROM USUARIOS WHERE NOMBRE_USUARIO = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, usuario.getNombreUsuario());
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     hashMap.put(
-                            resultSet.getString("PASSWORD_USUARIO"),
-                            resultSet.getInt("ID_USUARIO")
+                            resultSet.getString(PASSWORD_USUARIO),
+                            resultSet.getInt(ID_USUARIO)
                     );
                 }
                 for (Map.Entry<String, Integer> registro : hashMap.entrySet()) {
@@ -128,13 +129,13 @@ public class UsuarioDAO extends AbstractDAO {
      */
     public boolean esPasswordNula(Integer idUsuario) {
         String passwordNula = "";
-        String sql = "SELECT PASSWORD_USUARIO FROM USUARIOS WHERE ID_USUARIO = ?";
+        String sql = "SELECT " + PASSWORD_USUARIO + " FROM USUARIOS WHERE " + ID_USUARIO + " = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setInt(1, idUsuario);
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    passwordNula = resultSet.getString("PASSWORD_USUARIO");
+                    passwordNula = resultSet.getString(PASSWORD_USUARIO);
                 }
             }
         } catch (SQLException e) {
@@ -153,13 +154,13 @@ public class UsuarioDAO extends AbstractDAO {
      */
     public boolean esPasswordValida(Usuario usuario) {
         Usuario usuarioPassword = new Usuario();
-        String sql = "SELECT PASSWORD_USUARIO FROM USUARIOS WHERE ID_USUARIO = ?";
+        String sql = "SELECT " + PASSWORD_USUARIO + " FROM USUARIOS WHERE " + ID_USUARIO + " = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setInt(1, usuario.getIdUsuario());
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    usuarioPassword.setPassword(resultSet.getString("PASSWORD_USUARIO"));
+                    usuarioPassword.setPassword(resultSet.getString(PASSWORD_USUARIO));
                 }
             }
         } catch (SQLException e) {
@@ -186,11 +187,11 @@ public class UsuarioDAO extends AbstractDAO {
         Empleado empleado = null;
         EmpleadoCategoria empleadoCategoria = new EmpleadoCategoria();
         if (esPerfilValido(usuario)) {
-            String sql = "SELECT USUARIOS.ID_USUARIO, ID_CATEGORIA_EMPLEADO "
+            String sql = "SELECT USUARIOS." + ID_USUARIO + ", ID_CATEGORIA_EMPLEADO "
                     + "FROM EMPLEADOS "
                     + "INNER JOIN USUARIOS "
-                    + "ON EMPLEADOS.ID_USUARIO = USUARIOS.ID_USUARIO "
-                    + "WHERE USUARIOS.NOMBRE_USUARIO = ? AND USUARIOS.ID_USUARIO = ?";
+                    + "ON EMPLEADOS." + ID_USUARIO + " = USUARIOS." + ID_USUARIO + " "
+                    + "WHERE USUARIOS.NOMBRE_USUARIO = ? AND USUARIOS." + ID_USUARIO + " = ?";
             try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
                 preparedStatement.setString(1, usuario.getNombreUsuario());
                 preparedStatement.setInt(2, usuario.getIdUsuario());
@@ -199,7 +200,7 @@ public class UsuarioDAO extends AbstractDAO {
                     while (resultSet.next()) {
                         empleadoCategoria.setIdCategoria(resultSet.getString("ID_CATEGORIA_EMPLEADO"));
                         empleado = new Empleado(
-                                new Usuario(resultSet.getInt("ID_USUARIO")),
+                                new Usuario(resultSet.getInt(ID_USUARIO)),
                                 empleadoCategoria
                         );
                     }
@@ -220,13 +221,13 @@ public class UsuarioDAO extends AbstractDAO {
      */
     public Integer consultarIdUsuario(Integer idUsuario) {
         Integer idUsuarioObtenido = -1;
-        String sql = "SELECT ID_USUARIO FROM USUARIOS WHERE ID_USUARIO = ?";
+        String sql = "SELECT " + ID_USUARIO + " FROM USUARIOS WHERE " + ID_USUARIO + " = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setInt(1, idUsuario);
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    idUsuarioObtenido = resultSet.getInt("ID_USUARIO");
+                    idUsuarioObtenido = resultSet.getInt(ID_USUARIO);
                 }
 
             }
@@ -242,7 +243,7 @@ public class UsuarioDAO extends AbstractDAO {
      * @param usuario
      */
     public void actualizarPasswordNula(Usuario usuario) {
-        String sql = "UPDATE USUARIOS SET PASSWORD_USUARIO = ? WHERE ID_USUARIO = ?";
+        String sql = "UPDATE USUARIOS SET " + PASSWORD_USUARIO + " = ? WHERE " + ID_USUARIO + " = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, usuario.getPassword());
             preparedStatement.setInt(2, usuario.getIdUsuario());
@@ -253,7 +254,7 @@ public class UsuarioDAO extends AbstractDAO {
     }
 
     public void actualizarPassword(Usuario usuario) {
-        String sql = "UPDATE USUARIOS SET PASSWORD_USUARIO = ? WHERE ID_USUARIO = ? "
+        String sql = "UPDATE USUARIOS SET " + PASSWORD_USUARIO + " = ? WHERE " + ID_USUARIO + " = ? "
                 + "AND NOMBRE_USUARIO = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, usuario.getPassword());
@@ -272,7 +273,7 @@ public class UsuarioDAO extends AbstractDAO {
      * @param idEmpleado
      */
     public void actualizarIdUsuarioEnTablaEmpleado(String idUsuario, String idEmpleado) {
-        String sql = "UPDATE EMPLEADOS SET ID_USUARIO = ? WHERE ID_EMPLEADO = ?";
+        String sql = "UPDATE EMPLEADOS SET " + ID_USUARIO + " = ? WHERE ID_EMPLEADO = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, idUsuario);
             preparedStatement.setString(2, idEmpleado);
@@ -289,7 +290,7 @@ public class UsuarioDAO extends AbstractDAO {
      * @param idUsuario
      */
     private void actualizarRelacionEmpleadoUsuario(Integer idUsuario) {
-        String sql = "UPDATE EMPLEADOS SET ID_USUARIO = ? WHERE ID_USUARIO = ?";
+        String sql = "UPDATE EMPLEADOS SET " + ID_USUARIO + " = ? WHERE " + ID_USUARIO + " = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, "NULL");
             preparedStatement.setInt(2, idUsuario);
@@ -309,7 +310,7 @@ public class UsuarioDAO extends AbstractDAO {
     public int eliminar(Integer idUsuario) {
         int updateCount = 0;
         actualizarRelacionEmpleadoUsuario(idUsuario);
-        String sql = "DELETE FROM USUARIOS WHERE ID_USUARIO = ?";
+        String sql = "DELETE FROM USUARIOS WHERE " + ID_USUARIO + " = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setInt(1, idUsuario);
             preparedStatement.execute();
