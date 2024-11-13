@@ -4,7 +4,9 @@
  */
 package com.mx.grupogateway.system.controller;
 
+import com.mx.grupogateway.system.LoggerConfig;
 import com.mx.grupogateway.system.dao.ExcelDAO;
+import com.mx.grupogateway.system.factory.ConnectionFactory;
 import com.mx.grupogateway.system.modelo.DataImport;
 import com.mx.grupogateway.system.modelo.Project;
 import com.mx.grupogateway.system.modelo.PurchaseOrder;
@@ -33,7 +35,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class ExcelController extends SwingWorker<Void, Integer> {
 
-    private static final Logger logger = Logger.getLogger(ExcelController.class.getName());
+    private static final Logger logger = LoggerConfig.getLogger();
     private int numRows;
     private final ExcelDAO excelDAO;
     private final String excelFilePath;
@@ -48,7 +50,9 @@ public class ExcelController extends SwingWorker<Void, Integer> {
         this.jProgressBar = jProgressBar;
         this.jProgressBar.setStringPainted(true);
         this.jLabel = jLabel;
-        this.excelDAO = new ExcelDAO(dataImport, jProgressBar, jLabel);
+        this.excelDAO = new ExcelDAO(
+                dataImport, jProgressBar, jLabel
+        );
     }
 
     /**
@@ -109,27 +113,34 @@ public class ExcelController extends SwingWorker<Void, Integer> {
                 publish(progress);
             }
 
-        } catch (InvalidFormatException | IOException | RuntimeException e) {
-            logger.log(Level.SEVERE, null, e);
-            System.out.println("Error al procesar archivo" + e.getMessage());
+        } catch (InvalidFormatException e) {
+            logger.log(Level.SEVERE, "Error al procesar formato de excel: {0}", e.getMessage());
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Error de IO: {0}", e.getMessage());
+        } catch (RuntimeException e) {
+            logger.log(Level.SEVERE, "Error: {0}", e.getMessage());
         }
     }
 
     /**
      * Invoca el SwingWorker encargado de la exportación de la información
      * almacenada en los listados del DataModel a la Base de Datos.
-     * 
+     *
      * @see ExcelDAO
      */
     public void exportData() {
-        this.excelDAO.execute();
+        if (isDone()) {
+            this.excelDAO.execute();
+        } else {
+            logger.log(Level.SEVERE, "El proceso de importación del archivo de "
+                    + "Excel no se completó exitosamente.");
+        }
     }
 
     @Override
     protected Void doInBackground() throws Exception {
         importData();
         return null;
-        //throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
