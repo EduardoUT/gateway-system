@@ -30,7 +30,7 @@ public class LoggerConfig {
         try {
             Handler consoleHandler = new ConsoleHandler();
             Handler fileHandler = new FileHandler(
-                    "./bitacora.log", false
+                    "./bitacora.log", true
             );
             SimpleFormatter simpleFormatter = new SimpleFormatter();
             fileHandler.setFormatter(simpleFormatter);
