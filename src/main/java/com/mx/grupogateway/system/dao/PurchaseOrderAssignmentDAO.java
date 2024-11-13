@@ -4,6 +4,7 @@
  */
 package com.mx.grupogateway.system.dao;
 
+import com.mx.grupogateway.system.LoggerConfig;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Project;
 import com.mx.grupogateway.system.modelo.PurchaseOrder;
@@ -24,12 +25,12 @@ import java.util.logging.Logger;
  *
  * @author eduar
  */
-public class PurchaseOrderAssignmentDAO {
+public class PurchaseOrderAssignmentDAO extends AbstractDAO {
 
-    private final Connection con;
+    private static final Logger logger = LoggerConfig.getLogger();
 
     public PurchaseOrderAssignmentDAO(Connection con) {
-        this.con = con;
+        super(con);
     }
 
     /**
@@ -45,7 +46,7 @@ public class PurchaseOrderAssignmentDAO {
                 + "(ID_EMPLEADO, ID_PROJECT, FECHA_ASIGNACION, IMPORTE, "
                 + "TOTAL_PAGAR, STATUS_PAYMENT) VALUES "
                 + "(?, ?, CURRENT_TIMESTAMP, ?, ?, ?) ";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql,
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
             for (Long purchaseOrderProjectIdentifier : purchaseOrderProjectIdentifiers) {
                 preparedStatement.setInt(1, purchaseOrderAssignment.getEmpleado().getIdEmpleado());
@@ -55,16 +56,8 @@ public class PurchaseOrderAssignmentDAO {
                 preparedStatement.setString(5, purchaseOrderAssignment.getStatusAsBinary());
                 preparedStatement.execute();
             }
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                while (resultSet.next()) {
-                    System.out.println(
-                            String.format("Fue guardada la siguiente "
-                                    + "asignación %s", purchaseOrderAssignment));
-                }
-            }
         } catch (SQLException e) {
-            Logger.getLogger(PurchaseOrderAssignmentDAO.class.getName()).log(Level.SEVERE, null, e);
-            System.out.println("Error al guardar asignación: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error al guardar purchaseOrderAssignment: {0}", e.getMessage());
         }
     }
 
@@ -99,7 +92,7 @@ public class PurchaseOrderAssignmentDAO {
                 + "PURCHASE_HAS_ORDER.ID_PROJECT = PROJECT.ID_PROJECT "
                 + "INNER JOIN PURCHASE_ORDER ON "
                 + "PURCHASE_HAS_ORDER.PO_NO = PURCHASE_ORDER.PO_NO";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
@@ -148,9 +141,7 @@ public class PurchaseOrderAssignmentDAO {
                 }
             }
         } catch (SQLException e) {
-            Logger.getLogger(PurchaseOrderAssignmentDAO.class.getName()).log(Level.SEVERE, null, e);
-            System.out.println("Error al consultar EMPLEADOS_HAS_PROJECTS " + e.getMessage());
-            //throw new RuntimeException(e);
+            logger.log(Level.SEVERE, "Error al consultar purchaseOrderAssignment: {0}", e.getMessage());
         }
         return purchaseOrderAssignments;
     }
@@ -172,7 +163,7 @@ public class PurchaseOrderAssignmentDAO {
         String sql = "UPDATE EMPLEADOS_HAS_PROJECTS "
                 + "SET ID_EMPLEADO = ? "
                 + "WHERE ID_PROJECT = ? AND ID_EMPLEADO = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             for (Long purchaseOrderProjectIdentifier : purchaseOrderProjectIdentifiers) {
                 preparedStatement.setInt(1, empleadoNuevoId);
                 preparedStatement.setLong(2, purchaseOrderProjectIdentifier);
@@ -181,8 +172,7 @@ public class PurchaseOrderAssignmentDAO {
             }
             preparedStatement.executeBatch();
         } catch (SQLException e) {
-            Logger.getLogger(PurchaseOrderAssignmentDAO.class.getName()).log(Level.SEVERE, null, e);
-            System.out.println("Error al actualizar EMPLEADOS_HAS_PROJECTS " + e.getMessage());
+            logger.log(Level.SEVERE, "Error al actualizar purchaseOrderAssignment: {0}", e.getMessage());
         }
     }
 }
