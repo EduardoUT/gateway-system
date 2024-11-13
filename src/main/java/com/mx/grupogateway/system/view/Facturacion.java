@@ -690,6 +690,8 @@ public final class Facturacion extends javax.swing.JFrame {
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         evt.getID();
         this.dispose();
+        Login login = new Login();
+        login.setVisible(true);
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     /**

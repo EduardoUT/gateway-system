@@ -11,7 +11,6 @@ import com.mx.grupogateway.system.util.ValidacionJPasswordField;
 import com.mx.grupogateway.system.util.IconoVentana;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.Optional;
 import javax.swing.JOptionPane;
 
 /**
@@ -52,11 +51,12 @@ public class Registro extends javax.swing.JFrame {
      */
     private void registrarUsuario() {
         if (sonCamposValidos()) {
+            System.out.println(String.valueOf(campoCheckPassword.getPassword()));
             int idUsuario = this.usuarioController.actualizarPasswordNula(
                     new Usuario(
                             Integer.valueOf(campoIdUsuario.getText()),
                             campoNombreUsuario.getText(),
-                            campoCheckPassword.getPassword()
+                            String.valueOf(campoCheckPassword.getPassword())
                     ));
             if (idUsuario != -1) {
                 JOptionPane.showMessageDialog(null,

@@ -68,9 +68,9 @@ public class Login extends javax.swing.JFrame {
      */
     private void validarPerfilUsuario() {
         String nombreUsuario = campoUsuario.getText();
-        char[] password = campoPassword.getPassword();
+        String password = String.valueOf(campoPassword.getPassword());
         Usuario usuario = new Usuario();
-        usuario.setPassword(String.valueOf(password));
+        usuario.setPassword(String.valueOf(password), false);
         usuario.setNombreUsuario(nombreUsuario);
         empleado = this.usuarioController.consultarPerfilUsuario(usuario);
         if (empleado == null) {

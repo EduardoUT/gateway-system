@@ -115,8 +115,7 @@ public class UsuarioDAO extends AbstractDAO {
             logger.log(Level.SEVERE, "Error al verificar credenciales de usuario: {0}",
                     e.getMessage());
         }
-        return (usuario.getIdUsuario() != null
-                || usuario.getIdUsuario() != 0);
+        return (usuario.getIdUsuario() != 0 || usuario.getIdUsuario() != null);
     }
 
     /**
@@ -160,14 +159,13 @@ public class UsuarioDAO extends AbstractDAO {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    usuarioPassword.setPassword(resultSet.getString(PASSWORD_USUARIO));
+                    usuarioPassword.setPassword(resultSet.getString(PASSWORD_USUARIO), false);
                 }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al validar password: {0}", e.getMessage());
         }
-
-        if (usuarioPassword.getPassword() != null || usuarioPassword.getPassword().isEmpty()) {
+        if (usuarioPassword.getPassword() != null || !usuarioPassword.getPassword().isEmpty()) {
             return SecurityPassword.assertData(
                     usuarioPassword.getPassword(),
                     usuario.getPassword()

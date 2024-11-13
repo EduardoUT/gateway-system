@@ -30,7 +30,7 @@ public class Usuario {
      * @param password
      */
     public Usuario(Integer idUsuario, String nombreUsuario,
-            char[] password) {
+            String password) {
         this.idUsuario = idUsuario;
         this.nombreUsuario = nombreUsuario;
         this.password = encriptarPass(password);
@@ -43,7 +43,7 @@ public class Usuario {
      * @param nombreUsuario
      * @param password
      */
-    public Usuario(String nombreUsuario, char[] password) {
+    public Usuario(String nombreUsuario, String password) {
         this.nombreUsuario = nombreUsuario;
         this.password = encriptarPass(password);
         this.claveSeguridad = generarClaveSeguridad();
@@ -122,21 +122,18 @@ public class Usuario {
     }
 
     /**
-     * Este método recibe la password sin encriptarla.
+     * Este método recibe la password para encriptar, si el valor no requiere
+     * ser encriptado asignar false.
      *
      * @param password the password to set
+     * @param encriptar true para encriptar.
      */
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    /**
-     * Este método encripta la contraseña del usuario.
-     *
-     * @param password
-     */
-    public void setPassword(char[] password) {
-        this.password = encriptarPass(password);
+    public void setPassword(String password, boolean encriptar) {
+        if (encriptar) {
+            this.password = encriptarPass(password);
+        } else {
+            this.password = password;
+        }
     }
 
     /**
@@ -157,17 +154,26 @@ public class Usuario {
                         .substring(19, 35));
     }
 
+    /**
+     *
+     * @param nombre
+     * @param apellidoPaterno
+     * @param apellidoMaterno
+     * @return Genera el nombre del usuario apartir de su nombre y apellidos.
+     */
     private String generarNombreUsuario(String nombre,
             String apellidoPaterno, String apellidoMaterno) {
-        String usuario = nombre.substring(0, 1)
-                .concat(apellidoPaterno)
-                .concat(apellidoMaterno.substring(0, 1))
-                .toLowerCase();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder
+                .append(nombre.substring(0, 1))
+                .append(apellidoPaterno)
+                .append(apellidoMaterno.substring(0, 1));
+        String usuario = stringBuilder.toString().toLowerCase();
         this.setNombreUsuario(usuario);
         return this.nombreUsuario;
     }
 
-    private String encriptarPass(char[] password) {
+    private String encriptarPass(String password) {
         return SecurityPassword.encriptar(password);
     }
 
