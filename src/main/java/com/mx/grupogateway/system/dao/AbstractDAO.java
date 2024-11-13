@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
  */
-package com.mx.grupogateway.system.util;
+package com.mx.grupogateway.system.dao;
 
 import java.sql.Connection;
 
@@ -24,19 +24,28 @@ public abstract class AbstractDAO {
         }
     }
 
+    /**
+     * Se establece el status de la conexión.
+     *
+     * @param statusConnection
+     */
     private void setStatusConnection(boolean statusConnection) {
         this.statusConnection = statusConnection;
     }
 
+    /**
+     *
+     * @return Status de conexión.
+     */
     public boolean isStatusConnectionNotActive() {
         return this.statusConnection;
     }
 
     /**
-     * @return the con
+     * @return Objeto Connection.
      */
     public Connection getConnection() {
         return con;
     }
-    
+
 }
