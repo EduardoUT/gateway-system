@@ -4,6 +4,7 @@
  */
 package com.mx.grupogateway.system.dao;
 
+import com.mx.grupogateway.system.LoggerConfig;
 import com.mx.grupogateway.system.modelo.Site;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,12 +20,12 @@ import java.util.logging.Logger;
  *
  * @author eduar
  */
-public class SiteDAO {
+public class SiteDAO extends AbstractDAO {
 
-    private final Connection con;
+    private static final Logger logger = LoggerConfig.getLogger();
 
     public SiteDAO(Connection con) {
-        this.con = con;
+        super(con);
     }
 
     /**
@@ -36,7 +37,7 @@ public class SiteDAO {
         String sql = "INSERT INTO SITE "
                 + "(ID_SITE, SITE_CODE, SITE_NAME, BIDDING_AREA, SHIPMENT_NO) "
                 + "VALUES (?,?,?,?,?)";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql,
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setLong(1, site.getSiteId());
             preparedStatement.setString(2, site.getSiteCode());
@@ -44,14 +45,8 @@ public class SiteDAO {
             preparedStatement.setString(4, site.getBiddigArea());
             preparedStatement.setInt(5, site.getShipmentNo());
             preparedStatement.execute();
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                while (resultSet.next()) {
-                    System.out.println(String.format("Fue guardado el site %s", site));
-                }
-            }
         } catch (SQLException e) {
-            Logger.getLogger(SiteDAO.class.getName()).log(Level.SEVERE, null, e);
-            System.out.println("Error al guardar el Site: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error al guardar Site: {0}", e.getMessage());
         }
     }
 
@@ -64,7 +59,7 @@ public class SiteDAO {
     public List<Long> listarSiteIdentifiers(Long idSite) {
         List<Long> siteIdList = new ArrayList<>();
         String sql = "SELECT ID_SITE FROM SITE WHERE ID_SITE = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setLong(1, idSite);
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
@@ -75,8 +70,7 @@ public class SiteDAO {
                 }
             }
         } catch (SQLException e) {
-            Logger.getLogger(SiteDAO.class.getName()).log(Level.SEVERE, null, e);
-            System.out.println("Error al consultar los ids de SITE: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error al consultar Site: {0}", e.getMessage());
         }
         return siteIdList;
     }
