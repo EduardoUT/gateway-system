@@ -4,6 +4,7 @@
  */
 package com.mx.grupogateway.system.dao;
 
+import com.mx.grupogateway.system.LoggerConfig;
 import com.mx.grupogateway.system.modelo.PurchaseOrderDetail;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,12 +20,12 @@ import java.util.logging.Logger;
  *
  * @author eduar
  */
-public class PurchaseOrderDetailDAO {
+public class PurchaseOrderDetailDAO extends AbstractDAO {
 
-    private final Connection con;
+    private static final Logger logger = LoggerConfig.getLogger();
 
     public PurchaseOrderDetailDAO(Connection con) {
-        this.con = con;
+        super(con);
     }
 
     /**
@@ -37,7 +38,7 @@ public class PurchaseOrderDetailDAO {
                 + "(PO_NO, PO_STATUS, ITEM_CODE, ITEM_DESC, REQUESTED_QTY, "
                 + "LINE_AMOUNT, PAYMENT_TERMS)"
                 + "VALUES(?,?,?,?,?,?,?)";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql,
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, purchaseOrderDetail.getPurchaseOrderIdentifier());
             preparedStatement.setString(2, purchaseOrderDetail.getPoStatus());
@@ -47,15 +48,8 @@ public class PurchaseOrderDetailDAO {
             preparedStatement.setBigDecimal(6, purchaseOrderDetail.getLineAmount());
             preparedStatement.setString(7, purchaseOrderDetail.getPaymentTerms());
             preparedStatement.execute();
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                while (resultSet.next()) {
-                    System.out.println(String.format("Fue guardado "
-                            + "Purchase Order Detail %s", purchaseOrderDetail));
-                }
-            }
         } catch (SQLException e) {
-            Logger.getLogger(SiteDAO.class.getName()).log(Level.SEVERE, null, e);
-            System.out.println("Error al guardar Purchase Order Detail: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error al guardar PurchaseOrder: {0}", e.getMessage());
         }
     }
 
@@ -68,7 +62,7 @@ public class PurchaseOrderDetailDAO {
     public List<String> listarPurchaseOrderDetailIdentifiers(String purchaseOrderIdentifier) {
         List<String> purchaseOrderList = new ArrayList<>();
         String sql = "SELECT PO_NO FROM PURCHASE_ORDER WHERE PO_NO = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, purchaseOrderIdentifier);
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
@@ -76,11 +70,9 @@ public class PurchaseOrderDetailDAO {
                     PurchaseOrderDetail purchaseOrder = new PurchaseOrderDetail(resultSet.getString("PO_NO"));
                     purchaseOrderList.add(purchaseOrder.getPurchaseOrderIdentifier());
                 }
-
             }
         } catch (SQLException e) {
-            Logger.getLogger(PurchaseOrderDetailDAO.class.getName()).log(Level.SEVERE, null, e);
-            System.out.println("Error al consultad los ids de PURCHASE_ORDER: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error al consultar PurchaseOrder: {0}", e.getMessage());
         }
         return purchaseOrderList;
     }
@@ -94,13 +86,12 @@ public class PurchaseOrderDetailDAO {
     public void actualizarPurchaseOrderDetailStatus(
             PurchaseOrderDetail purchaseOrderDetail) {
         String sql = "UPDATE PURCHASE_ORDER SET PO_STATUS = ? WHERE PO_NO = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, purchaseOrderDetail.getPoStatus());
             preparedStatement.setString(2, purchaseOrderDetail.getPurchaseOrderIdentifier());
             preparedStatement.execute();
         } catch (SQLException e) {
-            Logger.getLogger(PurchaseOrderDetailDAO.class.getName()).log(Level.SEVERE, null, e);
-            System.out.println("Error al actualizar PO_STATUS " + e.getMessage());
+            logger.log(Level.SEVERE, "Error al actualizar PurchaseOrder: {0}", e.getMessage());
         }
     }
 }
