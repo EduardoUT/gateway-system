@@ -14,7 +14,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,19 +23,20 @@ import javax.swing.JOptionPane;
  *
  * @author Eduardo Reyes Hernández
  */
-public class EmpleadoDAO {
+public class EmpleadoDAO extends AbstractDAO {
 
     private static final Logger logger = LoggerConfig.getLogger();
-    private final Connection con;
 
     public EmpleadoDAO(Connection con) {
-        this.con = con;
+        super(con);
     }
 
     /**
      * Realiza el guardado en la BD del empleado.
      *
      * @param empleado
+     * @return Devuelve el identificador si la inserción se ejecuto
+     * correctamente, caso contrario devuelve -1.
      */
     public int guardar(Empleado empleado) {
         int idEmpleado = -1;
@@ -44,7 +44,7 @@ public class EmpleadoDAO {
                 + "(NOMBRE, APE_PAT, "
                 + "APE_MAT, ID_USUARIO, ID_CATEGORIA_EMPLEADO) "
                 + "VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql,
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, empleado.getNombre());
             preparedStatement.setString(2, empleado.getApellidoPaterno());
@@ -59,7 +59,6 @@ public class EmpleadoDAO {
                 }
             }
         } catch (SQLException e) {
-            System.out.println(Arrays.toString(logger.getHandlers()));
             logger.log(Level.SEVERE, "Error al guardar empleado: {0}", e.getMessage());
         }
         return idEmpleado;
@@ -81,7 +80,7 @@ public class EmpleadoDAO {
                 + "EMPLEADOS.ID_CATEGORIA_EMPLEADO "
                 + "WHERE NOMBRE_CATEGORIA = 'Administrador Facturación' "
                 + "OR NOMBRE_CATEGORIA = 'Operador Facturación'";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
@@ -116,7 +115,7 @@ public class EmpleadoDAO {
      * @param apellidoP
      * @param apellidoM
      * @param idCategoria
-     * @return
+     * @return Cantidad de registros afectados.
      */
     public int actualizar(String idEmpleado, String nombre, String apellidoP,
             String apellidoM, String idCategoria) {
@@ -125,7 +124,7 @@ public class EmpleadoDAO {
                 + "SET NOMBRE = ?, APE_PAT = ?, APE_MAT = ?, "
                 + "ID_CATEGORIA_EMPLEADO = ? "
                 + "WHERE ID_EMPLEADO = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, nombre);
             preparedStatement.setString(2, apellidoP);
             preparedStatement.setString(3, apellidoM);
@@ -148,7 +147,7 @@ public class EmpleadoDAO {
     public int eliminar(String idEmpleado) {
         int statusCode = 0;
         String sql = "DELETE FROM EMPLEADOS WHERE ID_EMPLEADO = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, idEmpleado);
             preparedStatement.execute();
         } catch (SQLException e) {
