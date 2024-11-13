@@ -7,7 +7,7 @@ package com.mx.grupogateway.system.view;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.ExcelController;
 import com.mx.grupogateway.system.modelo.DataImport;
-import com.mx.grupogateway.system.view.util.IconoVentana;
+import com.mx.grupogateway.system.util.IconoVentana;
 import java.awt.event.MouseEvent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;

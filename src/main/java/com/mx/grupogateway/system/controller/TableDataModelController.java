@@ -8,7 +8,7 @@ import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.PurchaseOrder;
 import com.mx.grupogateway.system.modelo.PurchaseOrderAssignment;
 import com.mx.grupogateway.system.modelo.Usuario;
-import com.mx.grupogateway.system.view.util.AccionesTabla;
+import com.mx.grupogateway.system.util.AccionesTabla;
 import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
