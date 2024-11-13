@@ -4,6 +4,7 @@
  */
 package com.mx.grupogateway.system.dao;
 
+import com.mx.grupogateway.system.LoggerConfig;
 import com.mx.grupogateway.system.modelo.Project;
 import com.mx.grupogateway.system.modelo.Site;
 import java.sql.Connection;
@@ -21,14 +22,12 @@ import java.util.logging.Logger;
  *
  * @author eduar
  */
-public class ProjectDAO {
+public class ProjectDAO extends AbstractDAO {
 
-    private Connection con;
+    private static final Logger logger = LoggerConfig.getLogger();
 
     public ProjectDAO(Connection con) {
-        if(con != null) {
-            this.con = con;
-        }
+        super(con);
     }
 
     /**
@@ -41,7 +40,7 @@ public class ProjectDAO {
                 + "(ID_PROJECT, ID_SITE, PROJECT_CODE, PROJECT_NAME, CUSTOMER, "
                 + "CATEGORY, PUBLISH_DATE) "
                 + "VALUES(?,?,?,?,?,?,?)";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql,
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setLong(1, project.getProjectId());
             preparedStatement.setLong(2, project.getSite().getSiteId());
@@ -51,15 +50,8 @@ public class ProjectDAO {
             preparedStatement.setString(6, project.getCategory());
             preparedStatement.setTimestamp(7, Timestamp.valueOf(project.getPublishDate()));
             preparedStatement.execute();
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                while (resultSet.next()) {
-                    System.out.println(String.format("Fue guardado "
-                            + "el proyecto %s", project));
-                }
-            }
         } catch (SQLException e) {
-            System.out.println("Error al guardar project: " + e.getMessage());
-            throw new RuntimeException(e);
+            logger.log(Level.SEVERE, "Error al guardar proyecto: {0}", e.getMessage());
         }
     }
 
@@ -77,7 +69,7 @@ public class ProjectDAO {
                 + "SITE.BIDDING_AREA SITE.SHIPMENT_NO "
                 + "FROM PROJECT "
                 + "INNER JOIN SITE ON PROJECT.ID_SITE = SITE.ID_SITE";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
@@ -101,8 +93,7 @@ public class ProjectDAO {
                 }
             }
         } catch (SQLException e) {
-            Logger.getLogger(ProjectDAO.class.getName()).log(Level.SEVERE, null, e);
-            System.out.println("Error al consultad los ids de PROJECT: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error al consultar proyecto: {0}", e.getMessage());
         }
         return projects;
     }
@@ -116,7 +107,7 @@ public class ProjectDAO {
     public List<Long> listarProjectId(Long projectIdentifier) {
         List<Long> projectIdList = new ArrayList<>();
         String sql = "SELECT ID_PROJECT FROM PROJECT WHERE ID_PROJECT = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setLong(1, projectIdentifier);
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
@@ -126,8 +117,8 @@ public class ProjectDAO {
                 }
             }
         } catch (SQLException e) {
-            Logger.getLogger(ProjectDAO.class.getName()).log(Level.SEVERE, null, e);
-            System.out.println("Error al consultad los ids de PROJECT: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error al consultar identificador de proyecto: {0}",
+                    e.getMessage());
         }
 
         return projectIdList;
