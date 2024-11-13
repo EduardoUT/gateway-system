@@ -4,6 +4,7 @@
  */
 package com.mx.grupogateway.system.dao;
 
+import com.mx.grupogateway.system.LoggerConfig;
 import com.mx.grupogateway.system.modelo.EmpleadoCategoria;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,17 +13,20 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Eduardo Reyes Hernández
  */
-public class EmpleadoCategoriaDAO {
+public class EmpleadoCategoriaDAO extends AbstractDAO {
 
-    private final Connection con;
+    private static final Logger logger = LoggerConfig.getLogger();
+    private static final String ID_CATEGORIA_EMPLEADO = "ID_CATEGORIA_EMPLEADO";
 
     public EmpleadoCategoriaDAO(Connection con) {
-        this.con = con;
+        super(con);
     }
 
     /**
@@ -32,26 +36,17 @@ public class EmpleadoCategoriaDAO {
      */
     public void guardar(EmpleadoCategoria empleadoCategoria) {
         String sql = "INSERT INTO EMPLEADO_CATEGORIA "
-                + "(ID_CATEGORIA_EMPLEADO, NOMBRE_CATEGORIA) "
+                + "(" + ID_CATEGORIA_EMPLEADO + ", NOMBRE_CATEGORIA) "
                 + "VALUES (?, ?)";
-
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql,
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1,
                     empleadoCategoria.getidCategoria());
             preparedStatement.setString(2,
                     empleadoCategoria.getNombreCategoria());
             preparedStatement.execute();
-
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                while (resultSet.next()) {
-                    System.out.println(
-                            String.format("Fue a la categoría %s",
-                                    empleadoCategoria));
-                }
-            }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.log(Level.SEVERE, "Error al guardar categor\u00eda: {0}", e.getMessage());
         }
     }
 
@@ -61,25 +56,24 @@ public class EmpleadoCategoriaDAO {
      */
     public List<EmpleadoCategoria> listar() {
         List<EmpleadoCategoria> empleadoCategorias = new ArrayList<>();
-        String sql = "SELECT ID_CATEGORIA_EMPLEADO, NOMBRE_CATEGORIA "
+        String sql = "SELECT " + ID_CATEGORIA_EMPLEADO + ", NOMBRE_CATEGORIA "
                 + "FROM CATEGORIA_EMPLEADO";
-
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     empleadoCategorias.add(new EmpleadoCategoria(
                             resultSet
-                                    .getString("ID_CATEGORIA_EMPLEADO"),
+                                    .getString(ID_CATEGORIA_EMPLEADO),
                             resultSet
                                     .getString("NOMBRE_CATEGORIA")
                     ));
                 }
-                return empleadoCategorias;
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.log(Level.SEVERE, "Error al consultar categor\u00edas: {0}", e.getMessage());
         }
+        return empleadoCategorias;
     }
 
     /**
@@ -91,18 +85,18 @@ public class EmpleadoCategoriaDAO {
      * @return
      */
     public int actualizar(String idCategoria, String nombreCategoria) {
+        int updateCount = 0;
         String sql = "UPDATE CATEGORIA_EMPLEADO "
-                + "SET NOMBRE_CATEGORIA = ?"
-                + "WHERE ID_CATEGORIA_EMPLEADO = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+                + "SET NOMBRE_CATEGORIA = ? WHERE " + ID_CATEGORIA_EMPLEADO + " = ?";
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, nombreCategoria);
             preparedStatement.setString(2, idCategoria);
             preparedStatement.execute();
-            int updateCount = preparedStatement.getUpdateCount();
-            return updateCount;
+            updateCount = preparedStatement.getUpdateCount();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.log(Level.SEVERE, "Error al actualizar categor\u00eda: {0}", e.getMessage());
         }
+        return updateCount;
     }
 
     /**
@@ -112,17 +106,18 @@ public class EmpleadoCategoriaDAO {
      * @return
      */
     public int eliminar(String idCategoria) {
+        int updateCount = 0;
         eliminarRelacionEmpleado(idCategoria);
         String sql = "DELETE FROM CATEGORIA_EMPLEADO "
-                + "WHERE ID_CATEGORIA_EMPLEADO = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+                + "WHERE " + ID_CATEGORIA_EMPLEADO + " = ?";
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, idCategoria);
             preparedStatement.execute();
-            int updateCount = preparedStatement.getUpdateCount();
-            return updateCount;
+            updateCount = preparedStatement.getUpdateCount();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.log(Level.SEVERE, "Error al eliminar categor\u00eda: {0}", e.getMessage());
         }
+        return updateCount;
     }
 
     /**
@@ -132,14 +127,15 @@ public class EmpleadoCategoriaDAO {
      * @param idEmpleado
      */
     private void eliminarRelacionEmpleado(String idEmpleado) {
-        String sql = "UPDATE EMPLEADOS SET ID_CATEGORIA_EMPLEADO = ? "
-                + "WHERE ID_CATEGORIA_EMPLEADO = ?";
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+        String sql = "UPDATE EMPLEADOS SET " + ID_CATEGORIA_EMPLEADO + " = ? "
+                + "WHERE " + ID_CATEGORIA_EMPLEADO + " = ?";
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, "Sin Categoria");
             preparedStatement.setString(2, idEmpleado);
             preparedStatement.execute();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.log(Level.SEVERE, "Error al eliminar claves foráneas "
+                    + "empleado-categoria-empleado: {0}", e.getMessage());
         }
     }
 }
