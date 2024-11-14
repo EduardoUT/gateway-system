@@ -2,6 +2,8 @@
 <h1 align="center">:satellite: CRUD-Gateway-Telecomunicaciones :satellite:</h1>
 Oficialmente titulado Sistema Interno de Gestión de información para Gateway Telecomunicaciones S.A. de C.V.
 
+**Por políticas de privacidad no puedo compartir datos ni recursos SQL, únicamente el código fuente desarrollado y una serie de capturas de pantalla.**
+
 **Acerca de...**
 
 Este proyecto fue parte de mis prácticas profesionales con una estadía profesional con duración de 4 meses, durante el periodo de Enero - Abril del año 2020, 
