@@ -55,4 +55,8 @@ public class ExcelFileChooser {
             this.rutaArchivo = archivo.getAbsolutePath();
         }
     }
+    
+    public boolean isAnyFileSelected() {
+        return !rutaArchivo.isEmpty();
+    }
 }

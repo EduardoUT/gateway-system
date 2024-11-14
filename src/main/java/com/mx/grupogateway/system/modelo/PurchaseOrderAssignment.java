@@ -12,48 +12,33 @@ import java.sql.Timestamp;
  *
  * @author eduar
  */
-public final class ProyectoAsignado extends Proyecto {
+public final class PurchaseOrderAssignment {
 
+    private Empleado empleado;
+    private PurchaseOrder purchaseOrder;
     private Timestamp fechaAsignacion;
     private BigDecimal importe;
     private BigDecimal totalPagar;
-    private Boolean status; //<------
-    private Empleado empleado;
+    private Boolean status = false;
+
+    public PurchaseOrderAssignment() {
+    }
 
     /**
-     * Constructor para representar este objeto en una lista.
+     * Constructor para representar una asignación de proyecto-empleado.
      *
+     * @param empleado
+     * @param purchaseOrder
      * @param fechaAsignacion
      * @param importe
      * @param totalPagar
      * @param status
-     * @param proyecto
-     * @param empleado
      */
-    public ProyectoAsignado(Timestamp fechaAsignacion, BigDecimal importe,
-            BigDecimal totalPagar, String status, Proyecto proyecto,
-            Empleado empleado) {
-        super(
-                proyecto.getIdProyecto(),
-                proyecto.getCustomer(),
-                proyecto.getProjectName(),
-                proyecto.getPoNo(),
-                proyecto.getPoStatus(),
-                proyecto.getPoLineNo(),
-                proyecto.getSiteCode(),
-                proyecto.getSiteName(),
-                proyecto.getItemDesc(),
-                proyecto.getRequestedQty(),
-                proyecto.getDueQty(),
-                proyecto.getBilledQty(),
-                proyecto.getUnitPrice(),
-                proyecto.getLineAmount(),
-                proyecto.getUnit(),
-                proyecto.getPaymentTerms(),
-                proyecto.getCategory(),
-                proyecto.getPublishDate()
-        );
+    public PurchaseOrderAssignment(Empleado empleado, PurchaseOrder purchaseOrder,
+            Timestamp fechaAsignacion, BigDecimal importe,
+            BigDecimal totalPagar, String status) {
         this.empleado = empleado;
+        this.purchaseOrder = purchaseOrder;
         this.fechaAsignacion = fechaAsignacion;
         this.importe = importe;
         this.totalPagar = totalPagar;
@@ -64,17 +49,43 @@ public final class ProyectoAsignado extends Proyecto {
      * Constructor para almacenar una nueva asignación de proyecto asociado a un
      * empleado.
      *
-     * @param idProyecto
-     * @param poNo Clave del proyecto, puede ser una o más.
+     * @param purchaseOrder
      * @param empleado Datos del empleado.
      */
-    public ProyectoAsignado(Long idProyecto, String poNo, Empleado empleado) {
-        super(idProyecto, poNo);
+    public PurchaseOrderAssignment(Empleado empleado, PurchaseOrder purchaseOrder) {
         this.empleado = empleado;
+        this.purchaseOrder = purchaseOrder;
         setFechaAsignacion(fechaAsignacion);
         this.importe = new BigDecimal("0.0");
         this.totalPagar = new BigDecimal("0.0");
-        this.status = false;
+    }
+
+    /**
+     * @return the empleado
+     */
+    public Empleado getEmpleado() {
+        return empleado;
+    }
+
+    /**
+     * @param empleado the empleado to set
+     */
+    public void setEmpleado(Empleado empleado) {
+        this.empleado = empleado;
+    }
+
+    /**
+     * @return the purchaseOrder
+     */
+    public PurchaseOrder getPurchaseOrder() {
+        return purchaseOrder;
+    }
+
+    /**
+     * @param purchaseOrder the purchaseOrder to set
+     */
+    public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
+        this.purchaseOrder = purchaseOrder;
     }
 
     /**
@@ -89,20 +100,6 @@ public final class ProyectoAsignado extends Proyecto {
      */
     public void setFechaAsignacion(Timestamp fechaAsignacion) {
         this.fechaAsignacion = fechaAsignacion;
-    }
-
-    /**
-     * @return the usuario
-     */
-    public Empleado getEmpleado() {
-        return empleado;
-    }
-
-    /**
-     * @param empleado the empleado to set
-     */
-    public void setEmpleado(Empleado empleado) {
-        this.empleado = empleado;
     }
 
     /**
@@ -141,12 +138,19 @@ public final class ProyectoAsignado extends Proyecto {
     }
 
     /**
+     * @param status the status to set
+     */
+    public void setStatus(Boolean status) {
+        this.status = status;
+    }
+
+    /**
      * Tranforma el status a binario, para ser almacenado en la BD.
      *
      * @return 1 o 0
      */
     public String getStatusAsBinary() {
-        return (this.status ? "1" : "0");
+        return (this.getStatus() ? "1" : "0");
     }
 
     /**
@@ -174,10 +178,9 @@ public final class ProyectoAsignado extends Proyecto {
                 + "Fecha Asignación: %s | Importe: %d | Total Pagar: %d | "
                 + "Status: %s]",
                 this.getEmpleado().getIdEmpleado(),
-                this.getIdProyecto(),
+                this.getPurchaseOrder().getProject().getProjectId(),
                 this.fechaAsignacion,
                 this.importe,
-                this.totalPagar,
-                this.status);
+                this.totalPagar, this.getStatus());
     }
 }

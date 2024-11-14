@@ -7,8 +7,8 @@ package com.mx.grupogateway.system.view;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.UsuarioController;
 import com.mx.grupogateway.system.modelo.Usuario;
-import com.mx.grupogateway.system.view.util.ValidacionJPasswordField;
-import com.mx.grupogateway.system.view.util.IconoVentana;
+import com.mx.grupogateway.system.util.ValidacionJPasswordField;
+import com.mx.grupogateway.system.util.IconoVentana;
 import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -77,17 +77,19 @@ public class ActualizarPassword extends javax.swing.JFrame {
     private void consultarPasswordActual() {
         usuario.setPassword(String.valueOf(
                 passwordActual.getPassword()
-        ));
+        ), false);
         boolean passwordValida
                 = this.usuarioController.esPasswordValida(usuario);
         if (passwordValida) {
-            usuario.setPassword(checkPassword.getPassword());
-            this.usuarioController.actualizarPassword(usuario);
-            JOptionPane.showMessageDialog(null,
-                    "Usuario actualizado éxitosamente.",
-                    "Actualización de contraseña éxitosa.",
-                    JOptionPane.INFORMATION_MESSAGE);
-            limpiarRegistros();
+            usuario.setPassword(String.valueOf(checkPassword.getPassword()), false);
+            int registrosAfectados = this.usuarioController.actualizarPassword(usuario);
+            if (registrosAfectados > 0) {
+                JOptionPane.showMessageDialog(null,
+                        "Usuario actualizado éxitosamente.",
+                        "Actualización de contraseña éxitosa.",
+                        JOptionPane.INFORMATION_MESSAGE);
+                limpiarRegistros();
+            }
         } else {
             JOptionPane.showMessageDialog(null,
                     "La contraseña actual es incorrecta.",

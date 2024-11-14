@@ -4,97 +4,149 @@
  */
 package com.mx.grupogateway.system.dao;
 
-import com.mx.grupogateway.system.modelo.Proyecto;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.LinkedList;
+import com.mx.grupogateway.system.controller.ProjectController;
+import com.mx.grupogateway.system.controller.PurchaseOrderController;
+import com.mx.grupogateway.system.controller.PurchaseOrderDetailController;
+import com.mx.grupogateway.system.controller.SiteController;
+import com.mx.grupogateway.system.modelo.DataImport;
+import com.mx.grupogateway.system.modelo.Project;
+import com.mx.grupogateway.system.modelo.PurchaseOrder;
+import com.mx.grupogateway.system.modelo.PurchaseOrderDetail;
+import com.mx.grupogateway.system.modelo.Site;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
 /**
+ * Clase de exportación de datos obtenidos del DataModel, el proceso se ejecuta
+ * en segundo plano y mantiene actualizado el progeso por medio de un
+ * jProgressBar y un jLabel.
  *
  * @author eduar
  */
 public class ExcelDAO extends SwingWorker<Void, Integer> {
 
-    private final Connection con;
     private final JProgressBar jProgressBar;
     private final JLabel jLabel;
-    private final LinkedList<Proyecto> listaProyectos;
+    private final DataImport dataImport;
+    private final ProjectController projectController;
+    private final SiteController siteController;
+    private final PurchaseOrderController purchaseOrderController;
+    private final PurchaseOrderDetailController purchaseOrderDetailController;
 
-    public ExcelDAO(Connection con, LinkedList<Proyecto> listaProyectos,
+    public ExcelDAO(DataImport dataImport,
             JProgressBar jProgressBar, JLabel jLabel) {
-        this.listaProyectos = listaProyectos;
+        this.dataImport = dataImport;
         this.jProgressBar = jProgressBar;
         this.jLabel = jLabel;
-        this.con = con;
-
+        this.projectController = new ProjectController();
+        this.siteController = new SiteController();
+        this.purchaseOrderDetailController = new PurchaseOrderDetailController();
+        this.purchaseOrderController = new PurchaseOrderController();
     }
 
     /**
-     * Proceso de ejecución en segundo plano que realiza la importación de
-     * información obtenida del archivo de Excel a la Base de Datos.
+     * Realiza la consulta del identificador de projecto en la Base de Datos a
+     * fin de evitar duplicidad.
      *
-     * La ejecución SQL se ejecuta una vez completado el lote de información
-     * contenido en la lista de proyecto.
-     *
+     * @param project
      * @return
-     * @throws Exception
      */
+    private boolean isProjectNotStoredInDatabase(Project project) {
+        List<Long> projectIdentifiers = projectController
+                .listarProjectIdentifiers(project.getProjectId());
+        return projectIdentifiers.isEmpty();
+    }
+
+    /**
+     * Realiza la consulta del identificador de site en la Base de Datos a fin
+     * de evitar duplicidad.
+     *
+     * @param site
+     * @return
+     */
+    private boolean isSiteNotStoredInDatabase(Site site) {
+        List<Long> siteIdentifiers = siteController
+                .listarSiteIdentifiers(site.getSiteId());
+        return siteIdentifiers.isEmpty();
+    }
+
+    /**
+     * Realiza la consulta del identificador de orden de compra en la Base de
+     * Datos a fin de evitar duplicidad.
+     *
+     * @param purchaseOrderDetail
+     * @return
+     */
+    private boolean isPurchaseOrderDetailNotStoredInDatabase(
+            PurchaseOrderDetail purchaseOrderDetail) {
+        List<String> purchaseOrdersDetailIdentifiers
+                = purchaseOrderDetailController
+                        .listarPurchaseOrderDetailIdentifiers(
+                                purchaseOrderDetail.getPurchaseOrderIdentifier()
+                        );
+        return purchaseOrdersDetailIdentifiers.isEmpty();
+    }
+
+    /**
+     * Realiza la consulta de los identificadores de proyecto y orden de compra
+     * asociados que conforman una clave compuesta en la Base de Datos a fin de
+     * evitar duplicidad.
+     *
+     * @param purchaseOrder
+     * @return
+     */
+    private boolean isPurchaseOrderNotStoredInDatabase(PurchaseOrder purchaseOrder) {
+        Map<Long, String> purchaseOrderIdentifiers = purchaseOrderController
+                .listarPurchaseOrderIdentifiers(
+                        purchaseOrder.getPurchaseOrderDetail().getPurchaseOrderIdentifier(),
+                        purchaseOrder.getProject().getProjectId()
+                );
+        return purchaseOrderIdentifiers.isEmpty();
+    }
+
+    /**
+     * Se procesa la información obtenida del DataModel acorde al respectivo
+     * modelo, para cada insrción se valida que el registro no haya sido
+     * almacenado, se actualiza el progreso en segundo plano en el jProgressBar
+     * en Project.
+     */
+    private void exportData() {
+        int progressCounter = 0;
+        int projectsSize = dataImport.getProjects().size();
+        for (Site site : dataImport.getSites()) {
+            if (isSiteNotStoredInDatabase(site)) {
+                siteController.guardar(site);
+            }
+        }
+
+        for (Project project : dataImport.getProjects()) {
+            if (isProjectNotStoredInDatabase(project)) {
+                projectController.guardar(project);
+            }
+            progressCounter++;
+            int progress = progressCounter * 100 / projectsSize;
+            publish(progress);
+        }
+
+        for (PurchaseOrderDetail purchaseOrderDetail : dataImport.getPurchaseOrderDetails()) {
+            if (isPurchaseOrderDetailNotStoredInDatabase(purchaseOrderDetail)) {
+                purchaseOrderDetailController.guardar(purchaseOrderDetail);
+            }
+        }
+
+        for (PurchaseOrder purchaseOrder : dataImport.getPurchaseOrders()) {
+            if (isPurchaseOrderNotStoredInDatabase(purchaseOrder)) {
+                purchaseOrderController.guardar(purchaseOrder);
+            }
+        }
+    }
+
     @Override
     protected Void doInBackground() throws Exception {
-        int progressCounter = 0;
-        int listaSize = listaProyectos.size();
-        String sql = "INSERT INTO PROJECTS "
-                + "(ID_PROJECT, PROJECT_CODE, PROJECT_NAME, CUSTOMER, "
-                + "PO_STATUS, PO_NO, PO_LINE_NO, SHIPMENT_NO, "
-                + "SITE_CODE, SITE_NAME, ITEM_CODE, ITEM_DESC, "
-                + "REQUESTED_QTY, DUE_QTY, BILLED_QTY, "
-                + "UNIT_PRICE, LINE_AMOUNT, UNIT, PAYMENT_TERMS, "
-                + "CATEGORY, BIDDING_AREA, PUBLISH_DATE) "
-                + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-
-        try (PreparedStatement preparedStatement = con.prepareStatement(sql,
-                Statement.RETURN_GENERATED_KEYS)) {
-            for (Proyecto proyecto : listaProyectos) {
-                preparedStatement.setLong(1, proyecto.getIdProyecto());
-                preparedStatement.setString(2, proyecto.getProjectCode());
-                preparedStatement.setString(3, proyecto.getProjectName());
-                preparedStatement.setString(4, proyecto.getCustomer());
-                preparedStatement.setString(5, proyecto.getPoStatus());
-                preparedStatement.setString(6, proyecto.getPoNo());
-                preparedStatement.setInt(7, proyecto.getPoLineNo());
-                preparedStatement.setInt(8, proyecto.getShipmentNo());
-                preparedStatement.setString(9, proyecto.getSiteCode());
-                preparedStatement.setString(10, proyecto.getSiteName());
-                preparedStatement.setLong(11, proyecto.getItemCode());
-                preparedStatement.setString(12, proyecto.getItemDesc());
-                preparedStatement.setString(13, proyecto.getRequestedQty());
-                preparedStatement.setString(14, proyecto.getDueQty());
-                preparedStatement.setString(15, proyecto.getBilledQty());
-                preparedStatement.setBigDecimal(16, proyecto.getUnitPrice());
-                preparedStatement.setBigDecimal(17, proyecto.getLineAmount());
-                preparedStatement.setString(18, proyecto.getUnit());
-                preparedStatement.setString(19, proyecto.getPaymentTerms());
-                preparedStatement.setString(20, proyecto.getCategory());
-                preparedStatement.setString(21, proyecto.getBiddingArea());
-                preparedStatement.setTimestamp(22,
-                        Timestamp.valueOf(proyecto.getPublishDate())
-                );
-                preparedStatement.addBatch();
-                progressCounter++;
-                int progress = progressCounter * 100 / listaSize;
-                publish(progress);
-            }
-            preparedStatement.executeBatch();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        exportData();
         return null;
     }
 

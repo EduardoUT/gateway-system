@@ -11,11 +11,10 @@ import com.mx.grupogateway.system.controller.UsuarioController;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.EmpleadoCategoria;
 import com.mx.grupogateway.system.modelo.Usuario;
-import com.mx.grupogateway.system.view.util.IconoVentana;
-import com.mx.grupogateway.system.view.util.MargenTabla;
-import com.mx.grupogateway.system.view.model.TableDataModelEmpleado;
-import com.mx.grupogateway.system.view.model.TableDataModelUsuario;
-import com.mx.grupogateway.system.view.util.AccionesTabla;
+import com.mx.grupogateway.system.util.IconoVentana;
+import com.mx.grupogateway.system.util.MargenTabla;
+import com.mx.grupogateway.system.controller.TableDataModelController;
+import com.mx.grupogateway.system.util.AccionesTabla;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -29,11 +28,7 @@ import javax.swing.table.DefaultTableModel;
  */
 public class Gestion extends javax.swing.JFrame {
 
-    private DefaultTableModel modeloTablaEmpleado;
-    private DefaultTableModel modeloTablaUsuario;
-    private DefaultComboBoxModel modeloComboBoxCargoEmpleado;
-    private TableDataModelEmpleado tableDataModelEmpleado;
-    private TableDataModelUsuario tableDataModelUsuario;
+    private TableDataModelController tableDataModel;
     private EmpleadoController empleadoController;
     private EmpleadoCategoriaController empleadoCargoController;
     private UsuarioController usuarioController;
@@ -87,9 +82,15 @@ public class Gestion extends javax.swing.JFrame {
                             empleadoCargos.getSelectedItem().toString()
                     )
             );
-            this.empleadoController.guardar(empleado);
-            JOptionPane.showMessageDialog(null, "Empleado guardado "
-                    + "éxitosamente.");
+            int idEmpleado = this.empleadoController.guardar(empleado);
+            if (idEmpleado != -1) {
+                JOptionPane.showMessageDialog(null, "Empleado guardado "
+                        + "éxitosamente.");
+            } else {
+                JOptionPane.showMessageDialog(null, "Hubo un problema al "
+                        + "guardar el empleado, intente más tarde.",
+                        "Error en la conexión.", JOptionPane.ERROR_MESSAGE);
+            }
             botonGuardar.setVisible(false);
             botonCancelarNuevoRegistro.setVisible(false);
             limpiarCamposFormularioEmpleado();
@@ -108,12 +109,11 @@ public class Gestion extends javax.swing.JFrame {
      * EmpleadoController y asignando registros en la tablaEmpleado.
      */
     private void cargarTablaEmpleado() {
+        DefaultTableModel modeloTablaEmpleado;
         modeloTablaEmpleado = (DefaultTableModel) tablaEmpleado.getModel();
         List<Empleado> empleados = this.empleadoController.listar();
-        tableDataModelEmpleado = new TableDataModelEmpleado(
-                modeloTablaEmpleado, tablaEmpleado, empleados
-        );
-        tableDataModelEmpleado.cargarModeloTablaEmpleados();
+        tableDataModel = new TableDataModelController();
+        tableDataModel.setTableDataModelEmpleados(modeloTablaEmpleado, tablaEmpleado, empleados);
         MargenTabla.ajustarColumnas(tablaEmpleado);
     }
 
@@ -151,15 +151,21 @@ public class Gestion extends javax.swing.JFrame {
      * pasa por parámetro en el método eliminar() del EmpleadoController.
      */
     private void eliminarEmpleado() {
-        int status = this.empleadoController.eliminar(
+        int registrosAfectados = this.empleadoController.eliminar(
                 AccionesTabla.obtenerUUID(tablaEmpleado, 0)
         );
-        if (status != 1451) {
+        if (registrosAfectados > 0) {
             JOptionPane.showMessageDialog(null, "Registro "
                     + "eliminado exitosamente.", "Eliminación completada.",
                     JOptionPane.INFORMATION_MESSAGE);
             limpiarCamposFormularioEmpleado();
             cargarTablaEmpleado();
+        } else {
+            JOptionPane.showMessageDialog(null, "Error al "
+                    + "eliminar este empleado, es posible que aún cuente con "
+                    + "proyectos asignados, o la conexión a la base de datos "
+                    + "se haya perdido.", "Verifique asignaciones.",
+                    JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -210,13 +216,14 @@ public class Gestion extends javax.swing.JFrame {
      * Cargo"
      */
     private void configurarComboBoxEmpleado() {
+        DefaultComboBoxModel<String> modeloComboBoxCargoEmpleado;
         modeloComboBoxCargoEmpleado = (DefaultComboBoxModel) empleadoCargos.getModel();
         modeloComboBoxCargoEmpleado.addElement("Seleccione un cargo");
         List<EmpleadoCategoria> listaCargos = this.empleadoCargoController
                 .listar();
-        listaCargos.forEach((empleadoCargo) -> {
-            modeloComboBoxCargoEmpleado.addElement(empleadoCargo.getNombreCategoria());
-        });
+        for (EmpleadoCategoria empleadoCategoria : listaCargos) {
+            modeloComboBoxCargoEmpleado.addElement(empleadoCategoria.getNombreCategoria());
+        }
     }
 
     /**
@@ -224,11 +231,20 @@ public class Gestion extends javax.swing.JFrame {
      * registros en la TablaUsuario.
      */
     private void cargarTablaUsuario() {
+        DefaultTableModel modeloTablaUsuario;
         modeloTablaUsuario = (DefaultTableModel) tablaUsuario.getModel();
         List<Usuario> usuarios = this.usuarioController.listar();
-        tableDataModelUsuario = new TableDataModelUsuario(modeloTablaUsuario, tablaUsuario, usuarios);
-        tableDataModelUsuario.cargarModeloTablaUsuario();
+        tableDataModel = new TableDataModelController();
+        tableDataModel.cargarModeloTablaUsuario(modeloTablaUsuario, tablaUsuario, usuarios);
         MargenTabla.ajustarColumnas(tablaUsuario);
+    }
+
+    private void bloquearAlSeleccionarAdmin() {
+        if (AccionesTabla.obtenerID(tablaUsuario, 0) == 1) {
+            botonEliminarUsuario.setVisible(false);
+        } else {
+            botonEliminarUsuario.setVisible(true);
+        }
     }
 
     /**
@@ -237,12 +253,19 @@ public class Gestion extends javax.swing.JFrame {
      */
     private void eliminarUsuario() {
         int cantidadEliminada = this.usuarioController
-                .eliminar(String.valueOf(AccionesTabla
-                        .obtenerID(tablaUsuario, 0)));
-        JOptionPane.showMessageDialog(null, cantidadEliminada
-                + " registro eliminado exitosamente.");
-        cargarTablaUsuario();
-        cargarTablaEmpleado();
+                .eliminar(AccionesTabla
+                        .obtenerID(tablaUsuario, 0));
+        if (cantidadEliminada > 0) {
+            JOptionPane.showMessageDialog(null, "Registro eliminado exitosamente.");
+            cargarTablaUsuario();
+            cargarTablaEmpleado();
+        } else {
+            JOptionPane.showMessageDialog(null, "Error al "
+                    + "eliminar este usuario, es posible que aún cuente con "
+                    + "proyectos asignados, o la conexión a la base de datos "
+                    + "se haya perdido.", "Verifique asignaciones.",
+                    JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     /**
@@ -307,6 +330,11 @@ public class Gestion extends javax.swing.JFrame {
         tablaUsuario.setFocusable(false);
         tablaUsuario.getTableHeader().setResizingAllowed(false);
         tablaUsuario.getTableHeader().setReorderingAllowed(false);
+        tablaUsuario.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaUsuarioMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(tablaUsuario);
 
         botonEliminarUsuario.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
@@ -553,10 +581,9 @@ public class Gestion extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonEliminarUsuarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonEliminarUsuarioMouseClicked
-        if (evt.getButton() == MouseEvent.BUTTON1) {
-            if (AccionesTabla.filaEstaSeleccionada(tablaUsuario)) {
-                eliminarUsuario();
-            }
+        if (evt.getButton() == MouseEvent.BUTTON1
+                && AccionesTabla.filaEstaSeleccionada(tablaUsuario)) {
+            eliminarUsuario();
         }
     }//GEN-LAST:event_botonEliminarUsuarioMouseClicked
 
@@ -581,18 +608,14 @@ public class Gestion extends javax.swing.JFrame {
     }//GEN-LAST:event_botonNuevoRegistroMouseClicked
 
     private void botonEliminarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonEliminarMouseClicked
-        if (evt.getButton() == MouseEvent.BUTTON1) {
-            if (AccionesTabla.filaEstaSeleccionada(tablaEmpleado)) {
-                eliminarEmpleado();
-            }
+        if (evt.getButton() == MouseEvent.BUTTON1 && AccionesTabla.filaEstaSeleccionada(tablaEmpleado)) {
+            eliminarEmpleado();
         }
     }//GEN-LAST:event_botonEliminarMouseClicked
 
     private void botonActualizarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonActualizarMouseClicked
-        if (evt.getButton() == MouseEvent.BUTTON1) {
-            if (AccionesTabla.filaEstaSeleccionada(tablaEmpleado)) {
-                actualizarEmpleado();
-            }
+        if (evt.getButton() == MouseEvent.BUTTON1 && AccionesTabla.filaEstaSeleccionada(tablaEmpleado)) {
+            actualizarEmpleado();
         }
     }//GEN-LAST:event_botonActualizarMouseClicked
 
@@ -630,6 +653,11 @@ public class Gestion extends javax.swing.JFrame {
         new Login().setVisible(true);
 
     }//GEN-LAST:event_jMenuItem4ActionPerformed
+
+    private void tablaUsuarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaUsuarioMouseClicked
+        evt.getButton();
+        bloquearAlSeleccionarAdmin();
+    }//GEN-LAST:event_tablaUsuarioMouseClicked
 
     /**
      * @param args the command line arguments

@@ -8,10 +8,11 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.UsuarioController;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Usuario;
-import com.mx.grupogateway.system.view.util.ValidacionJPasswordField;
-import com.mx.grupogateway.system.view.util.FondoLogin;
-import com.mx.grupogateway.system.view.util.IconoVentana;
+import com.mx.grupogateway.system.util.ValidacionJPasswordField;
+import com.mx.grupogateway.system.util.FondoLogin;
+import com.mx.grupogateway.system.util.IconoVentana;
 import java.awt.Color;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import javax.swing.JOptionPane;
 
@@ -68,9 +69,9 @@ public class Login extends javax.swing.JFrame {
      */
     private void validarPerfilUsuario() {
         String nombreUsuario = campoUsuario.getText();
-        char[] password = campoPassword.getPassword();
+        String password = String.valueOf(campoPassword.getPassword());
         Usuario usuario = new Usuario();
-        usuario.setPassword(String.valueOf(password));
+        usuario.setPassword(password, false);
         usuario.setNombreUsuario(nombreUsuario);
         empleado = this.usuarioController.consultarPerfilUsuario(usuario);
         if (empleado == null) {
@@ -115,8 +116,13 @@ public class Login extends javax.swing.JFrame {
         campoPassword.setForeground(new java.awt.Color(0, 0, 0));
         campoPassword.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1), "Contraseña", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16), new java.awt.Color(0, 0, 0))); // NOI18N
         campoPassword.setCaretColor(new java.awt.Color(0, 0, 0));
+        campoPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                campoPasswordKeyPressed(evt);
+            }
+        });
 
-        checkBox.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        checkBox.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         checkBox.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/ojoCerrado.png"))); // NOI18N
         checkBox.setRolloverEnabled(false);
         checkBox.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/ojoAbierto.png"))); // NOI18N
@@ -145,7 +151,7 @@ public class Login extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("Registrarse");
-        jLabel2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabel2.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabel2MouseClicked(evt);
@@ -239,6 +245,12 @@ public class Login extends javax.swing.JFrame {
             this.dispose();
         }
     }//GEN-LAST:event_jLabel2MouseClicked
+
+    private void campoPasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_campoPasswordKeyPressed
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            botonIngresar.doClick();
+        }
+    }//GEN-LAST:event_campoPasswordKeyPressed
 
     /**
      * @param args the command line arguments

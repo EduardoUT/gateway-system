@@ -4,21 +4,21 @@
  */
 package com.mx.grupogateway.system.controller;
 
-import com.mx.grupogateway.system.dao.ProyectoDAO;
+import com.mx.grupogateway.system.dao.ProjectDAO;
 import com.mx.grupogateway.system.factory.ConnectionFactory;
-import com.mx.grupogateway.system.modelo.Proyecto;
+import com.mx.grupogateway.system.modelo.Project;
 import java.util.List;
 
 /**
  *
  * @author eduar
  */
-public class ProyectoController {
+public class ProjectController {
 
-    private final ProyectoDAO proyectoDAO;
+    private final ProjectDAO proyectoDAO;
 
-    public ProyectoController() {
-        this.proyectoDAO = new ProyectoDAO(
+    public ProjectController() {
+        this.proyectoDAO = new ProjectDAO(
                 new ConnectionFactory().realizarConexion()
         );
     }
@@ -28,7 +28,7 @@ public class ProyectoController {
      *
      * @param proyecto
      */
-    public void guardar(Proyecto proyecto) {
+    public void guardar(Project proyecto) {
         this.proyectoDAO.guardar(proyecto);
     }
 
@@ -37,7 +37,18 @@ public class ProyectoController {
      *
      * @return
      */
-    public List<Proyecto> listar() {
+    public List<Project> listar() {
         return this.proyectoDAO.listar();
+    }
+
+    /**
+     * Lista los identificadores de proyectos existentes de cuerdo al id
+     * ingresado.
+     *
+     * @param projectId
+     * @return Lista de identificadores,
+     */
+    public List<Long> listarProjectIdentifiers(Long projectId) {
+        return this.proyectoDAO.listarProjectId(projectId);
     }
 }

@@ -7,10 +7,10 @@ package com.mx.grupogateway.system.view;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.UsuarioController;
 import com.mx.grupogateway.system.modelo.Usuario;
-import com.mx.grupogateway.system.view.util.ValidacionJPasswordField;
-import com.mx.grupogateway.system.view.util.IconoVentana;
+import com.mx.grupogateway.system.util.ValidacionJPasswordField;
+import com.mx.grupogateway.system.util.IconoVentana;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.Optional;
 import javax.swing.JOptionPane;
 
 /**
@@ -50,34 +50,26 @@ public class Registro extends javax.swing.JFrame {
      * usuario y contraseña asignados.
      */
     private void registrarUsuario() {
-        String idUsuario = campoIdUsuario.getText();
         if (sonCamposValidos()) {
-            Optional id = this.usuarioController.consultarIdUsuario(idUsuario);
-            if (!id.isPresent()) {
-                JOptionPane.showMessageDialog(
-                        null,
-                        "El usuario " + campoNombreUsuario.getText() + " no existe en la BD.",
-                        "Usuario inexistente.",
-                        JOptionPane.ERROR_MESSAGE);
-            } else {
-                boolean esPasswordNula = this.usuarioController.esPasswordNula(idUsuario);
-                if (esPasswordNula) {
-                    this.usuarioController.actualizarPassword(new Usuario(
-                            campoIdUsuario.getText(),
+            int idUsuario = this.usuarioController.actualizarPasswordNula(
+                    new Usuario(
+                            Integer.valueOf(campoIdUsuario.getText()),
                             campoNombreUsuario.getText(),
-                            campoCheckPassword.getPassword()
+                            String.valueOf(campoCheckPassword.getPassword())
                     ));
-                    JOptionPane.showMessageDialog(null,
-                            "Usuario registrado éxitosamente.",
-                            "Registro éxitoso",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    limpiarRegistros();
-                } else {
-                    JOptionPane.showMessageDialog(null,
-                            "Este usuario ya a sido registrado.",
-                            "Registro anulado.",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
+            if (idUsuario > 0) {
+                JOptionPane.showMessageDialog(null,
+                        "Usuario registrado éxitosamente.",
+                        "Registro éxitoso",
+                        JOptionPane.INFORMATION_MESSAGE);
+                limpiarRegistros();
+            } else {
+                JOptionPane.showMessageDialog(null,
+                        "Es posible que este usuario no exista en la Base de Datos "
+                        + "o ya cuente con una contraseña asignada, verifique "
+                        + "con su Administrador.",
+                        "Registro anulado.",
+                        JOptionPane.WARNING_MESSAGE);
             }
         } else {
             JOptionPane.showMessageDialog(
@@ -139,6 +131,11 @@ public class Registro extends javax.swing.JFrame {
         jLabel6.setText("Id Usuario:");
 
         campoIdUsuario.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        campoIdUsuario.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                campoIdUsuarioKeyPressed(evt);
+            }
+        });
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel2.setText("Nombre de Usuario:");
@@ -179,7 +176,7 @@ public class Registro extends javax.swing.JFrame {
 
         checkBoxVerPassword.setBorder(null);
         checkBoxVerPassword.setContentAreaFilled(false);
-        checkBoxVerPassword.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        checkBoxVerPassword.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         checkBoxVerPassword.setFocusPainted(false);
         checkBoxVerPassword.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/ojoCerrado.png"))); // NOI18N
         checkBoxVerPassword.setRolloverEnabled(false);
@@ -333,6 +330,16 @@ public class Registro extends javax.swing.JFrame {
         evt.getID();
         new Login().setVisible(true);
     }//GEN-LAST:event_formWindowClosed
+
+    private void campoIdUsuarioKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_campoIdUsuarioKeyPressed
+        char c = evt.getKeyChar();
+        if (Character.isDigit(c) || evt.getKeyCode() == KeyEvent.VK_BACK_SPACE
+                || evt.getKeyCode() == KeyEvent.VK_DELETE) {
+            campoIdUsuario.setEditable(true);
+        } else {
+            campoIdUsuario.setEditable(false);
+        }
+    }//GEN-LAST:event_campoIdUsuarioKeyPressed
 
     /**
      * @param args the command line arguments

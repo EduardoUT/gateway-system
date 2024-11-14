@@ -6,13 +6,13 @@
 package com.mx.grupogateway.system.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import com.mx.grupogateway.system.controller.ProyectoController;
-import com.mx.grupogateway.system.modelo.Proyecto;
+import com.mx.grupogateway.system.controller.PurchaseOrderController;
+import com.mx.grupogateway.system.modelo.PurchaseOrder;
 import com.mx.grupogateway.system.modelo.Usuario;
-import com.mx.grupogateway.system.view.util.IconoVentana;
-import com.mx.grupogateway.system.view.util.MargenTabla;
-import com.mx.grupogateway.system.view.util.AccionesTabla;
-import com.mx.grupogateway.system.view.model.TableDataModelProyecto;
+import com.mx.grupogateway.system.controller.TableDataModelController;
+import com.mx.grupogateway.system.util.IconoVentana;
+import com.mx.grupogateway.system.util.MargenTabla;
+import com.mx.grupogateway.system.util.AccionesTabla;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -27,8 +27,8 @@ import java.util.List;
 public final class Facturacion extends javax.swing.JFrame {
 
     private DefaultTableModel modeloTablaProyectos;
-    private TableDataModelProyecto tableDataModelProyecto;
-    private ProyectoController proyectoController;
+    private TableDataModelController tableDataModel;
+    private PurchaseOrderController purchaseOrderController;
     private Usuario usuario;
 
     public Facturacion() {
@@ -38,7 +38,7 @@ public final class Facturacion extends javax.swing.JFrame {
 
     private void iniciarProcesos() {
         cargarIconoVentana();
-        this.proyectoController = new ProyectoController();
+        this.purchaseOrderController = new PurchaseOrderController();
         cargarTablaProyectos();
         AccionesTabla.filtrarResultados(tablaProyectos, buscadorProyecto, filtroProyecto);
     }
@@ -50,15 +50,13 @@ public final class Facturacion extends javax.swing.JFrame {
     protected void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
-    
-    private void cargarTablaProyectos() {
+
+    protected void cargarTablaProyectos() {
         tablaProyectos.setModel(new Asignaciones().tablaProyectos.getModel());
         modeloTablaProyectos = (DefaultTableModel) tablaProyectos.getModel();
-        List<Proyecto> listaProyecto = this.proyectoController.listar();
-        tableDataModelProyecto = new TableDataModelProyecto(
-                modeloTablaProyectos, tablaProyectos, listaProyecto
-        );
-        tableDataModelProyecto.cargarModeloTablaProyecto();
+        List<PurchaseOrder> purchaseOrders = this.purchaseOrderController.listar();
+        tableDataModel = new TableDataModelController();
+        tableDataModel.cargarModeloTablaProyecto(modeloTablaProyectos, tablaProyectos, purchaseOrders);
         MargenTabla.ajustarColumnas(tablaProyectos);
     }
 
@@ -591,6 +589,11 @@ public final class Facturacion extends javax.swing.JFrame {
 
         jMenuItem4.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jMenuItem4.setText("Cerrar Sesión");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
         jMenu3.add(jMenuItem4);
 
         jMenuBar1.add(jMenu3);
@@ -649,8 +652,8 @@ public final class Facturacion extends javax.swing.JFrame {
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         evt.getID();
         ImportarExcel importarExcel = new ImportarExcel();
-        importarExcel.setJFrame(this);
-        this.setVisible(false);
+        importarExcel.setUsuario(usuario);
+        this.dispose();
         importarExcel.setVisible(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
@@ -683,6 +686,13 @@ public final class Facturacion extends javax.swing.JFrame {
         actualizarPassword.setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        evt.getID();
+        this.dispose();
+        Login login = new Login();
+        login.setVisible(true);
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     /**
      * @param args the command line arguments

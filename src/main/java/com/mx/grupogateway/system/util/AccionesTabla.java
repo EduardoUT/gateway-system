@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mx.grupogateway.system.view.util;
+package com.mx.grupogateway.system.util;
 
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -35,7 +35,7 @@ public class AccionesTabla {
      * uno de los identificaores de columna de la tabla).
      */
     public static void filtrarResultados(JTable tabla, JTextField campo,
-            JComboBox comboBox) {
+            JComboBox<String> comboBox) {
         TableRowSorter<TableModel> rowSorter
                 = new TableRowSorter<>(tabla.getModel());
         campo.getDocument().addDocumentListener(new DocumentListener() {
@@ -63,23 +63,7 @@ public class AccionesTabla {
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                String text = campo.getText();
-                String seleccion = (String) comboBox.getSelectedItem();
-                comboBox.getSelectedIndex();
-                if (text.trim().length() == 0) {
-                    rowSorter.setRowFilter(null);
-                } else {
-                    rowSorter.setRowFilter(
-                            RowFilter.regexFilter(
-                                    "(?i)" + text,
-                                    tabla
-                                            .getColumnModel()
-                                            .getColumnIndex(
-                                                    seleccion
-                                            )
-                            )
-                    );
-                }
+                insertUpdate(e);
             }
 
             @Override

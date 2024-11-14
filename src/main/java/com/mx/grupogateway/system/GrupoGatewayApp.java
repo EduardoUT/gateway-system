@@ -4,13 +4,19 @@
  */
 package com.mx.grupogateway.system;
 
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.mx.grupogateway.system.view.Login;
+
 /**
  *
  * @author Eduardo Reyes Hernández
  */
 public class GrupoGatewayApp {
-    
+
     public static void main(String[] args) {
-        System.out.println("Hola.");
+        LoggerConfig.config();
+        FlatDarkLaf.setup();
+        Login login = new Login();
+        login.setVisible(true);
     }
 }
