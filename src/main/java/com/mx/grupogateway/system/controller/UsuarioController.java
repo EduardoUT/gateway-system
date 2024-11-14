@@ -95,18 +95,18 @@ public class UsuarioController {
      * usuario
      *
      * @param usuario
-     * @return 
+     * @return
      */
     public int actualizarPasswordNula(Usuario usuario) {
         int idUsuario = this.consultarIdUsuario(usuario.getIdUsuario());
-        if (idUsuario != 1 && this.esPasswordNula(idUsuario)) {
+        if (idUsuario > 0 && this.esPasswordNula(idUsuario)) {
             this.usuarioDAO.actualizarPasswordNula(usuario);
         }
         return idUsuario;
     }
-    
-    public void actualizarPassword(Usuario usuario) {
-        this.usuarioDAO.actualizarPassword(usuario);
+
+    public int actualizarPassword(Usuario usuario) {
+        return this.usuarioDAO.actualizarPassword(usuario);
     }
 
     /**

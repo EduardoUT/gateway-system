@@ -7,6 +7,7 @@ package com.mx.grupogateway.system.view;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.ExcelController;
 import com.mx.grupogateway.system.modelo.DataImport;
+import com.mx.grupogateway.system.modelo.Usuario;
 import com.mx.grupogateway.system.util.IconoVentana;
 import java.awt.event.MouseEvent;
 import javax.swing.JFileChooser;
@@ -19,6 +20,7 @@ import javax.swing.JFrame;
 public class ImportarExcel extends javax.swing.JFrame {
 
     private ExcelController excelController;
+    private Usuario usuario;
     private DataImport dataImport;
     private JFrame jFrame;
 
@@ -37,6 +39,10 @@ public class ImportarExcel extends javax.swing.JFrame {
 
     private void cargarIconoVentana() {
         this.setIconImage(IconoVentana.getIconoVentana());
+    }
+    
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     private void lockButtonImportExcel() {
@@ -113,6 +119,9 @@ public class ImportarExcel extends javax.swing.JFrame {
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosed(java.awt.event.WindowEvent evt) {
                 formWindowClosed(evt);
+            }
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
             }
         });
 
@@ -236,8 +245,14 @@ public class ImportarExcel extends javax.swing.JFrame {
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         evt.getID();
-        getFacturacion().setVisible(true);
+        
     }//GEN-LAST:event_formWindowClosed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        Facturacion facturacion = new Facturacion();
+        facturacion.setUsuario(usuario);
+        facturacion.setVisible(true);
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments

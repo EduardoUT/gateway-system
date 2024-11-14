@@ -145,19 +145,15 @@ public class EmpleadoDAO extends AbstractDAO {
      * @return Código de error
      */
     public int eliminar(String idEmpleado) {
-        int statusCode = 0;
+        int registrosAfectados = 0;
         String sql = "DELETE FROM EMPLEADOS WHERE ID_EMPLEADO = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, idEmpleado);
             preparedStatement.execute();
+            registrosAfectados = preparedStatement.getUpdateCount();
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al eliminar empleado: {0}", e.getMessage());
-            JOptionPane.showMessageDialog(null, "Error al "
-                    + "eliminar este empleado, es posible que aún cuente con "
-                    + "proyectos asignados, o la conexión a la base de datos "
-                    + "se haya perdido.", "Error al eliminar.",
-                    JOptionPane.ERROR_MESSAGE);
         }
-        return statusCode;
+        return registrosAfectados;
     }
 }

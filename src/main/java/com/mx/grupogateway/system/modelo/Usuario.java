@@ -130,6 +130,7 @@ public class Usuario {
      */
     public void setPassword(String password, boolean encriptar) {
         if (encriptar) {
+            System.out.println(password);
             this.password = encriptarPass(password);
         } else {
             this.password = password;

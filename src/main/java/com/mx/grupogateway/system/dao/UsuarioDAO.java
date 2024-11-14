@@ -152,6 +152,7 @@ public class UsuarioDAO extends AbstractDAO {
      * @return
      */
     public boolean esPasswordValida(Usuario usuario) {
+        boolean esValida = false;
         Usuario usuarioPassword = new Usuario();
         String sql = "SELECT " + PASSWORD_USUARIO + " FROM USUARIOS WHERE " + ID_USUARIO + " = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
@@ -166,12 +167,11 @@ public class UsuarioDAO extends AbstractDAO {
             logger.log(Level.SEVERE, "Error al validar password: {0}", e.getMessage());
         }
         if (usuarioPassword.getPassword() != null || !usuarioPassword.getPassword().isEmpty()) {
-            return SecurityPassword.assertData(
+            esValida = SecurityPassword.assertData(
                     usuarioPassword.getPassword(),
-                    usuario.getPassword()
-            );
+                    usuario.getPassword());
         }
-        return false;
+        return esValida;
     }
 
     /**
@@ -227,7 +227,6 @@ public class UsuarioDAO extends AbstractDAO {
                 while (resultSet.next()) {
                     idUsuarioObtenido = resultSet.getInt(ID_USUARIO);
                 }
-
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al consultar el identificador de usuario: {0}", e.getMessage());
@@ -251,17 +250,24 @@ public class UsuarioDAO extends AbstractDAO {
         }
     }
 
-    public void actualizarPassword(Usuario usuario) {
-        String sql = "UPDATE USUARIOS SET " + PASSWORD_USUARIO + " = ? WHERE " + ID_USUARIO + " = ? "
-                + "AND NOMBRE_USUARIO = ?";
+    /**
+     * Actualiza la password de un usuario existente acorde al idUsuario.
+     *
+     * @param usuario
+     * @return Retorna la cantidad de registros afectados.
+     */
+    public int actualizarPassword(Usuario usuario) {
+        int registrosAfectados = 0;
+        String sql = "UPDATE USUARIOS SET " + PASSWORD_USUARIO + " = ? WHERE " + ID_USUARIO + " = ? ";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, usuario.getPassword());
             preparedStatement.setInt(2, usuario.getIdUsuario());
-            preparedStatement.setString(3, usuario.getNombreUsuario());
             preparedStatement.execute();
+            registrosAfectados = preparedStatement.getUpdateCount();
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al actualizar password existente: {0}", e.getMessage());
         }
+        return registrosAfectados;
     }
 
     /**
@@ -277,7 +283,8 @@ public class UsuarioDAO extends AbstractDAO {
             preparedStatement.setString(2, idEmpleado);
             preparedStatement.execute();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, null, e.getMessage());
+            logger.log(Level.SEVERE, "Error al actualizar clave foranea "
+                    + "idUsuario en tabla empleados según idEmpleado: {0}", e.getMessage());
         }
     }
 
@@ -294,7 +301,8 @@ public class UsuarioDAO extends AbstractDAO {
             preparedStatement.setInt(2, idUsuario);
             preparedStatement.execute();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, null, e.getMessage());
+            logger.log(Level.SEVERE, "Error al actualizar clave foranea "
+                    + "idUsuario en tabla empleados: {0}", e.getMessage());
         }
     }
 
@@ -314,7 +322,7 @@ public class UsuarioDAO extends AbstractDAO {
             preparedStatement.execute();
             updateCount = preparedStatement.getUpdateCount();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, null, e.getMessage());
+            logger.log(Level.SEVERE, "Error al eliminar usuario: {0}", e.getMessage());
         }
         return updateCount;
     }

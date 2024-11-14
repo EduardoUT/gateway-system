@@ -51,14 +51,13 @@ public class Registro extends javax.swing.JFrame {
      */
     private void registrarUsuario() {
         if (sonCamposValidos()) {
-            System.out.println(String.valueOf(campoCheckPassword.getPassword()));
             int idUsuario = this.usuarioController.actualizarPasswordNula(
                     new Usuario(
                             Integer.valueOf(campoIdUsuario.getText()),
                             campoNombreUsuario.getText(),
                             String.valueOf(campoCheckPassword.getPassword())
                     ));
-            if (idUsuario != -1) {
+            if (idUsuario > 0) {
                 JOptionPane.showMessageDialog(null,
                         "Usuario registrado éxitosamente.",
                         "Registro éxitoso",

@@ -82,12 +82,14 @@ public class ActualizarPassword extends javax.swing.JFrame {
                 = this.usuarioController.esPasswordValida(usuario);
         if (passwordValida) {
             usuario.setPassword(String.valueOf(checkPassword.getPassword()), false);
-            this.usuarioController.actualizarPassword(usuario);
-            JOptionPane.showMessageDialog(null,
-                    "Usuario actualizado éxitosamente.",
-                    "Actualización de contraseña éxitosa.",
-                    JOptionPane.INFORMATION_MESSAGE);
-            limpiarRegistros();
+            int registrosAfectados = this.usuarioController.actualizarPassword(usuario);
+            if (registrosAfectados > 0) {
+                JOptionPane.showMessageDialog(null,
+                        "Usuario actualizado éxitosamente.",
+                        "Actualización de contraseña éxitosa.",
+                        JOptionPane.INFORMATION_MESSAGE);
+                limpiarRegistros();
+            }
         } else {
             JOptionPane.showMessageDialog(null,
                     "La contraseña actual es incorrecta.",

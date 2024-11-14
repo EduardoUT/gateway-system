@@ -652,8 +652,8 @@ public final class Facturacion extends javax.swing.JFrame {
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         evt.getID();
         ImportarExcel importarExcel = new ImportarExcel();
-        importarExcel.setJFrame(this);
-        this.setVisible(false);
+        importarExcel.setUsuario(usuario);
+        this.dispose();
         importarExcel.setVisible(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
