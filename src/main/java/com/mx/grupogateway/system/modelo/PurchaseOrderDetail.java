@@ -5,6 +5,8 @@
 package com.mx.grupogateway.system.modelo;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Objects;
 
 /**
  *
@@ -12,7 +14,7 @@ import java.math.BigDecimal;
  */
 public class PurchaseOrderDetail {
 
-    private String purchaseOrderIdentifier;
+    private String purchaseOrderDetailIdentifier;
     private String poStatus;
     private Long itemCode;
     private String itemDesc;
@@ -21,12 +23,24 @@ public class PurchaseOrderDetail {
     private String paymentTerms;
 
     public PurchaseOrderDetail() {
+        this.purchaseOrderDetailIdentifier = "0000000000-00";
+        this.poStatus = "NEW";
+        this.itemCode = Long.MAX_VALUE;
+        this.itemDesc = "No Item Desc";
+        this.requestedQty = "0";
+        this.lineAmount = new BigDecimal("0.00");
+        this.paymentTerms = "No Payment Terms";
+    }
+
+    public PurchaseOrderDetail(String poNo) {
+        this();
+        this.purchaseOrderDetailIdentifier = poNo;
     }
 
     public PurchaseOrderDetail(String poNo, String poStatus, Long itemCode,
             String itemDesc, String requestedQty, BigDecimal lineAmount,
             String paymentTerms) {
-        this.purchaseOrderIdentifier = poNo;
+        this.purchaseOrderDetailIdentifier = poNo;
         this.poStatus = poStatus;
         this.itemCode = itemCode;
         this.itemDesc = itemDesc;
@@ -35,22 +49,19 @@ public class PurchaseOrderDetail {
         this.paymentTerms = paymentTerms;
     }
 
-    public PurchaseOrderDetail(String poNo) {
-        this.purchaseOrderIdentifier = poNo;
+    /**
+     * @return the purchaseOrderDetailIdentifier
+     */
+    public String getPurchaseOrderDetailIdentifier() {
+        return purchaseOrderDetailIdentifier;
     }
 
     /**
-     * @return the purchaseOrderIdentifier
+     * @param purchaseOrderDetailIdentifier the purchaseOrderDetailIdentifier to
+     * set
      */
-    public String getPurchaseOrderIdentifier() {
-        return purchaseOrderIdentifier;
-    }
-
-    /**
-     * @param purchaseOrderIdentifier the purchaseOrderIdentifier to set
-     */
-    public void setPurchaseOrderIdentifier(String purchaseOrderIdentifier) {
-        this.purchaseOrderIdentifier = purchaseOrderIdentifier;
+    public void setPurchaseOrderDetailIdentifier(String purchaseOrderDetailIdentifier) {
+        this.purchaseOrderDetailIdentifier = purchaseOrderDetailIdentifier;
     }
 
     /**
@@ -135,5 +146,33 @@ public class PurchaseOrderDetail {
      */
     public void setPaymentTerms(String paymentTerms) {
         this.paymentTerms = paymentTerms;
+    }
+
+    /**
+     *
+     * @param purchaseOrderDetail
+     * @return
+     */
+    @Override
+    public boolean equals(Object purchaseOrderDetail) {
+        if (this == purchaseOrderDetail) {
+            return true;
+        }
+        if (purchaseOrderDetail == null
+                || getClass() != purchaseOrderDetail.getClass()) {
+            return false;
+        }
+        PurchaseOrderDetail otherPurchaseOrderDetail
+                = (PurchaseOrderDetail) purchaseOrderDetail;
+        if (purchaseOrderDetailIdentifier.equals(
+                otherPurchaseOrderDetail.getPurchaseOrderDetailIdentifier())) {
+            return true;
+        }
+        return purchaseOrderDetail instanceof PurchaseOrderDetail;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(purchaseOrderDetailIdentifier);
     }
 }
