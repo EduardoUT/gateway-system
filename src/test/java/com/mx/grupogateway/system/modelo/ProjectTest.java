@@ -4,21 +4,14 @@
  */
 package com.mx.grupogateway.system.modelo;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import jdk.nashorn.internal.ir.annotations.Ignore;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -27,30 +20,16 @@ import org.junit.jupiter.params.provider.ValueSource;
  *
  * @author eduar
  */
-public class ProjectTest {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class ProjectTest {
 
-    private Project project;
-
-    public ProjectTest() {
-    }
-
-    @BeforeAll
-    public static void setUpClass() {
-    }
-
-    @AfterAll
-    public static void tearDownClass() {
-    }
-
-    @BeforeEach
-    public void setUp() {
-        project = new Project();
-    }
+    private Project project = new Project();
+    private final Set<Project> hashSet = new HashSet<>();
 
     @DisplayName("Debería lanzar NullPointerException para cada objeto de Project "
             + "con null asignado.")
     @Test
-    public void testNullPointerExceptionOnProject() {
+    void testNullPointerExceptionOnProject() {
         NullPointerException e;
         e = assertThrowsExactly(NullPointerException.class, () -> {
             project.setProjectId(null);
@@ -92,7 +71,7 @@ public class ProjectTest {
     @DisplayName("Debería aceptar una clave de proyecto dentro del rango")
     @ParameterizedTest()
     @ValueSource(longs = {102517684201L, Long.MAX_VALUE})
-    public void testProjectId(Long projectId) {
+    void testProjectId(Long projectId) {
         project.setProjectId(projectId);
         assertTrue(project.getProjectId() > 0);
         assertTrue(project.getProjectId() <= Long.MAX_VALUE);
@@ -101,7 +80,7 @@ public class ProjectTest {
     @DisplayName("Debería lanzar un IllegalArgumentException cuando se ingresa "
             + "un valor menor o igual a 0 y mayor a Long.MAX_VALUE")
     @Test
-    public void testProjectIdBoundaries() {
+    void testProjectIdBoundaries() {
         IllegalArgumentException e;
         e = assertThrowsExactly(IllegalArgumentException.class, () -> {
             project.setProjectId(0L);
@@ -121,10 +100,11 @@ public class ProjectTest {
                 e.getMessage());
     }
 
+    /*
     @DisplayName("Debería aceptar objetos Site validos e irrepetibles"
             + "de acuerdo a su idSite asociado al hashCode")
     @Test
-    public void testSiteEqualsToAndHashCode() {
+    void testSiteEqualsToAndHashCode() {
         Set hashSet = new HashSet();
         Site siteOne = new Site(200000213693002L);
         Site siteTwo = new Site(200000213138002L);
@@ -136,10 +116,43 @@ public class ProjectTest {
         assertTrue(hashSet.contains(siteTwo));
         assertTrue(hashSet.contains(siteThree));
         assertTrue(siteOne.equals(siteThree));
+    }*/
+    @DisplayName("Debería comparar objetos con mismo identificador.")
+    @Test
+    void testProjectEquals() {
+        Project projectB = new Project(62446507901L);
+        project.setProjectId(62446507901L);
+        assertTrue(project.equals(projectB));
     }
 
-    @AfterEach
-    public void tearDown() {
+    @DisplayName("Deería comparar objetos con la misma referencia")
+    @Test
+    void testSameReference() {
+        Project projectB = new Project(63555002501L);
+        project = projectB;
+        assertTrue(project.equals(projectB));
     }
 
+    @DisplayName("Debería comparar objetos cuya referencia sea null.")
+    @Test
+    void testProjectClassWithNullReference() {
+        Project projectB = null;
+        assertFalse(project.equals(projectB));
+    }
+
+    @DisplayName("Debería aceptar objetos Project validos e irrepetibles "
+            + "de acuerdo a su projectId asociado al hashCode")
+    @ParameterizedTest
+    @MethodSource("projectProvider")
+    void testProjectHashCodeOnHashSet(Project otherProject) {
+        hashSet.add(otherProject);
+        assertTrue(hashSet.contains(otherProject));
+        assertEquals(1, hashSet.size());
+    }
+
+    static Stream<Project> projectProvider() {
+        return Stream.of(
+                new Project(63555002501L),
+                new Project(63555002501L));
+    }
 }
