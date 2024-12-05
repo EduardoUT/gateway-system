@@ -40,7 +40,7 @@ public class PurchaseOrderDetailDAO extends AbstractDAO {
                 + "VALUES(?,?,?,?,?,?,?)";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, purchaseOrderDetail.getPurchaseOrderIdentifier());
+            preparedStatement.setString(1, purchaseOrderDetail.getPurchaseOrderDetailIdentifier());
             preparedStatement.setString(2, purchaseOrderDetail.getPoStatus());
             preparedStatement.setLong(3, purchaseOrderDetail.getItemCode());
             preparedStatement.setString(4, purchaseOrderDetail.getItemDesc());
@@ -68,7 +68,7 @@ public class PurchaseOrderDetailDAO extends AbstractDAO {
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     PurchaseOrderDetail purchaseOrder = new PurchaseOrderDetail(resultSet.getString("PO_NO"));
-                    purchaseOrderList.add(purchaseOrder.getPurchaseOrderIdentifier());
+                    purchaseOrderList.add(purchaseOrder.getPurchaseOrderDetailIdentifier());
                 }
             }
         } catch (SQLException e) {
@@ -88,7 +88,7 @@ public class PurchaseOrderDetailDAO extends AbstractDAO {
         String sql = "UPDATE PURCHASE_ORDER SET PO_STATUS = ? WHERE PO_NO = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, purchaseOrderDetail.getPoStatus());
-            preparedStatement.setString(2, purchaseOrderDetail.getPurchaseOrderIdentifier());
+            preparedStatement.setString(2, purchaseOrderDetail.getPurchaseOrderDetailIdentifier());
             preparedStatement.execute();
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al actualizar PurchaseOrder: {0}", e.getMessage());
