@@ -26,16 +26,17 @@ public class Site {
         this.shipmentNo = Integer.MAX_VALUE;
     }
 
+    public Site(Long siteId) {
+        this();
+        this.siteId = siteId;
+    }
+
     public Site(Long siteId, String siteCode, String siteName, String biddingArea, Integer shiplmentNo) {
         this.siteId = siteId;
         this.siteCode = siteCode;
         this.siteName = siteName;
         this.biddigArea = biddingArea;
         this.shipmentNo = shiplmentNo;
-    }
-
-    public Site(Long siteId) {
-        this.siteId = siteId;
     }
 
     /**
