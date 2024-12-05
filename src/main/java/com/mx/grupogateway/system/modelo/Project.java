@@ -5,6 +5,7 @@
 package com.mx.grupogateway.system.modelo;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  *
@@ -29,6 +30,12 @@ public class Project {
         this.publishDate = LocalDateTime.now();
     }
 
+    public Project(Long projectId) {
+        this();
+        validateProjectId(projectId);
+        this.projectId = projectId;
+    }
+
     /**
      * Constructor para la creación de un Proyecto.
      *
@@ -51,11 +58,6 @@ public class Project {
         this.customer = projectCustomer;
         this.category = projectCategory;
         this.publishDate = publishDate;
-    }
-
-    public Project(Long projectId) {
-        validateProjectId(projectId);
-        this.projectId = projectId;
     }
 
     /**
@@ -223,5 +225,30 @@ public class Project {
         return String.format("Project ID: %d | Project Code: %s | "
                 + "Project Name: %s | Customer: %s | Category: %s | Publish Date: %s",
                 projectId, projectCode, projectName, customer, category, publishDate);
+    }
+
+    /**
+     *
+     * @param project
+     * @return
+     */
+    @Override
+    public boolean equals(Object project) {
+        if (this == project) {
+            return true;
+        }
+        if (project == null || getClass() != project.getClass()) {
+            return false;
+        }
+        Project otherProject = (Project) project;
+        if (project.equals(otherProject.getProjectId())) {
+            return true;
+        }
+        return project instanceof Project;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(projectId);
     }
 }
