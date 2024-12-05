@@ -46,10 +46,10 @@ public class PurchaseOrderDAO extends AbstractDAO {
                 + "VALUES(?,?,?,?,?,?,?)";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, purchaseOrder.getPurchaseOrderDetail().getPurchaseOrderIdentifier());
+            preparedStatement.setString(1, purchaseOrder.getPurchaseOrderDetail().getPurchaseOrderDetailIdentifier());
             preparedStatement.setLong(2, purchaseOrder.getProject().getProjectId());
             preparedStatement.setInt(3, purchaseOrder.getPoLineNo());
-            preparedStatement.setString(4, purchaseOrder.getDueQty());
+            preparedStatement.setBigDecimal(4, purchaseOrder.getDueQty());
             preparedStatement.setBigDecimal(5, purchaseOrder.getBilledQty());
             preparedStatement.setString(6, purchaseOrder.getUnit());
             preparedStatement.setBigDecimal(7, purchaseOrder.getUnitPrice());
@@ -105,7 +105,7 @@ public class PurchaseOrderDAO extends AbstractDAO {
                             .toLocalDateTime());
 
                     PurchaseOrderDetail purchaseOrderDetail = new PurchaseOrderDetail();
-                    purchaseOrderDetail.setPurchaseOrderIdentifier(resultSet.getString("PO_NO"));
+                    purchaseOrderDetail.setPurchaseOrderDetailIdentifier(resultSet.getString("PO_NO"));
                     purchaseOrderDetail.setPoStatus(resultSet.getString("PO_STATUS"));
                     purchaseOrderDetail.setItemCode(resultSet.getLong("ITEM_CODE"));
                     purchaseOrderDetail.setItemDesc(resultSet.getString("ITEM_DESC"));
@@ -117,7 +117,7 @@ public class PurchaseOrderDAO extends AbstractDAO {
                     purchaseOrder.setPurchaseOrderDetail(purchaseOrderDetail);
                     purchaseOrder.setProject(project);
                     purchaseOrder.setPoLineNo(resultSet.getInt("PO_LINE_NO"));
-                    purchaseOrder.setDueQty(resultSet.getString("DUE_QTY"));
+                    purchaseOrder.setDueQty(resultSet.getBigDecimal("DUE_QTY"));
                     purchaseOrder.setBilledQty(resultSet.getBigDecimal("BILLED_QTY"));
                     purchaseOrder.setUnit(resultSet.getString("UNIT"));
                     purchaseOrder.setUnitPrice(resultSet.getBigDecimal("UNIT_PRICE"));
@@ -154,7 +154,7 @@ public class PurchaseOrderDAO extends AbstractDAO {
                     purchaseOrder.setProject(new Project(resultSet.getLong(ID_PROJECT)));
                     purchaseOrderIdentifiers.put(
                             purchaseOrder.getProject().getProjectId(),
-                            purchaseOrder.getPurchaseOrderDetail().getPurchaseOrderIdentifier()
+                            purchaseOrder.getPurchaseOrderDetail().getPurchaseOrderDetailIdentifier()
                     );
                 }
             }
@@ -174,7 +174,7 @@ public class PurchaseOrderDAO extends AbstractDAO {
         List<Long> purchaseOrderProjectIdentifiers = new ArrayList<>();
         String sql = "SELECT ID_PROJECT FROM PURCHASE_HAS_ORDER WHERE PO_NO = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
-            preparedStatement.setString(1, purchaseOrder.getPurchaseOrderDetail().getPurchaseOrderIdentifier());
+            preparedStatement.setString(1, purchaseOrder.getPurchaseOrderDetail().getPurchaseOrderDetailIdentifier());
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
