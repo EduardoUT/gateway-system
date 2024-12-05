@@ -49,8 +49,10 @@ public class TableDataModelController {
                         purchaseOrderAssignment.getEmpleado().getApellidoPaterno(),
                         purchaseOrderAssignment.getEmpleado().getApellidoMaterno(),
                         purchaseOrderAssignment.getFechaAsignacion(),
-                        purchaseOrderAssignment.getPurchaseOrder().getProject().getProjectId(),
-                        purchaseOrderAssignment.getPurchaseOrder().getPurchaseOrderDetail().getPurchaseOrderIdentifier(),
+                        purchaseOrderAssignment.getPurchaseOrder()
+                                .getProject().getProjectId(),
+                        purchaseOrderAssignment.getPurchaseOrder()
+                                .getPurchaseOrderDetail().getPurchaseOrderDetailIdentifier(),
                         purchaseOrderAssignment.getImporte(),
                         purchaseOrderAssignment.getTotalPagar(),
                         purchaseOrderAssignment.getStatus(),
@@ -88,7 +90,7 @@ public class TableDataModelController {
                         purchaseOrder.getProject().getProjectName(),
                         purchaseOrder.getProject().getCustomer(),
                         purchaseOrder.getPurchaseOrderDetail().getPoStatus(),
-                        purchaseOrder.getPurchaseOrderDetail().getPurchaseOrderIdentifier(),
+                        purchaseOrder.getPurchaseOrderDetail().getPurchaseOrderDetailIdentifier(),
                         purchaseOrder.getProject().getSite().getShipmentNo(),
                         purchaseOrder.getPoLineNo(),
                         purchaseOrder.getProject().getSite().getSiteCode(),
