@@ -108,7 +108,7 @@ public class PurchaseOrderAssignmentDAO extends AbstractDAO {
                     project.setPublishDate(resultSet.getTimestamp("PUBLISH_DATE")
                             .toLocalDateTime());
                     PurchaseOrderDetail purchaseOrderDetail = new PurchaseOrderDetail();
-                    purchaseOrderDetail.setPurchaseOrderIdentifier(resultSet.getString("PO_NO"));
+                    purchaseOrderDetail.setPurchaseOrderDetailIdentifier(resultSet.getString("PO_NO"));
                     purchaseOrderDetail.setPoStatus(resultSet.getString("PO_STATUS"));
                     purchaseOrderDetail.setItemDesc(resultSet.getString("ITEM_DESC"));
                     purchaseOrderDetail.setRequestedQty(resultSet.getString("REQUESTED_QTY"));
@@ -118,7 +118,7 @@ public class PurchaseOrderAssignmentDAO extends AbstractDAO {
                     purchaseOrder.setPurchaseOrderDetail(purchaseOrderDetail);
                     purchaseOrder.setProject(project);
                     purchaseOrder.setPoLineNo(resultSet.getInt("PO_LINE_NO"));
-                    purchaseOrder.setDueQty(resultSet.getString("DUE_QTY"));
+                    purchaseOrder.setDueQty(resultSet.getBigDecimal("DUE_QTY"));
                     purchaseOrder.setBilledQty(resultSet.getBigDecimal("BILLED_QTY"));
                     purchaseOrder.setUnit(resultSet.getString("UNIT"));
                     purchaseOrder.setUnitPrice(resultSet.getBigDecimal("UNIT_PRICE"));
