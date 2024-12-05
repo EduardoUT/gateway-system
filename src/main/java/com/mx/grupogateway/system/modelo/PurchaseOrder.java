@@ -5,6 +5,7 @@
 package com.mx.grupogateway.system.modelo;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  *
@@ -15,16 +16,29 @@ public class PurchaseOrder {
     private PurchaseOrderDetail purchaseOrderDetail;
     private Project project;
     private Integer poLineNo;
-    private String dueQty;
+    private BigDecimal dueQty;
     private BigDecimal billedQty;
     private String unit;
     private BigDecimal unitPrice;
 
     public PurchaseOrder() {
+        this.purchaseOrderDetail = new PurchaseOrderDetail();
+        this.project = new Project();
+        this.poLineNo = 0;
+        this.dueQty = new BigDecimal("0.00");
+        this.billedQty = new BigDecimal("0.00");
+        this.unit = "SITE";
+        this.unitPrice = new BigDecimal("0.00");
+    }
+
+    public PurchaseOrder(PurchaseOrderDetail purchaseOrderDetail, Project project) {
+        this();
+        this.purchaseOrderDetail = purchaseOrderDetail;
+        this.project = project;
     }
 
     public PurchaseOrder(PurchaseOrderDetail purchaseOrderDetail,
-            Project project, Integer poLineNo, String dueQty, BigDecimal billedQty,
+            Project project, Integer poLineNo, BigDecimal dueQty, BigDecimal billedQty,
             String unit, BigDecimal unitPrice) {
         this.purchaseOrderDetail = purchaseOrderDetail;
         this.project = project;
@@ -80,14 +94,14 @@ public class PurchaseOrder {
     /**
      * @return the dueQty
      */
-    public String getDueQty() {
+    public BigDecimal getDueQty() {
         return dueQty;
     }
 
     /**
      * @param dueQty the dueQty to set
      */
-    public void setDueQty(String dueQty) {
+    public void setDueQty(BigDecimal dueQty) {
         this.dueQty = dueQty;
     }
 
@@ -131,5 +145,40 @@ public class PurchaseOrder {
      */
     public void setUnitPrice(BigDecimal unitPrice) {
         this.unitPrice = unitPrice;
+    }
+
+    @Override
+    public boolean equals(Object purchaseOrder) {
+        if (this == purchaseOrder) {
+            return true;
+        }
+        if (purchaseOrder == null || getClass() != purchaseOrder.getClass()) {
+            return false;
+        }
+        PurchaseOrder otherPurchaseOrder = (PurchaseOrder) purchaseOrder;
+        boolean isSamePurchasOrderIdentifier = purchaseOrderDetail
+                .getPurchaseOrderDetailIdentifier()
+                .equals(otherPurchaseOrder
+                        .getPurchaseOrderDetail()
+                        .getPurchaseOrderDetailIdentifier()
+                );
+        boolean isSameProjectId = project
+                .getProjectId()
+                .equals(otherPurchaseOrder
+                        .getProject()
+                        .getProjectId()
+                );
+        if (isSamePurchasOrderIdentifier && isSameProjectId) {
+            return true;
+        }
+        return purchaseOrder instanceof PurchaseOrder;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                purchaseOrderDetail.getPurchaseOrderDetailIdentifier(),
+                project.getProjectId()
+        );
     }
 }
