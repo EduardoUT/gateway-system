@@ -6,7 +6,6 @@ package com.mx.grupogateway.system.controller;
 
 import com.mx.grupogateway.system.LoggerConfig;
 import com.mx.grupogateway.system.dao.ExcelDAO;
-import com.mx.grupogateway.system.factory.ConnectionFactory;
 import com.mx.grupogateway.system.modelo.DataImport;
 import com.mx.grupogateway.system.modelo.Project;
 import com.mx.grupogateway.system.modelo.PurchaseOrder;
@@ -88,7 +87,7 @@ public class ExcelController extends SwingWorker<Void, Integer> {
                 project.setPublishDate(getCellValueTimestamp(row, 41));
 
                 PurchaseOrderDetail purchaseOrderDetail = new PurchaseOrderDetail();
-                purchaseOrderDetail.setPurchaseOrderIdentifier(getCellValueString(row, 11));
+                purchaseOrderDetail.setPurchaseOrderDetailIdentifier(getCellValueString(row, 11));
                 purchaseOrderDetail.setPoStatus(getCellValueString(row, 10));
                 purchaseOrderDetail.setItemCode(getCellValueLong(row, 17));
                 purchaseOrderDetail.setItemDesc(getCellValueString(row, 18));
@@ -100,7 +99,7 @@ public class ExcelController extends SwingWorker<Void, Integer> {
                 purchaseOrder.setPurchaseOrderDetail(purchaseOrderDetail);
                 purchaseOrder.setProject(project);
                 purchaseOrder.setPoLineNo(getCellValueInteger(row, 12));
-                purchaseOrder.setDueQty(getCellValueString(row, 20));
+                purchaseOrder.setDueQty(getCellValueBigDecimal(row, 20));
                 purchaseOrder.setBilledQty(getCellValueBigDecimal(row, 21));
                 purchaseOrder.setUnit(getCellValueString(row, 24));
                 purchaseOrder.setUnitPrice(getCellValueBigDecimal(row, 22));
