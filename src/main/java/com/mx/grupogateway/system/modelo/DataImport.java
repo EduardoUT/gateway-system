@@ -4,8 +4,8 @@
  */
 package com.mx.grupogateway.system.modelo;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Clase contenedor de listados de las clase modelo que representan un project
@@ -15,22 +15,22 @@ import java.util.List;
  */
 public class DataImport {
 
-    private final List<Project> projects;
-    private final List<Site> sites;
-    private final List<PurchaseOrder> purchaseOrders;
-    private final List<PurchaseOrderDetail> purchaseOrderDetails;
+    private final Set<Project> projects;
+    private final Set<Site> sites;
+    private final Set<PurchaseOrder> purchaseOrders;
+    private final Set<PurchaseOrderDetail> purchaseOrderDetails;
 
     public DataImport() {
-        this.projects = new ArrayList<>();
-        this.sites = new ArrayList<>();
-        this.purchaseOrders = new ArrayList<>();
-        this.purchaseOrderDetails = new ArrayList<>();
+        this.projects = new HashSet<>();
+        this.sites = new HashSet<>();
+        this.purchaseOrders = new HashSet<>();
+        this.purchaseOrderDetails = new HashSet<>();
     }
 
     /**
      * @return the projects
      */
-    public List<Project> getProjects() {
+    public Set<Project> getProjects() {
         return projects;
     }
 
@@ -44,7 +44,7 @@ public class DataImport {
     /**
      * @return the sites
      */
-    public List<Site> getSites() {
+    public Set<Site> getSites() {
         return sites;
     }
 
@@ -58,7 +58,7 @@ public class DataImport {
     /**
      * @return the purchaseOrders
      */
-    public List<PurchaseOrder> getPurchaseOrders() {
+    public Set<PurchaseOrder> getPurchaseOrders() {
         return purchaseOrders;
     }
 
@@ -72,7 +72,7 @@ public class DataImport {
     /**
      * @return the purchaseOrderDetails
      */
-    public List<PurchaseOrderDetail> getPurchaseOrderDetails() {
+    public Set<PurchaseOrderDetail> getPurchaseOrderDetails() {
         return purchaseOrderDetails;
     }
 
