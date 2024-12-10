@@ -18,7 +18,7 @@ public class PurchaseOrderDetail {
     private String poStatus;
     private Long itemCode;
     private String itemDesc;
-    private String requestedQty;
+    private BigDecimal requestedQty;
     private BigDecimal lineAmount;
     private String paymentTerms;
 
@@ -27,7 +27,7 @@ public class PurchaseOrderDetail {
         this.poStatus = "NEW";
         this.itemCode = Long.MAX_VALUE;
         this.itemDesc = "No Item Desc";
-        this.requestedQty = "0";
+        this.requestedQty = new BigDecimal(BigInteger.ZERO);
         this.lineAmount = new BigDecimal("0.00");
         this.paymentTerms = "No Payment Terms";
     }
@@ -38,7 +38,7 @@ public class PurchaseOrderDetail {
     }
 
     public PurchaseOrderDetail(String poNo, String poStatus, Long itemCode,
-            String itemDesc, String requestedQty, BigDecimal lineAmount,
+            String itemDesc, BigDecimal requestedQty, BigDecimal lineAmount,
             String paymentTerms) {
         this.purchaseOrderDetailIdentifier = poNo;
         this.poStatus = poStatus;
@@ -109,14 +109,14 @@ public class PurchaseOrderDetail {
     /**
      * @return the requestedQty
      */
-    public String getRequestedQty() {
+    public BigDecimal getRequestedQty() {
         return requestedQty;
     }
 
     /**
      * @param requestedQty the requestedQty to set
      */
-    public void setRequestedQty(String requestedQty) {
+    public void setRequestedQty(BigDecimal requestedQty) {
         this.requestedQty = requestedQty;
     }
 
