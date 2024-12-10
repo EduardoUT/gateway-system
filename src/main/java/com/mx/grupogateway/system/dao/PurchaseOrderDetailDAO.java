@@ -44,7 +44,7 @@ public class PurchaseOrderDetailDAO extends AbstractDAO {
             preparedStatement.setString(2, purchaseOrderDetail.getPoStatus());
             preparedStatement.setLong(3, purchaseOrderDetail.getItemCode());
             preparedStatement.setString(4, purchaseOrderDetail.getItemDesc());
-            preparedStatement.setString(5, purchaseOrderDetail.getRequestedQty());
+            preparedStatement.setBigDecimal(5, purchaseOrderDetail.getRequestedQty());
             preparedStatement.setBigDecimal(6, purchaseOrderDetail.getLineAmount());
             preparedStatement.setString(7, purchaseOrderDetail.getPaymentTerms());
             preparedStatement.execute();
