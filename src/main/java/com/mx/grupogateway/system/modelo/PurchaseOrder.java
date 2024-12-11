@@ -4,6 +4,7 @@
  */
 package com.mx.grupogateway.system.modelo;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -11,8 +12,9 @@ import java.util.Objects;
  *
  * @author eduar
  */
-public class PurchaseOrder {
+public class PurchaseOrder implements Serializable {
 
+    private static final long SERIAL_VERSION_UUID = 1L;
     private PurchaseOrderDetail purchaseOrderDetail;
     private Project project;
     private Integer poLineNo;
@@ -47,6 +49,13 @@ public class PurchaseOrder {
         this.billedQty = billedQty;
         this.unit = unit;
         this.unitPrice = unitPrice;
+    }
+
+    /**
+     * @return the SERIAL_VERSION_UUID
+     */
+    public static long getSERIAL_VERSION_UUID() {
+        return SERIAL_VERSION_UUID;
     }
 
     /**

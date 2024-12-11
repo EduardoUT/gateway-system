@@ -1,0 +1,16 @@
+dic 10, 2024 12:44:50 PM com.mx.grupogateway.system.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+dic 10, 2024 1:03:19 PM com.mx.grupogateway.system.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+dic 10, 2024 1:18:45 PM com.mx.grupogateway.system.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+dic 10, 2024 1:32:36 PM com.mx.grupogateway.system.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+dic 10, 2024 2:08:14 PM com.mx.grupogateway.system.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+dic 10, 2024 2:08:54 PM com.mx.grupogateway.system.controller.ExcelController importData
+GRAVE: Error: java.lang.Long cannot be cast to java.util.Optional
+dic 10, 2024 2:11:02 PM com.mx.grupogateway.system.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+dic 10, 2024 2:22:13 PM com.mx.grupogateway.system.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.

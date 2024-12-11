@@ -13,7 +13,7 @@ import com.mx.grupogateway.system.modelo.EmpleadoCategoria;
 import com.mx.grupogateway.system.modelo.Usuario;
 import com.mx.grupogateway.system.util.IconoVentana;
 import com.mx.grupogateway.system.util.MargenTabla;
-import com.mx.grupogateway.system.controller.TableDataModelController;
+import com.mx.grupogateway.system.controller.TableDataModelUtil;
 import com.mx.grupogateway.system.util.AccionesTabla;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -28,7 +28,6 @@ import javax.swing.table.DefaultTableModel;
  */
 public class Gestion extends javax.swing.JFrame {
 
-    private TableDataModelController tableDataModel;
     private EmpleadoController empleadoController;
     private EmpleadoCategoriaController empleadoCargoController;
     private UsuarioController usuarioController;
@@ -112,8 +111,11 @@ public class Gestion extends javax.swing.JFrame {
         DefaultTableModel modeloTablaEmpleado;
         modeloTablaEmpleado = (DefaultTableModel) tablaEmpleado.getModel();
         List<Empleado> empleados = this.empleadoController.listar();
-        tableDataModel = new TableDataModelController();
-        tableDataModel.setTableDataModelEmpleados(modeloTablaEmpleado, tablaEmpleado, empleados);
+        TableDataModelUtil.loadTableDataModelEmpleados(
+                modeloTablaEmpleado,
+                tablaEmpleado,
+                empleados
+        );
         MargenTabla.ajustarColumnas(tablaEmpleado);
     }
 
@@ -234,8 +236,11 @@ public class Gestion extends javax.swing.JFrame {
         DefaultTableModel modeloTablaUsuario;
         modeloTablaUsuario = (DefaultTableModel) tablaUsuario.getModel();
         List<Usuario> usuarios = this.usuarioController.listar();
-        tableDataModel = new TableDataModelController();
-        tableDataModel.cargarModeloTablaUsuario(modeloTablaUsuario, tablaUsuario, usuarios);
+        TableDataModelUtil.loadTableDataModelUsuarios(
+                modeloTablaUsuario,
+                tablaUsuario,
+                usuarios
+        );
         MargenTabla.ajustarColumnas(tablaUsuario);
     }
 

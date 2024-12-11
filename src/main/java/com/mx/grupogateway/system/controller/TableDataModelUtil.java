@@ -17,9 +17,13 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author eduar
  */
-public class TableDataModelController {
+public class TableDataModelUtil {
 
-    public void setTableDataModelEmpleados(DefaultTableModel modeloTablaEmpleados,
+    private TableDataModelUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    public static void loadTableDataModelEmpleados(DefaultTableModel modeloTablaEmpleados,
             JTable tablaEmpleados, List<Empleado> empleados) {
         AccionesTabla.limpiarTabla(modeloTablaEmpleados, tablaEmpleados);
         tablaEmpleados.getTableHeader().setFont(tablaEmpleados.getFont());
@@ -37,7 +41,7 @@ public class TableDataModelController {
         }
     }
 
-    public void cargarModeloTablaAsignaciones(DefaultTableModel modeloTablaAsignaciones,
+    public static void loadTableDataModelAssignments(DefaultTableModel modeloTablaAsignaciones,
             JTable tablaAsignaciones, List<PurchaseOrderAssignment> purchaseOrderAssignments) {
         AccionesTabla.limpiarTabla(modeloTablaAsignaciones, tablaAsignaciones);
         tablaAsignaciones.getTableHeader().setFont(tablaAsignaciones.getFont());
@@ -77,7 +81,7 @@ public class TableDataModelController {
         }
     }
 
-    public void cargarModeloTablaProyecto(DefaultTableModel modeloTablaPurchaseOrder,
+    public static void loadTableDataModelPurchaseOrders(DefaultTableModel modeloTablaPurchaseOrder,
             JTable tablaPuchaseOrders, List<PurchaseOrder> purchaseOrders) {
         AccionesTabla.limpiarTabla(modeloTablaPurchaseOrder, tablaPuchaseOrders);
         modeloTablaPurchaseOrder = (DefaultTableModel) tablaPuchaseOrders.getModel();
@@ -112,7 +116,7 @@ public class TableDataModelController {
         }
     }
 
-    public void cargarModeloTablaUsuario(DefaultTableModel modeloTablaUsuario,
+    public static void loadTableDataModelUsuarios(DefaultTableModel modeloTablaUsuario,
             JTable tablaUsuario, List<Usuario> usuarios) {
         AccionesTabla.limpiarTabla(modeloTablaUsuario, tablaUsuario);
         modeloTablaUsuario = (DefaultTableModel) tablaUsuario.getModel();

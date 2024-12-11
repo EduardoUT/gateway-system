@@ -16,7 +16,7 @@ import com.mx.grupogateway.system.modelo.PurchaseOrderAssignment;
 import com.mx.grupogateway.system.modelo.PurchaseOrderDetail;
 import com.mx.grupogateway.system.util.IconoVentana;
 import com.mx.grupogateway.system.util.MargenTabla;
-import com.mx.grupogateway.system.controller.TableDataModelController;
+import com.mx.grupogateway.system.controller.TableDataModelUtil;
 import com.mx.grupogateway.system.util.AccionesTabla;
 import java.awt.event.KeyEvent;
 import java.util.List;
@@ -32,10 +32,9 @@ import javax.swing.table.DefaultTableModel;
  */
 public final class Asignaciones extends javax.swing.JFrame {
 
-    private DefaultTableModel modeloTablaProyectos;
     private DefaultTableModel modeloTablaEmpleados;
     private DefaultTableModel modeloTablaAsignaciones;
-    private TableDataModelController tableDataModel;
+
     private EmpleadoController empleadoController;
     private PurchaseOrderController purchaseOrderController;
     private PurchaseOrderAssignmentController purchaseOrderAssignmentController;
@@ -74,16 +73,22 @@ public final class Asignaciones extends javax.swing.JFrame {
     private void cargarTablaEmpleados() {
         modeloTablaEmpleados = (DefaultTableModel) tablaEmpleados.getModel();
         List<Empleado> empleados = this.empleadoController.listar();
-        tableDataModel = new TableDataModelController();
-        tableDataModel.setTableDataModelEmpleados(modeloTablaEmpleados, tablaEmpleados, empleados);
+        TableDataModelUtil.loadTableDataModelEmpleados(
+                modeloTablaEmpleados,
+                tablaEmpleados,
+                empleados
+        );
         MargenTabla.ajustarColumnas(tablaEmpleados);
     }
 
     private void cargarTablaProyectos() {
-        modeloTablaProyectos = (DefaultTableModel) tablaProyectos.getModel();
+        DefaultTableModel modeloTablaProyectos = (DefaultTableModel) tablaProyectos.getModel();
         purchaseOrders = this.purchaseOrderController.listar();
-        tableDataModel = new TableDataModelController();
-        tableDataModel.cargarModeloTablaProyecto(modeloTablaProyectos, tablaProyectos, purchaseOrders);
+        TableDataModelUtil.loadTableDataModelPurchaseOrders(
+                modeloTablaProyectos,
+                tablaProyectos,
+                purchaseOrders
+        );
         MargenTabla.ajustarColumnas(tablaProyectos);
     }
 
@@ -91,8 +96,11 @@ public final class Asignaciones extends javax.swing.JFrame {
         modeloTablaAsignaciones = (DefaultTableModel) tablaAsignaciones.getModel();
         List<PurchaseOrderAssignment> purchaseOrderAssignments
                 = this.purchaseOrderAssignmentController.listar();
-        tableDataModel = new TableDataModelController();
-        tableDataModel.cargarModeloTablaAsignaciones(modeloTablaAsignaciones, tablaAsignaciones, purchaseOrderAssignments);
+        TableDataModelUtil.loadTableDataModelAssignments(
+                modeloTablaAsignaciones,
+                tablaAsignaciones,
+                purchaseOrderAssignments
+        );
         MargenTabla.ajustarColumnas(tablaAsignaciones);
     }
 
