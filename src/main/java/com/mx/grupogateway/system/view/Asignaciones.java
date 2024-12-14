@@ -15,7 +15,7 @@ import com.mx.grupogateway.system.modelo.PurchaseOrder;
 import com.mx.grupogateway.system.modelo.PurchaseOrderAssignment;
 import com.mx.grupogateway.system.modelo.PurchaseOrderDetail;
 import com.mx.grupogateway.system.util.IconoVentana;
-import com.mx.grupogateway.system.util.MargenTabla;
+import com.mx.grupogateway.system.util.MarginTable;
 import com.mx.grupogateway.system.controller.TableDataModelUtil;
 import com.mx.grupogateway.system.util.AccionesTabla;
 import java.awt.event.KeyEvent;
@@ -31,10 +31,8 @@ import javax.swing.table.DefaultTableModel;
  * @author mcore
  */
 public final class Asignaciones extends javax.swing.JFrame {
-
-    private DefaultTableModel modeloTablaEmpleados;
+    
     private DefaultTableModel modeloTablaAsignaciones;
-
     private EmpleadoController empleadoController;
     private PurchaseOrderController purchaseOrderController;
     private PurchaseOrderAssignmentController purchaseOrderAssignmentController;
@@ -71,14 +69,13 @@ public final class Asignaciones extends javax.swing.JFrame {
     }
 
     private void cargarTablaEmpleados() {
-        modeloTablaEmpleados = (DefaultTableModel) tablaEmpleados.getModel();
-        List<Empleado> empleados = this.empleadoController.listar();
-        TableDataModelUtil.loadTableDataModelEmpleados(
-                modeloTablaEmpleados,
-                tablaEmpleados,
-                empleados
-        );
-        MargenTabla.ajustarColumnas(tablaEmpleados);
+        List<Object[]> empleados = this.empleadoController.listar();
+        EmpleadoTableModel empleadoTableModel = new EmpleadoTableModel();
+        for (Object[] empleado : empleados) {
+            empleadoTableModel.addRow(empleado);
+        }
+        tablaEmpleados.setModel(empleadoTableModel);
+        MarginTable.setMarginColumns(tablaEmpleados);
     }
 
     private void cargarTablaProyectos() {
@@ -89,7 +86,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                 tablaProyectos,
                 purchaseOrders
         );
-        MargenTabla.ajustarColumnas(tablaProyectos);
+        MarginTable.setMarginColumns(tablaProyectos);
     }
 
     private void cargarTablaProyectosAsignados() {
@@ -101,7 +98,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                 tablaAsignaciones,
                 purchaseOrderAssignments
         );
-        MargenTabla.ajustarColumnas(tablaAsignaciones);
+        MarginTable.setMarginColumns(tablaAsignaciones);
     }
 
     /**
@@ -359,7 +356,6 @@ public final class Asignaciones extends javax.swing.JFrame {
             }
         });
         tablaAsignaciones.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-        tablaAsignaciones.setColumnSelectionAllowed(true);
         tablaAsignaciones.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tablaAsignaciones.getTableHeader().setResizingAllowed(false);
         tablaAsignaciones.getTableHeader().setReorderingAllowed(false);
@@ -401,18 +397,9 @@ public final class Asignaciones extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Id Empleado", "Nombre", "Apellido Paterno", "Apellido Materno", "Id Usuario", "Cargo"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
-            };
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
             }
-        });
-        tablaEmpleados.setColumnSelectionAllowed(true);
+        ));
         tablaEmpleados.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tablaEmpleados.getTableHeader().setResizingAllowed(false);
         tablaEmpleados.getTableHeader().setReorderingAllowed(false);
