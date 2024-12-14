@@ -16,9 +16,9 @@ import javax.swing.table.TableColumn;
  *
  * @author Eduardo Reyes Hernández
  */
-public class MargenTabla {
+public class MarginTable {
 
-    private MargenTabla() {
+    private MarginTable() {
     }
 
     private static final Integer MARGEN_COLUMNA = 2;
@@ -43,7 +43,7 @@ public class MargenTabla {
      *
      * @param tabla JTable a ser ajustada.
      */
-    public static void ajustarColumnas(JTable tabla) {
+    public static void setMarginColumns(JTable tabla) {
         for (int indiceColumna = 0; indiceColumna < tabla.getColumnCount();
                 indiceColumna++) {
             ajustarMargen(tabla, indiceColumna, MARGEN_COLUMNA);
