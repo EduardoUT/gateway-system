@@ -7,6 +7,8 @@ package com.mx.grupogateway.system.controller;
 import com.mx.grupogateway.system.dao.EmpleadoDAO;
 import com.mx.grupogateway.system.factory.ConnectionFactory;
 import com.mx.grupogateway.system.modelo.Empleado;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -45,12 +47,31 @@ public class EmpleadoController {
     }
 
     /**
-     * Listando una lista de empleados.
+     * Lista de empleados a mostrar en el JTable.
      *
-     * @return Lista de tipo Empleado.
+     * @return Lista de Object[] con los datos del Empleado a mostrar en el
+     * TableModel.
      */
-    public List<Empleado> listar() {
-        return this.empleadoDAO.listar();
+    public List<Object[]> listar() {
+        List<Empleado> listEmpleados = this.empleadoDAO.listar();
+        List<Object[]> dataModelEmpleados = new ArrayList<>();
+        if (!listEmpleados.isEmpty()) {
+            for (Empleado empleado : listEmpleados) {
+                dataModelEmpleados.add(
+                        new Object[]{
+                            empleado.getIdEmpleado(),
+                            empleado.getNombre(),
+                            empleado.getApellidoPaterno(),
+                            empleado.getApellidoMaterno(),
+                            empleado.getUsuario().getIdUsuario(),
+                            empleado.getEmpleadoCategoria().getNombreCategoria()
+                        }
+                );
+            }
+            return dataModelEmpleados;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     /**
