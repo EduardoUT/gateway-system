@@ -11,7 +11,7 @@ import com.mx.grupogateway.system.modelo.PurchaseOrder;
 import com.mx.grupogateway.system.modelo.Usuario;
 import com.mx.grupogateway.system.controller.TableDataModelUtil;
 import com.mx.grupogateway.system.util.IconoVentana;
-import com.mx.grupogateway.system.util.MargenTabla;
+import com.mx.grupogateway.system.util.MarginTable;
 import com.mx.grupogateway.system.util.AccionesTabla;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
@@ -59,7 +59,7 @@ public final class Facturacion extends javax.swing.JFrame {
                 tablaProyectos,
                 purchaseOrders
         );
-        MargenTabla.ajustarColumnas(tablaProyectos);
+        MarginTable.setMarginColumns(tablaProyectos);
     }
 
     private Object obtenerValorTabla(int fila, int columna) {
