@@ -71,7 +71,7 @@ public class EmpleadoDAO extends AbstractDAO {
      * @return Lista de tipo Empleado de la BD.
      */
     public List<Empleado> listar() {
-        List<Empleado> resultado = new ArrayList<>();
+        List<Empleado> empleados = new ArrayList<>();
         String sql = "SELECT ID_EMPLEADO, NOMBRE, APE_PAT, APE_MAT, ID_USUARIO, "
                 + "NOMBRE_CATEGORIA, EMPLEADOS.ID_CATEGORIA_EMPLEADO "
                 + "FROM CATEGORIA_EMPLEADO "
@@ -84,7 +84,7 @@ public class EmpleadoDAO extends AbstractDAO {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    resultado.add(
+                    empleados.add(
                             new Empleado(
                                     resultSet.getInt("ID_EMPLEADO"),
                                     resultSet.getString("NOMBRE"),
@@ -98,12 +98,11 @@ public class EmpleadoDAO extends AbstractDAO {
                             )
                     );
                 }
-
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al consultar empleado: {0}", e.getMessage());
         }
-        return resultado;
+        return empleados;
     }
 
     /**
