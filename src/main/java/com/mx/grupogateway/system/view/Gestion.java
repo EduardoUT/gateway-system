@@ -12,7 +12,7 @@ import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.EmpleadoCategoria;
 import com.mx.grupogateway.system.modelo.Usuario;
 import com.mx.grupogateway.system.util.IconoVentana;
-import com.mx.grupogateway.system.util.MargenTabla;
+import com.mx.grupogateway.system.util.MarginTable;
 import com.mx.grupogateway.system.controller.TableDataModelUtil;
 import com.mx.grupogateway.system.util.AccionesTabla;
 import java.awt.event.KeyEvent;
@@ -108,15 +108,13 @@ public class Gestion extends javax.swing.JFrame {
      * EmpleadoController y asignando registros en la tablaEmpleado.
      */
     private void cargarTablaEmpleado() {
-        DefaultTableModel modeloTablaEmpleado;
-        modeloTablaEmpleado = (DefaultTableModel) tablaEmpleado.getModel();
-        List<Empleado> empleados = this.empleadoController.listar();
-        TableDataModelUtil.loadTableDataModelEmpleados(
-                modeloTablaEmpleado,
-                tablaEmpleado,
-                empleados
-        );
-        MargenTabla.ajustarColumnas(tablaEmpleado);
+        List<Object[]> empleados = this.empleadoController.listar();
+        EmpleadoTableModel empleadoTableModel = new EmpleadoTableModel();
+        for (Object[] empleado : empleados) {
+            empleadoTableModel.addRow(empleado);
+        }
+        tablaEmpleado.setModel(empleadoTableModel);
+        MarginTable.setMarginColumns(tablaEmpleado);
     }
 
     /**
@@ -241,7 +239,7 @@ public class Gestion extends javax.swing.JFrame {
                 tablaUsuario,
                 usuarios
         );
-        MargenTabla.ajustarColumnas(tablaUsuario);
+        MarginTable.setMarginColumns(tablaUsuario);
     }
 
     private void bloquearAlSeleccionarAdmin() {
