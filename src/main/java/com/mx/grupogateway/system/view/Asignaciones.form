@@ -214,8 +214,8 @@
                 </Property>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                   <StringArray count="2">
-                    <StringItem index="0" value="Id Proyecto"/>
-                    <StringItem index="1" value="Po No"/>
+                    <StringItem index="0" value="ID Project"/>
+                    <StringItem index="1" value="PO No"/>
                   </StringArray>
                 </Property>
               </Properties>
@@ -247,145 +247,11 @@
                       <Font name="Segoe UI" size="16" style="0"/>
                     </Property>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="22" rowCount="0">
-                        <Column editable="false" title="Id Proyecto" type="java.lang.Object"/>
-                        <Column editable="false" title="Project Code" type="java.lang.Object"/>
-                        <Column editable="false" title="Project Name" type="java.lang.Object"/>
-                        <Column editable="false" title="Customer" type="java.lang.Object"/>
-                        <Column editable="false" title="Po Status" type="java.lang.Object"/>
-                        <Column editable="false" title="Po No" type="java.lang.Object"/>
-                        <Column editable="false" title="Po Line No" type="java.lang.Object"/>
-                        <Column editable="false" title="Shipment No" type="java.lang.Object"/>
-                        <Column editable="false" title="Site Code" type="java.lang.Object"/>
-                        <Column editable="false" title="Site Name" type="java.lang.Object"/>
-                        <Column editable="false" title="Item Code" type="java.lang.Object"/>
-                        <Column editable="false" title="Item Description" type="java.lang.Object"/>
-                        <Column editable="false" title="Requested Qty" type="java.lang.Object"/>
-                        <Column editable="false" title="Due Qty" type="java.lang.Object"/>
-                        <Column editable="false" title="Billed Qty" type="java.lang.Object"/>
-                        <Column editable="false" title="Unit Price" type="java.lang.Object"/>
-                        <Column editable="false" title="Line Amount" type="java.lang.Object"/>
-                        <Column editable="false" title="Unit" type="java.lang.Object"/>
-                        <Column editable="false" title="Payment Terms" type="java.lang.Object"/>
-                        <Column editable="false" title="Category" type="java.lang.Object"/>
-                        <Column editable="false" title="Bidding Area" type="java.lang.Object"/>
-                        <Column editable="false" title="Publish Date" type="java.lang.Object"/>
-                      </Table>
+                      <Table columnCount="0" rowCount="0"/>
                     </Property>
                     <Property name="autoResizeMode" type="int" value="0"/>
                     <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
-                      <TableColumnModel selectionModel="0">
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                          <Title/>
-                          <Editor/>
-                          <Renderer/>
-                        </Column>
-                      </TableColumnModel>
+                      <TableColumnModel selectionModel="0"/>
                     </Property>
                     <Property name="selectionModel" type="javax.swing.ListSelectionModel" editor="org.netbeans.modules.form.editors2.JTableSelectionModelEditor">
                       <JTableSelectionModel selectionMode="0"/>
@@ -415,8 +281,8 @@
                 </Property>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                   <StringArray count="4">
-                    <StringItem index="0" value="Id Empleado"/>
-                    <StringItem index="1" value="Id Usuario"/>
+                    <StringItem index="0" value="ID Empleado"/>
+                    <StringItem index="1" value="IDUsuario"/>
                     <StringItem index="2" value="Nombre"/>
                     <StringItem index="3" value="Cargo"/>
                   </StringArray>
@@ -465,34 +331,7 @@
                       <Font name="Segoe UI" size="16" style="0"/>
                     </Property>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="26" rowCount="0">
-                        <Column editable="false" title="Id Empleado" type="java.lang.Object"/>
-                        <Column editable="false" title="Nombre" type="java.lang.Object"/>
-                        <Column editable="false" title="Apellido Paterno" type="java.lang.Object"/>
-                        <Column editable="false" title="Apellido Materno" type="java.lang.Object"/>
-                        <Column editable="false" title="Fecha Asignaci&#xf3;n" type="java.lang.Object"/>
-                        <Column editable="false" title="Id Proyecto" type="java.lang.Object"/>
-                        <Column editable="false" title="Po No" type="java.lang.Object"/>
-                        <Column editable="false" title="Importe" type="java.lang.Object"/>
-                        <Column editable="false" title="Total Pagar" type="java.lang.Object"/>
-                        <Column editable="false" title="Status" type="java.lang.Object"/>
-                        <Column editable="false" title="Customer" type="java.lang.Object"/>
-                        <Column editable="false" title="Project Name" type="java.lang.Object"/>
-                        <Column editable="false" title="Po Status" type="java.lang.Object"/>
-                        <Column editable="false" title="Po Line No" type="java.lang.Object"/>
-                        <Column editable="false" title="Site Code" type="java.lang.Object"/>
-                        <Column editable="false" title="Site Name" type="java.lang.Object"/>
-                        <Column editable="false" title="Item Desc" type="java.lang.Object"/>
-                        <Column editable="false" title="Requested Qty" type="java.lang.Object"/>
-                        <Column editable="false" title="Due Qty" type="java.lang.Object"/>
-                        <Column editable="false" title="Billed Qty" type="java.lang.Object"/>
-                        <Column editable="false" title="Unit Price" type="java.lang.Object"/>
-                        <Column editable="false" title="Line Amount" type="java.lang.Object"/>
-                        <Column editable="false" title="Unit" type="java.lang.Object"/>
-                        <Column editable="false" title="Payment Terms" type="java.lang.Object"/>
-                        <Column editable="false" title="Category" type="java.lang.Object"/>
-                        <Column editable="false" title="Publish Date" type="java.lang.Object"/>
-                      </Table>
+                      <Table columnCount="0" rowCount="0"/>
                     </Property>
                     <Property name="autoResizeMode" type="int" value="0"/>
                     <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -650,10 +489,10 @@
                 </Property>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                   <StringArray count="4">
-                    <StringItem index="0" value="Id Proyecto"/>
-                    <StringItem index="1" value="Id Empleado"/>
+                    <StringItem index="0" value="ID Project"/>
+                    <StringItem index="1" value="ID Empleado"/>
                     <StringItem index="2" value="Nombre"/>
-                    <StringItem index="3" value="Po No"/>
+                    <StringItem index="3" value="PO No"/>
                   </StringArray>
                 </Property>
               </Properties>

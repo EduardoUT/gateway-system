@@ -7,17 +7,15 @@ package com.mx.grupogateway.system.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.system.controller.PurchaseOrderController;
-import com.mx.grupogateway.system.modelo.PurchaseOrder;
 import com.mx.grupogateway.system.modelo.Usuario;
 import com.mx.grupogateway.system.controller.TableDataModelUtil;
 import com.mx.grupogateway.system.util.IconoVentana;
-import com.mx.grupogateway.system.util.MarginTable;
 import com.mx.grupogateway.system.util.AccionesTabla;
+import com.mx.grupogateway.system.util.ColumnTitlesUtil;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.sql.Date;
-import javax.swing.table.DefaultTableModel;
 import java.util.List;
 
 /**
@@ -50,16 +48,14 @@ public final class Facturacion extends javax.swing.JFrame {
     }
 
     protected void cargarTablaProyectos() {
-        tablaProyectos.setModel(new Asignaciones().tablaProyectos.getModel());
-        DefaultTableModel modeloTablaProyectos;
-        modeloTablaProyectos = (DefaultTableModel) tablaProyectos.getModel();
-        List<PurchaseOrder> purchaseOrders = this.purchaseOrderController.listar();
-        TableDataModelUtil.loadTableDataModelPurchaseOrders(
-                modeloTablaProyectos,
+        List<Object[]> purchaseOrders = this.purchaseOrderController.listar();
+        TableDataModelUtil.loadTableDataModel(
+                tablaProyectos.getModel(),
                 tablaProyectos,
-                purchaseOrders
+                purchaseOrders,
+                ColumnTitlesUtil
+                        .getColumnTitles(PurchaseOrderColumnTitles.values())
         );
-        MarginTable.setMarginColumns(tablaProyectos);
     }
 
     private Object obtenerValorTabla(int fila, int columna) {

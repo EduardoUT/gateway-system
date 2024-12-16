@@ -15,28 +15,25 @@ import com.mx.grupogateway.system.modelo.PurchaseOrder;
 import com.mx.grupogateway.system.modelo.PurchaseOrderAssignment;
 import com.mx.grupogateway.system.modelo.PurchaseOrderDetail;
 import com.mx.grupogateway.system.util.IconoVentana;
-import com.mx.grupogateway.system.util.MarginTable;
 import com.mx.grupogateway.system.controller.TableDataModelUtil;
 import com.mx.grupogateway.system.util.AccionesTabla;
+import com.mx.grupogateway.system.util.ColumnTitlesUtil;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author mcore
  */
 public final class Asignaciones extends javax.swing.JFrame {
-    
-    private DefaultTableModel modeloTablaAsignaciones;
+
     private EmpleadoController empleadoController;
     private PurchaseOrderController purchaseOrderController;
     private PurchaseOrderAssignmentController purchaseOrderAssignmentController;
-    private List<PurchaseOrder> purchaseOrders;
     private int filaTablaProyectos;
     private int filaTablaEmpleados;
     private int filaTablaAsignaciones;
@@ -70,35 +67,36 @@ public final class Asignaciones extends javax.swing.JFrame {
 
     private void cargarTablaEmpleados() {
         List<Object[]> empleados = this.empleadoController.listar();
-        EmpleadoTableModel empleadoTableModel = new EmpleadoTableModel();
-        for (Object[] empleado : empleados) {
-            empleadoTableModel.addRow(empleado);
-        }
-        tablaEmpleados.setModel(empleadoTableModel);
-        MarginTable.setMarginColumns(tablaEmpleados);
+        TableDataModelUtil.loadTableDataModel(
+                tablaEmpleados.getModel(),
+                tablaEmpleados,
+                empleados,
+                ColumnTitlesUtil.getColumnTitles(
+                        EmpleadoColumnTitles.values())
+        );
     }
 
     private void cargarTablaProyectos() {
-        DefaultTableModel modeloTablaProyectos = (DefaultTableModel) tablaProyectos.getModel();
-        purchaseOrders = this.purchaseOrderController.listar();
-        TableDataModelUtil.loadTableDataModelPurchaseOrders(
-                modeloTablaProyectos,
+        List<Object[]> purchaseOrders = this.purchaseOrderController.listar();
+        TableDataModelUtil.loadTableDataModel(
+                tablaProyectos.getModel(),
                 tablaProyectos,
-                purchaseOrders
+                purchaseOrders,
+                ColumnTitlesUtil.getColumnTitles(PurchaseOrderColumnTitles.values())
         );
-        MarginTable.setMarginColumns(tablaProyectos);
     }
 
     private void cargarTablaProyectosAsignados() {
-        modeloTablaAsignaciones = (DefaultTableModel) tablaAsignaciones.getModel();
-        List<PurchaseOrderAssignment> purchaseOrderAssignments
+        List<Object[]> purchaseOrderAssignments
                 = this.purchaseOrderAssignmentController.listar();
-        TableDataModelUtil.loadTableDataModelAssignments(
-                modeloTablaAsignaciones,
+        TableDataModelUtil.loadTableDataModel(
+                tablaAsignaciones.getModel(),
                 tablaAsignaciones,
-                purchaseOrderAssignments
+                purchaseOrderAssignments,
+                ColumnTitlesUtil.getColumnTitles(
+                        PurchaseOrderAssignmentColumnTitles.values()
+                )
         );
-        MarginTable.setMarginColumns(tablaAsignaciones);
     }
 
     /**
@@ -288,7 +286,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         });
 
         filtroProyecto.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        filtroProyecto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Id Proyecto", "Po No" }));
+        filtroProyecto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID Project", "PO No" }));
 
         jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel15.setForeground(new java.awt.Color(255, 255, 255));
@@ -300,17 +298,9 @@ public final class Asignaciones extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Id Proyecto", "Project Code", "Project Name", "Customer", "Po Status", "Po No", "Po Line No", "Shipment No", "Site Code", "Site Name", "Item Code", "Item Description", "Requested Qty", "Due Qty", "Billed Qty", "Unit Price", "Line Amount", "Unit", "Payment Terms", "Category", "Bidding Area", "Publish Date"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
-            };
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
             }
-        });
+        ));
         tablaProyectos.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         tablaProyectos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tablaProyectos.getTableHeader().setResizingAllowed(false);
@@ -321,7 +311,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         buscadorEmpleado.setToolTipText("Buscar Empleado");
 
         filtroEmpleado.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        filtroEmpleado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Id Empleado", "Id Usuario", "Nombre", "Cargo" }));
+        filtroEmpleado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID Empleado", "IDUsuario", "Nombre", "Cargo" }));
 
         jLabel16.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel16.setForeground(new java.awt.Color(255, 255, 255));
@@ -344,17 +334,9 @@ public final class Asignaciones extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Id Empleado", "Nombre", "Apellido Paterno", "Apellido Materno", "Fecha Asignación", "Id Proyecto", "Po No", "Importe", "Total Pagar", "Status", "Customer", "Project Name", "Po Status", "Po Line No", "Site Code", "Site Name", "Item Desc", "Requested Qty", "Due Qty", "Billed Qty", "Unit Price", "Line Amount", "Unit", "Payment Terms", "Category", "Publish Date"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
-            };
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
             }
-        });
+        ));
         tablaAsignaciones.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         tablaAsignaciones.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tablaAsignaciones.getTableHeader().setResizingAllowed(false);
@@ -373,7 +355,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         tablaAsignaciones.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         filtroAsignacion.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        filtroAsignacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Id Proyecto", "Id Empleado", "Nombre", "Po No" }));
+        filtroAsignacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID Project", "ID Empleado", "Nombre", "PO No" }));
 
         buscadorAsignacion.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
 

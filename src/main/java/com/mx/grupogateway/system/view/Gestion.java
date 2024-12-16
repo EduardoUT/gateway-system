@@ -12,15 +12,14 @@ import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.EmpleadoCategoria;
 import com.mx.grupogateway.system.modelo.Usuario;
 import com.mx.grupogateway.system.util.IconoVentana;
-import com.mx.grupogateway.system.util.MarginTable;
 import com.mx.grupogateway.system.controller.TableDataModelUtil;
 import com.mx.grupogateway.system.util.AccionesTabla;
+import com.mx.grupogateway.system.util.ColumnTitlesUtil;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -109,12 +108,13 @@ public class Gestion extends javax.swing.JFrame {
      */
     private void cargarTablaEmpleado() {
         List<Object[]> empleados = this.empleadoController.listar();
-        EmpleadoTableModel empleadoTableModel = new EmpleadoTableModel();
-        for (Object[] empleado : empleados) {
-            empleadoTableModel.addRow(empleado);
-        }
-        tablaEmpleado.setModel(empleadoTableModel);
-        MarginTable.setMarginColumns(tablaEmpleado);
+        TableDataModelUtil.loadTableDataModel(
+                tablaEmpleado.getModel(),
+                tablaEmpleado,
+                empleados,
+                ColumnTitlesUtil.getColumnTitles(
+                        EmpleadoColumnTitles.values())
+        );
     }
 
     /**
@@ -231,15 +231,14 @@ public class Gestion extends javax.swing.JFrame {
      * registros en la TablaUsuario.
      */
     private void cargarTablaUsuario() {
-        DefaultTableModel modeloTablaUsuario;
-        modeloTablaUsuario = (DefaultTableModel) tablaUsuario.getModel();
-        List<Usuario> usuarios = this.usuarioController.listar();
-        TableDataModelUtil.loadTableDataModelUsuarios(
-                modeloTablaUsuario,
+        List<Object[]> usuarios = this.usuarioController.listar();
+        TableDataModelUtil.loadTableDataModel(
+                tablaUsuario.getModel(),
                 tablaUsuario,
-                usuarios
+                usuarios,
+                ColumnTitlesUtil.getColumnTitles(
+                        UsuarioColumnTitles.values())
         );
-        MarginTable.setMarginColumns(tablaUsuario);
     }
 
     private void bloquearAlSeleccionarAdmin() {

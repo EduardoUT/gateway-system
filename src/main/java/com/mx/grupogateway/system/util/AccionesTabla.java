@@ -68,7 +68,7 @@ public class AccionesTabla {
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                insertUpdate(e);
             }
 
         });
@@ -123,11 +123,11 @@ public class AccionesTabla {
      * Cuando haya modificaciones en los registros de una tabla, se limpia la
      * selección de fila que se modificó y vacía los registros en la tabla.
      *
-     * @param modeloTabla Modelo al que se limpiarán los registros.
+     * @param defaultTableModel Modelo al que se limpiarán los registros.
      * @param tabla JTable al que se limpiará la selección.
      */
-    public static void limpiarTabla(DefaultTableModel modeloTabla, JTable tabla) {
-        modeloTabla.getDataVector().clear();
+    public static void limpiarTabla(DefaultTableModel defaultTableModel, JTable tabla) {
+        defaultTableModel.getDataVector().clear();
         tabla.clearSelection();
     }
 

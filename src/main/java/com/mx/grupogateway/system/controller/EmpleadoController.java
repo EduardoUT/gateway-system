@@ -53,10 +53,10 @@ public class EmpleadoController {
      * TableModel.
      */
     public List<Object[]> listar() {
-        List<Empleado> listEmpleados = this.empleadoDAO.listar();
+        List<Empleado> empleados = this.empleadoDAO.listar();
         List<Object[]> dataModelEmpleados = new ArrayList<>();
-        if (!listEmpleados.isEmpty()) {
-            for (Empleado empleado : listEmpleados) {
+        if (!empleados.isEmpty()) {
+            for (Empleado empleado : empleados) {
                 dataModelEmpleados.add(
                         new Object[]{
                             empleado.getIdEmpleado(),

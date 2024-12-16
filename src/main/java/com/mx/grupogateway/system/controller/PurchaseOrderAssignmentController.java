@@ -6,7 +6,14 @@ package com.mx.grupogateway.system.controller;
 
 import com.mx.grupogateway.system.dao.PurchaseOrderAssignmentDAO;
 import com.mx.grupogateway.system.factory.ConnectionFactory;
+import com.mx.grupogateway.system.modelo.Empleado;
+import com.mx.grupogateway.system.modelo.Project;
+import com.mx.grupogateway.system.modelo.PurchaseOrder;
 import com.mx.grupogateway.system.modelo.PurchaseOrderAssignment;
+import com.mx.grupogateway.system.modelo.PurchaseOrderDetail;
+import com.mx.grupogateway.system.modelo.Site;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -64,8 +71,52 @@ public class PurchaseOrderAssignmentController {
      *
      * @return
      */
-    public List<PurchaseOrderAssignment> listar() {
-        return this.purchaseOrderAssignmentDAO.listar();
+    public List<Object[]> listar() {
+        List<PurchaseOrderAssignment> purchaseOrderAssignments
+                = this.purchaseOrderAssignmentDAO.listar();
+        List<Object[]> dataModelPurchaseOrderAssignments = new ArrayList<>();
+        if (!purchaseOrderAssignments.isEmpty()) {
+            for (PurchaseOrderAssignment purchaseOrderAssignment : purchaseOrderAssignments) {
+                Empleado empleado = purchaseOrderAssignment.getEmpleado();
+                PurchaseOrder purchaseOrder = purchaseOrderAssignment.getPurchaseOrder();
+                PurchaseOrderDetail purchaseOrderDetail = purchaseOrder.getPurchaseOrderDetail();
+                Project project = purchaseOrder.getProject();
+                Site site = project.getSite();
+                dataModelPurchaseOrderAssignments.add(
+                        new Object[]{
+                            empleado.getIdEmpleado(),
+                            empleado.getNombre(),
+                            empleado.getApellidoPaterno(),
+                            empleado.getApellidoMaterno(),
+                            purchaseOrderAssignment.getFechaAsignacion(),
+                            project.getProjectId(),
+                            purchaseOrderDetail.getPurchaseOrderDetailIdentifier(),
+                            purchaseOrderAssignment.getImporte(),
+                            purchaseOrderAssignment.getTotalPagar(),
+                            purchaseOrderAssignment.getStatus(),
+                            project.getCustomer(),
+                            project.getProjectName(),
+                            purchaseOrderDetail.getPoStatus(),
+                            purchaseOrder.getPoLineNo(),
+                            site.getSiteCode(),
+                            site.getSiteName(),
+                            purchaseOrderDetail.getItemDesc(),
+                            purchaseOrderDetail.getRequestedQty(),
+                            purchaseOrder.getDueQty(),
+                            purchaseOrder.getBilledQty(),
+                            purchaseOrder.getUnitPrice(),
+                            purchaseOrderDetail.getLineAmount(),
+                            purchaseOrder.getUnit(),
+                            purchaseOrderDetail.getPaymentTerms(),
+                            project.getCategory(),
+                            project.getPublishDate()
+                        }
+                );
+            }
+            return dataModelPurchaseOrderAssignments;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     /**

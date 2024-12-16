@@ -8,8 +8,9 @@ import com.mx.grupogateway.system.dao.UsuarioDAO;
 import com.mx.grupogateway.system.factory.ConnectionFactory;
 import com.mx.grupogateway.system.modelo.Empleado;
 import com.mx.grupogateway.system.modelo.Usuario;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
  *
@@ -34,6 +35,7 @@ public class UsuarioController {
      * ejecución fue exitosa, devuelve -1 en caso contrario.
      *
      * @param usuario
+     * @return Identificador del usuario guardado.
      */
     public int guardar(Usuario usuario) {
         return this.usuarioDAO.guardar(usuario);
@@ -43,8 +45,23 @@ public class UsuarioController {
      *
      * @return List de tipo Usuario.
      */
-    public List<Usuario> listar() {
-        return this.usuarioDAO.listar();
+    public List<Object[]> listar() {
+        List<Usuario> usuarios = this.usuarioDAO.listar();
+        List<Object[]> dataModelUsuarios = new ArrayList<>();
+        if (!usuarios.isEmpty()) {
+            for (Usuario usuario : usuarios) {
+                dataModelUsuarios.add(
+                        new Object[]{
+                            usuario.getIdUsuario(),
+                            usuario.getNombreUsuario(),
+                            usuario.getClaveSeguridad()
+                        }
+                );
+            }
+            return dataModelUsuarios;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     /**
