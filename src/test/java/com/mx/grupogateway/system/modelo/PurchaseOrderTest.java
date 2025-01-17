@@ -4,6 +4,9 @@
  */
 package com.mx.grupogateway.system.modelo;
 
+import com.mx.grupogateway.purchaseorder.detail.PurchaseOrderDetail;
+import com.mx.grupogateway.purchaseorder.PurchaseOrder;
+import com.mx.grupogateway.project.Project;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;

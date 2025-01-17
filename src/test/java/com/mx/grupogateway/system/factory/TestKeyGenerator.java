@@ -4,7 +4,7 @@
  */
 package com.mx.grupogateway.system.factory;
 
-import com.mx.grupogateway.system.modelo.Usuario;
+import com.mx.grupogateway.user.Usuario;
 import java.sql.Timestamp;
 import java.util.Date;
 import javax.swing.ImageIcon;
