@@ -78,7 +78,7 @@ public class ExcelController extends SwingWorker<Void, Integer> {
                 site.setShipmentNo(getCellValueInteger(row, 13));
 
                 Project project = new Project();
-                project.setProjectId(getCellValueLong(row, 0));
+                project.setId(getCellValueLong(row, 0));
                 project.setSite(site);
                 project.setProjectCode(getCellValueString(row, 5));
                 project.setProjectName(getCellValueString(row, 4));
@@ -87,7 +87,7 @@ public class ExcelController extends SwingWorker<Void, Integer> {
                 project.setPublishDate(getCellValueTimestamp(row, 41));
 
                 PurchaseOrderDetail purchaseOrderDetail = new PurchaseOrderDetail();
-                purchaseOrderDetail.setPurchaseOrderDetailIdentifier(getCellValueString(row, 11));
+                purchaseOrderDetail.setId(getCellValueString(row, 11));
                 purchaseOrderDetail.setPoStatus(getCellValueString(row, 10));
                 purchaseOrderDetail.setItemCode(getCellValueLong(row, 17));
                 purchaseOrderDetail.setItemDesc(getCellValueString(row, 18));

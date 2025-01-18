@@ -14,7 +14,7 @@ import java.util.Objects;
  */
 public class Project {
 
-    private Long projectId;
+    private Long id;
     private Site site;
     private String projectCode;
     private String projectName;
@@ -23,7 +23,7 @@ public class Project {
     private LocalDateTime publishDate;
 
     public Project() {
-        this.projectId = Long.MAX_VALUE;
+        this.id = Long.MAX_VALUE;
         this.site = new Site();
         this.projectCode = "0";
         this.projectName = "No Name";
@@ -33,14 +33,14 @@ public class Project {
 
     public Project(Long projectId) {
         this();
-        validateProjectId(projectId);
-        this.projectId = projectId;
+        validateId(projectId);
+        this.id = projectId;
     }
 
     /**
      * Constructor para la creación de un Proyecto.
      *
-     * @param projectId
+     * @param id
      * @param site
      * @param projectCode
      * @param projectName
@@ -48,11 +48,11 @@ public class Project {
      * @param projectCategory
      * @param publishDate
      */
-    public Project(Long projectId, Site site, String projectCode, String projectName,
+    public Project(Long id, Site site, String projectCode, String projectName,
             String projectCustomer, String projectCategory, LocalDateTime publishDate) {
-        validateProject(projectId, site, projectCode, projectName,
+        validateProject(id, site, projectCode, projectName,
                 projectCustomer, projectCategory, publishDate);
-        this.projectId = projectId;
+        this.id = id;
         this.site = site;
         this.projectCode = projectCode;
         this.projectName = projectName;
@@ -62,15 +62,15 @@ public class Project {
     }
 
     /**
-     * @return the projectId
+     * @return the id
      */
-    public Long getProjectId() {
-        return projectId;
+    public Long getId() {
+        return id;
     }
 
-    public void setProjectId(Long projectId) {
-        validateProjectId(projectId);
-        this.projectId = projectId;
+    public void setId(Long id) {
+        validateId(id);
+        this.id = id;
     }
 
     /**
@@ -163,11 +163,11 @@ public class Project {
         this.publishDate = publishDate;
     }
 
-    private void validateProjectId(Long projectId) {
-        if (projectId == null) {
+    private void validateId(Long id) {
+        if (id == null) {
             throw new NullPointerException("projectId no puede ser null.");
         }
-        if (projectId <= 0 || projectId > Long.MAX_VALUE) {
+        if (id <= 0 || id > Long.MAX_VALUE) {
             throw new IllegalArgumentException("id menor o igual a 0, o mayor "
                     + "al limite permitido.");
         }
@@ -212,7 +212,7 @@ public class Project {
     private void validateProject(Long projectId, Site site, String projectCode,
             String projectName, String customer, String category,
             LocalDateTime publishDate) {
-        validateProjectId(projectId);
+        validateId(projectId);
         validateProjectSite(site);
         validateProjectCode(projectCode);
         validateProjectName(projectName);
@@ -225,7 +225,7 @@ public class Project {
     public String toString() {
         return String.format("Project ID: %d | Project Code: %s | "
                 + "Project Name: %s | Customer: %s | Category: %s | Publish Date: %s",
-                projectId, projectCode, projectName, customer, category, publishDate);
+                id, projectCode, projectName, customer, category, publishDate);
     }
 
     /**
@@ -242,7 +242,7 @@ public class Project {
             return false;
         }
         Project otherProject = (Project) project;
-        if (project.equals(otherProject.getProjectId())) {
+        if (project.equals(otherProject.getId())) {
             return true;
         }
         return project instanceof Project;
@@ -250,6 +250,6 @@ public class Project {
 
     @Override
     public int hashCode() {
-        return Objects.hash(projectId);
+        return Objects.hash(id);
     }
 }

@@ -7,7 +7,7 @@ package com.mx.grupogateway.view;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.excel.ExcelController;
 import com.mx.grupogateway.excel.DataImport;
-import com.mx.grupogateway.user.Usuario;
+import com.mx.grupogateway.user.User;
 import com.mx.grupogateway.util.IconoVentana;
 import java.awt.event.MouseEvent;
 import javax.swing.JFileChooser;
@@ -20,7 +20,7 @@ import javax.swing.JFrame;
 public class ImportarExcel extends javax.swing.JFrame {
 
     private ExcelController excelController;
-    private Usuario usuario;
+    private User user;
     private DataImport dataImport;
     private JFrame jFrame;
 
@@ -41,8 +41,8 @@ public class ImportarExcel extends javax.swing.JFrame {
         this.setIconImage(IconoVentana.getIconoVentana());
     }
     
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     private void lockButtonImportExcel() {
@@ -55,8 +55,8 @@ public class ImportarExcel extends javax.swing.JFrame {
 
     /**
      * Se encarga de abrir el explorador de archivos específicos de Excel,
-     * posteriormente importa la información en una Lista de objetos Excel
-     * mientras informa al usuario el progreso.
+ posteriormente importa la información en una Lista de objetos Excel
+ mientras informa al user el progreso.
      */
     private void importExcelFile() {
         String filePath;
@@ -82,7 +82,7 @@ public class ImportarExcel extends javax.swing.JFrame {
 
     /**
      * Cuando la lista contiene la información extraida del archivo, informa al
-     * usuario el progreso y envía la información a la Base de Datos.
+ user el progreso y envía la información a la Base de Datos.
      * @param jFrame
      */
     protected void setJFrame(JFrame jFrame) {
@@ -250,7 +250,7 @@ public class ImportarExcel extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         Facturacion facturacion = new Facturacion();
-        facturacion.setUsuario(usuario);
+        facturacion.setUser(user);
         facturacion.setVisible(true);
     }//GEN-LAST:event_formWindowClosing
 

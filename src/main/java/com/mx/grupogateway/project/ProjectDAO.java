@@ -43,7 +43,7 @@ public class ProjectDAO extends ConnectionStatus {
                 + "VALUES(?,?,?,?,?,?,?)";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setLong(1, project.getProjectId());
+            preparedStatement.setLong(1, project.getId());
             preparedStatement.setLong(2, project.getSite().getSiteId());
             preparedStatement.setString(3, project.getProjectCode());
             preparedStatement.setString(4, project.getProjectName());
@@ -82,7 +82,7 @@ public class ProjectDAO extends ConnectionStatus {
                     site.setShipmentNo(resultSet.getInt("SHIPMENT_NO"));
 
                     Project project = new Project();
-                    project.setProjectId(resultSet.getLong("ID_PROJECT"));
+                    project.setId(resultSet.getLong("ID_PROJECT"));
                     project.setSite(site);
                     project.setProjectCode(resultSet.getString("PROJECT_CODE"));
                     project.setProjectName(resultSet.getString("PROJECT_NAME"));
@@ -102,19 +102,19 @@ public class ProjectDAO extends ConnectionStatus {
     /**
      * Consulta los identificadores de project.
      *
-     * @param projectIdentifier
+     * @param id
      * @return
      */
-    public List<Long> listarProjectId(Long projectIdentifier) {
-        List<Long> projectIdList = new ArrayList<>();
+    public List<Long> listarProjectId(Long id) {
+        List<Long> projectIds = new ArrayList<>();
         String sql = "SELECT ID_PROJECT FROM PROJECT WHERE ID_PROJECT = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
-            preparedStatement.setLong(1, projectIdentifier);
+            preparedStatement.setLong(1, id);
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     Project projectId = new Project(resultSet.getLong("ID_PROJECT"));
-                    projectIdList.add(projectId.getProjectId());
+                    projectIds.add(projectId.getId());
                 }
             }
         } catch (SQLException e) {
@@ -122,6 +122,6 @@ public class ProjectDAO extends ConnectionStatus {
                     e.getMessage());
         }
 
-        return projectIdList;
+        return projectIds;
     }
 }

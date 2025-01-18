@@ -7,7 +7,7 @@ package com.mx.grupogateway.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.purchaseorder.PurchaseOrderController;
-import com.mx.grupogateway.user.Usuario;
+import com.mx.grupogateway.user.User;
 import com.mx.grupogateway.util.TableDataModelUtil;
 import com.mx.grupogateway.util.IconoVentana;
 import com.mx.grupogateway.util.AccionesTabla;
@@ -25,7 +25,7 @@ import java.util.List;
 public final class Facturacion extends javax.swing.JFrame {
 
     private PurchaseOrderController purchaseOrderController;
-    private Usuario usuario;
+    private User user;
 
     public Facturacion() {
         initComponents();
@@ -43,8 +43,8 @@ public final class Facturacion extends javax.swing.JFrame {
         this.setIconImage(IconoVentana.getIconoVentana());
     }
 
-    protected void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    protected void setUser(User user) {
+        this.user = user;
     }
 
     protected void cargarTablaProyectos() {
@@ -650,7 +650,7 @@ public final class Facturacion extends javax.swing.JFrame {
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         evt.getID();
         ImportarExcel importarExcel = new ImportarExcel();
-        importarExcel.setUsuario(usuario);
+        importarExcel.setUser(user);
         this.dispose();
         importarExcel.setVisible(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
@@ -679,7 +679,7 @@ public final class Facturacion extends javax.swing.JFrame {
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         evt.getID();
         ActualizarPassword actualizarPassword = new ActualizarPassword();
-        actualizarPassword.setUsuario(usuario);
+        actualizarPassword.setUser(user);
         actualizarPassword.setJFrame(this);
         actualizarPassword.setVisible(true);
         this.setVisible(false);

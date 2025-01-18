@@ -5,8 +5,8 @@
 package com.mx.grupogateway.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import com.mx.grupogateway.user.UsuarioController;
-import com.mx.grupogateway.user.Usuario;
+import com.mx.grupogateway.user.UserController;
+import com.mx.grupogateway.user.User;
 import com.mx.grupogateway.util.ValidacionJPasswordField;
 import com.mx.grupogateway.util.IconoVentana;
 import java.awt.event.KeyEvent;
@@ -19,7 +19,7 @@ import javax.swing.JOptionPane;
  */
 public class Registro extends javax.swing.JFrame {
 
-    private UsuarioController usuarioController;
+    private UserController userController;
 
     /**
      * Creates new form Registro
@@ -31,7 +31,7 @@ public class Registro extends javax.swing.JFrame {
 
     private void iniciarProcesos() {
         cargarIconoVentana();
-        this.usuarioController = new UsuarioController();
+        this.userController = new UserController();
         passwordStatusLabel.setVisible(false);
     }
 
@@ -51,8 +51,7 @@ public class Registro extends javax.swing.JFrame {
      */
     private void registrarUsuario() {
         if (sonCamposValidos()) {
-            int idUsuario = this.usuarioController.actualizarPasswordNula(
-                    new Usuario(
+            int idUsuario = this.userController.actualizarPasswordNula(new User(
                             Integer.valueOf(campoIdUsuario.getText()),
                             campoNombreUsuario.getText(),
                             String.valueOf(campoCheckPassword.getPassword())

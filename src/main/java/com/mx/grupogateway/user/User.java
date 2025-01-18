@@ -4,7 +4,7 @@
  */
 package com.mx.grupogateway.user;
 
-import com.mx.grupogateway.employee.Empleado;
+import com.mx.grupogateway.employee.Employee;
 import com.mx.grupogateway.util.SecurityPassword;
 import java.util.UUID;
 
@@ -12,28 +12,28 @@ import java.util.UUID;
  *
  * @author Eduardo Reyes Hernández
  */
-public class Usuario {
+public class User {
 
-    private Integer idUsuario;
-    private String nombreUsuario;
+    private Integer id;
+    private String userName;
     private String password;
     private String claveSeguridad;
 
-    public Usuario() {
-        idUsuario = 0;
+    public User() {
+        id = 0;
     }
 
     /**
      * Constructor para actualizar una password nula.
      *
-     * @param idUsuario
-     * @param nombreUsuario
+     * @param id
+     * @param userName
      * @param password
      */
-    public Usuario(Integer idUsuario, String nombreUsuario,
+    public User(Integer id, String userName,
             String password) {
-        this.idUsuario = idUsuario;
-        this.nombreUsuario = nombreUsuario;
+        this.id = id;
+        this.userName = userName;
         this.password = encriptarPass(password);
     }
 
@@ -41,11 +41,11 @@ public class Usuario {
      * Constructor para crear un nuevo usuario con una clave de seguridad
      * generada por defecto.
      *
-     * @param nombreUsuario
+     * @param userName
      * @param password
      */
-    public Usuario(String nombreUsuario, String password) {
-        this.nombreUsuario = nombreUsuario;
+    public User(String userName, String password) {
+        this.userName = userName;
         this.password = encriptarPass(password);
         this.claveSeguridad = generarClaveSeguridad();
     }
@@ -53,27 +53,27 @@ public class Usuario {
     /**
      * Constructor usado para listar un usuario con id y nombre.
      *
-     * @param idUsuario
-     * @param nombreUsuario
+     * @param id
+     * @param userName
      */
-    public Usuario(Integer idUsuario, String nombreUsuario) {
-        this.idUsuario = idUsuario;
-        this.nombreUsuario = nombreUsuario;
+    public User(Integer id, String userName) {
+        this.id = id;
+        this.userName = userName;
     }
 
     /**
      * Constructor para crear un nuevo Usuario con nombre de usuario,
-     * identificador y sin password desde un objeto Empleado.
+ identificador y sin password desde un objeto Employee.
      *
-     * @param empleado Recibe un objeto Empleado para crear el nombre de Usuario
-     * con el nombre del empleado.
+     * @param employee Recibe un objeto Employee para crear el nombre de Usuario
+ con el nombre del empleado.
      */
-    public Usuario(Empleado empleado) {
-        this.idUsuario = 0;
-        this.nombreUsuario = generarNombreUsuario(
-                empleado.getNombre(),
-                empleado.getApellidoPaterno(),
-                empleado.getApellidoMaterno()
+    public User(Employee employee) {
+        this.id = 0;
+        this.userName = generarNombreUsuario(
+                employee.getName(),
+                employee.getPaternalSurname(),
+                employee.getMaternalSurname()
         );
         this.password = "NULL";
     }
@@ -81,38 +81,38 @@ public class Usuario {
     /**
      * Constructor para asignar el identificador de un usuario.
      *
-     * @param idUsuario
+     * @param id
      */
-    public Usuario(Integer idUsuario) {
-        this.idUsuario = idUsuario;
+    public User(Integer id) {
+        this.id = id;
     }
 
     /**
      * @return the usuarioId
      */
-    public Integer getIdUsuario() {
-        return idUsuario;
+    public Integer getId() {
+        return id;
     }
 
     /**
-     * @param idUsuario the usuarioId to set
+     * @param id the usuarioId to set
      */
-    public void setIdUsuario(Integer idUsuario) {
-        this.idUsuario = idUsuario;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     /**
-     * @return the nombreUsuario
+     * @return the userName
      */
-    public String getNombreUsuario() {
-        return nombreUsuario;
+    public String getUserName() {
+        return userName;
     }
 
     /**
-     * @param nombreUsuario the nombreUsuario to set
+     * @param userName the userName to set
      */
-    public void setNombreUsuario(String nombreUsuario) {
-        this.nombreUsuario = nombreUsuario;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     /**
@@ -127,11 +127,10 @@ public class Usuario {
      * ser encriptado asignar false.
      *
      * @param password the password to set
-     * @param encriptar true para encriptar.
+     * @param encrypt true para encriptar.
      */
-    public void setPassword(String password, boolean encriptar) {
-        if (encriptar) {
-            System.out.println(password);
+    public void setPassword(String password, boolean encrypt) {
+        if (encrypt) {
             this.password = encriptarPass(password);
         } else {
             this.password = password;
@@ -158,21 +157,21 @@ public class Usuario {
 
     /**
      *
-     * @param nombre
-     * @param apellidoPaterno
-     * @param apellidoMaterno
+     * @param employeeName
+     * @param paternalSurname
+     * @param maternalSurname
      * @return Genera el nombre del usuario apartir de su nombre y apellidos.
      */
-    private String generarNombreUsuario(String nombre,
-            String apellidoPaterno, String apellidoMaterno) {
+    private String generarNombreUsuario(String employeeName,
+            String paternalSurname, String maternalSurname) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
-                .append(nombre.substring(0, 1))
-                .append(apellidoPaterno)
-                .append(apellidoMaterno.substring(0, 1));
-        String usuario = stringBuilder.toString().toLowerCase();
-        this.setNombreUsuario(usuario);
-        return this.nombreUsuario;
+                .append(employeeName.substring(0, 1))
+                .append(paternalSurname)
+                .append(maternalSurname.substring(0, 1));
+        String user = stringBuilder.toString().toLowerCase();
+        this.setUserName(user);
+        return this.userName;
     }
 
     private String encriptarPass(String password) {
@@ -183,8 +182,8 @@ public class Usuario {
     public String toString() {
         return String.format("[ID: %s | Nombre Usuario: %s | Contraseña: %s | "
                 + "Clave Seguridad: %s]",
-                this.getIdUsuario(),
-                this.nombreUsuario,
+                this.getId(),
+                this.userName,
                 this.password,
                 this.claveSeguridad);
     }

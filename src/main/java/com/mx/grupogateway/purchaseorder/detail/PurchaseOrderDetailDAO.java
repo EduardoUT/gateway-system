@@ -41,7 +41,7 @@ public class PurchaseOrderDetailDAO extends ConnectionStatus {
                 + "VALUES(?,?,?,?,?,?,?)";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, purchaseOrderDetail.getPurchaseOrderDetailIdentifier());
+            preparedStatement.setString(1, purchaseOrderDetail.getId());
             preparedStatement.setString(2, purchaseOrderDetail.getPoStatus());
             preparedStatement.setLong(3, purchaseOrderDetail.getItemCode());
             preparedStatement.setString(4, purchaseOrderDetail.getItemDesc());
@@ -61,7 +61,7 @@ public class PurchaseOrderDetailDAO extends ConnectionStatus {
      * @return
      */
     public List<String> listarPurchaseOrderDetailIdentifiers(String purchaseOrderIdentifier) {
-        List<String> purchaseOrderList = new ArrayList<>();
+        List<String> purchaseOrders = new ArrayList<>();
         String sql = "SELECT PO_NO FROM PURCHASE_ORDER WHERE PO_NO = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, purchaseOrderIdentifier);
@@ -69,13 +69,13 @@ public class PurchaseOrderDetailDAO extends ConnectionStatus {
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     PurchaseOrderDetail purchaseOrder = new PurchaseOrderDetail(resultSet.getString("PO_NO"));
-                    purchaseOrderList.add(purchaseOrder.getPurchaseOrderDetailIdentifier());
+                    purchaseOrders.add(purchaseOrder.getId());
                 }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al consultar PurchaseOrder: {0}", e.getMessage());
         }
-        return purchaseOrderList;
+        return purchaseOrders;
     }
 
     /**
@@ -89,7 +89,7 @@ public class PurchaseOrderDetailDAO extends ConnectionStatus {
         String sql = "UPDATE PURCHASE_ORDER SET PO_STATUS = ? WHERE PO_NO = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, purchaseOrderDetail.getPoStatus());
-            preparedStatement.setString(2, purchaseOrderDetail.getPurchaseOrderDetailIdentifier());
+            preparedStatement.setString(2, purchaseOrderDetail.getId());
             preparedStatement.execute();
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al actualizar PurchaseOrder: {0}", e.getMessage());

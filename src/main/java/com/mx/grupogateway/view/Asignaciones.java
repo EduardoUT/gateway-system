@@ -6,10 +6,10 @@
 package com.mx.grupogateway.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import com.mx.grupogateway.employee.EmpleadoController;
+import com.mx.grupogateway.employee.EmployeeController;
 import com.mx.grupogateway.purchaseorder.assignment.PurchaseOrderAssignmentController;
 import com.mx.grupogateway.purchaseorder.PurchaseOrderController;
-import com.mx.grupogateway.employee.Empleado;
+import com.mx.grupogateway.employee.Employee;
 import com.mx.grupogateway.project.Project;
 import com.mx.grupogateway.purchaseorder.PurchaseOrder;
 import com.mx.grupogateway.purchaseorder.assignment.PurchaseOrderAssignment;
@@ -31,7 +31,7 @@ import javax.swing.event.ListSelectionEvent;
  */
 public final class Asignaciones extends javax.swing.JFrame {
 
-    private EmpleadoController empleadoController;
+    private EmployeeController employeeController;
     private PurchaseOrderController purchaseOrderController;
     private PurchaseOrderAssignmentController purchaseOrderAssignmentController;
     private int filaTablaProyectos;
@@ -49,7 +49,7 @@ public final class Asignaciones extends javax.swing.JFrame {
         filaTablaProyectos = tablaProyectos.getSelectedRow();
         filaTablaEmpleados = tablaEmpleados.getSelectedRow();
         filaTablaAsignaciones = tablaAsignaciones.getSelectedRow();
-        this.empleadoController = new EmpleadoController();
+        this.employeeController = new EmployeeController();
         this.purchaseOrderController = new PurchaseOrderController();
         this.purchaseOrderAssignmentController = new PurchaseOrderAssignmentController();
         cargarTablaEmpleados();
@@ -66,7 +66,7 @@ public final class Asignaciones extends javax.swing.JFrame {
     }
 
     private void cargarTablaEmpleados() {
-        List<Object[]> empleados = this.empleadoController.listar();
+        List<Object[]> empleados = this.employeeController.listar();
         TableDataModelUtil.loadTableDataModel(
                 tablaEmpleados.getModel(),
                 tablaEmpleados,
@@ -131,7 +131,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                     JOptionPane.INFORMATION_MESSAGE);
         } else {
             Project project = new Project();
-            project.setProjectId(Long.valueOf(tablaProyectos.getValueAt(filaTablaProyectos, 0).toString()));
+            project.setId(Long.valueOf(tablaProyectos.getValueAt(filaTablaProyectos, 0).toString()));
             PurchaseOrderDetail purchaseOrderDetail = new PurchaseOrderDetail(
                     tablaProyectos.getValueAt(filaTablaProyectos, 5).toString()
             );
@@ -139,7 +139,7 @@ public final class Asignaciones extends javax.swing.JFrame {
             purchaseOrder.setProject(project);
             purchaseOrder.setPurchaseOrderDetail(purchaseOrderDetail);
             PurchaseOrderAssignment purchaseOrderAssignment = new PurchaseOrderAssignment(
-                    new Empleado(
+                    new Employee(
                             Integer.valueOf(
                                     tablaEmpleados.getValueAt(filaTablaEmpleados, 0).toString()
                             ),

@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mx.grupogateway.employee;
+package com.mx.grupogateway.employee.category;
 
 import com.mx.grupogateway.factory.ConnectionFactory;
 import java.util.List;
@@ -11,31 +11,31 @@ import java.util.List;
  *
  * @author Eduardo Reyes Hernández
  */
-public class EmpleadoCategoriaController {
+public class EmployeeCategoryController {
 
-    private final EmpleadoCategoriaDAO empleadoCategoriaDAO;
+    private final EmployeeCategoryDAO employeeCategoryDAO;
 
-    public EmpleadoCategoriaController() {
-        this.empleadoCategoriaDAO = new EmpleadoCategoriaDAO(
+    public EmployeeCategoryController() {
+        this.employeeCategoryDAO = new EmployeeCategoryDAO(
                 new ConnectionFactory().realizarConexion()
         );
     }
 
     /**
-     * Guarda objeto de tipo EmpleadoCategoria.
+     * Guarda objeto de tipo EmployeeCategory.
      *
-     * @param empleadoCategoria
+     * @param employeeCategory
      */
-    public void guardar(EmpleadoCategoria empleadoCategoria) {
-        this.empleadoCategoriaDAO.guardar(empleadoCategoria);
+    public void guardar(EmployeeCategory employeeCategory) {
+        this.employeeCategoryDAO.guardar(employeeCategory);
     }
 
     /**
      *
-     * @return List de tipo EmpleadoCategoria.
+     * @return List de tipo EmployeeCategory.
      */
-    public List<EmpleadoCategoria> listar() {
-        return this.empleadoCategoriaDAO.listar();
+    public List<EmployeeCategory> listar() {
+        return this.employeeCategoryDAO.listar();
     }
 
     /**
@@ -46,7 +46,7 @@ public class EmpleadoCategoriaController {
      * @return
      */
     public int actualizar(String idCategoria, String nombreCategoria) {
-        return this.empleadoCategoriaDAO.actualizar(idCategoria, nombreCategoria);
+        return this.employeeCategoryDAO.actualizar(idCategoria, nombreCategoria);
     }
 
     /**
@@ -56,6 +56,6 @@ public class EmpleadoCategoriaController {
      * @return
      */
     public int eliminar(String idCategoria) {
-        return this.empleadoCategoriaDAO.eliminar(idCategoria);
+        return this.employeeCategoryDAO.eliminar(idCategoria);
     }
 }

@@ -4,11 +4,11 @@
  */
 package com.mx.grupogateway.system.factory;
 
-import com.mx.grupogateway.user.UsuarioController;
+import com.mx.grupogateway.user.UserController;
 import com.mx.grupogateway.factory.ConnectionFactory;
-import com.mx.grupogateway.employee.Empleado;
-import com.mx.grupogateway.employee.EmpleadoCategoria;
-import com.mx.grupogateway.user.Usuario;
+import com.mx.grupogateway.employee.Employee;
+import com.mx.grupogateway.employee.category.EmployeeCategory;
+import com.mx.grupogateway.user.User;
 import java.sql.Connection;
 import java.sql.SQLException;
 

@@ -55,7 +55,7 @@ public class ExcelDAO extends SwingWorker<Void, Integer> {
      */
     private boolean isProjectNotStoredInDatabase(Project project) {
         List<Long> projectIdentifiers = projectController
-                .listarProjectIdentifiers(project.getProjectId());
+                .listarProjectIdentifiers(project.getId());
         return projectIdentifiers.isEmpty();
     }
 
@@ -85,7 +85,7 @@ public class ExcelDAO extends SwingWorker<Void, Integer> {
                 = purchaseOrderDetailController
                         .listarPurchaseOrderDetailIdentifiers(
                                 purchaseOrderDetail
-                                        .getPurchaseOrderDetailIdentifier()
+                                        .getId()
                         );
         return purchaseOrdersDetailIdentifiers.isEmpty();
     }
@@ -102,8 +102,8 @@ public class ExcelDAO extends SwingWorker<Void, Integer> {
         Map<Long, String> purchaseOrderIdentifiers = purchaseOrderController
                 .listarPurchaseOrderIdentifiers(
                         purchaseOrder.getPurchaseOrderDetail()
-                                .getPurchaseOrderDetailIdentifier(),
-                        purchaseOrder.getProject().getProjectId()
+                                .getId(),
+                        purchaseOrder.getProject().getId()
                 );
         return purchaseOrderIdentifiers.isEmpty();
     }

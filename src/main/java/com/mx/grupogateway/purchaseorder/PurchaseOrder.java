@@ -168,16 +168,16 @@ public class PurchaseOrder implements Serializable {
         }
         PurchaseOrder otherPurchaseOrder = (PurchaseOrder) purchaseOrder;
         boolean isSamePurchasOrderIdentifier = purchaseOrderDetail
-                .getPurchaseOrderDetailIdentifier()
+                .getId()
                 .equals(otherPurchaseOrder
                         .getPurchaseOrderDetail()
-                        .getPurchaseOrderDetailIdentifier()
+                        .getId()
                 );
         boolean isSameProjectId = project
-                .getProjectId()
+                .getId()
                 .equals(otherPurchaseOrder
                         .getProject()
-                        .getProjectId()
+                        .getId()
                 );
         if (isSamePurchasOrderIdentifier && isSameProjectId) {
             return true;
@@ -188,8 +188,8 @@ public class PurchaseOrder implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(
-                purchaseOrderDetail.getPurchaseOrderDetailIdentifier(),
-                project.getProjectId()
+                purchaseOrderDetail.getId(),
+                project.getId()
         );
     }
 }

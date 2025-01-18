@@ -28,7 +28,7 @@ class PurchaseOrderDetailTest {
     @DisplayName("Debería comparar objetos con mismo purchaseOrderDetailIdentifier.")
     @Test
     void testPurchaseOrderDetailEquals() {
-        purchaseOrderDetail.setPurchaseOrderDetailIdentifier("6081150685-75");
+        purchaseOrderDetail.setId("6081150685-75");
         assertTrue(purchaseOrderDetail.equals(new PurchaseOrderDetail("6081150685-75")));
     }
 

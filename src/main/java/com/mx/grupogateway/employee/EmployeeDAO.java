@@ -4,9 +4,10 @@
  */
 package com.mx.grupogateway.employee;
 
+import com.mx.grupogateway.employee.category.EmployeeCategory;
 import com.mx.grupogateway.config.LoggerConfig;
 import com.mx.grupogateway.config.ConnectionStatus;
-import com.mx.grupogateway.user.Usuario;
+import com.mx.grupogateway.user.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,61 +17,60 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 
 /**
  *
  * @author Eduardo Reyes Hernández
  */
-public class EmpleadoDAO extends ConnectionStatus {
+public class EmployeeDAO extends ConnectionStatus {
 
     private static final Logger logger = LoggerConfig.getLogger();
 
-    public EmpleadoDAO(Connection con) {
+    public EmployeeDAO(Connection con) {
         super(con);
     }
 
     /**
      * Realiza el guardado en la BD del empleado.
      *
-     * @param empleado
+     * @param employee
      * @return Devuelve el identificador si la inserción se ejecuto
      * correctamente, caso contrario devuelve -1.
      */
-    public int guardar(Empleado empleado) {
-        int idEmpleado = -1;
+    public int guardar(Employee employee) {
+        int employeeId = -1;
         String sql = "INSERT INTO EMPLEADOS "
                 + "(NOMBRE, APE_PAT, "
                 + "APE_MAT, ID_USUARIO, ID_CATEGORIA_EMPLEADO) "
                 + "VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, empleado.getNombre());
-            preparedStatement.setString(2, empleado.getApellidoPaterno());
-            preparedStatement.setString(3, empleado.getApellidoMaterno());
-            preparedStatement.setInt(4, empleado.getUsuario().getIdUsuario());
-            preparedStatement.setString(5, empleado.getEmpleadoCategoria().getidCategoria());
+            preparedStatement.setString(1, employee.getName());
+            preparedStatement.setString(2, employee.getPaternalSurname());
+            preparedStatement.setString(3, employee.getMaternalSurname());
+            preparedStatement.setInt(4, employee.getUser().getId());
+            preparedStatement.setString(5, employee.getEmployeeCategory().getId());
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 if (resultSet.next()) {
-                    idEmpleado = resultSet.getInt(1);
-                    empleado.setIdEmpleado(idEmpleado);
+                    employeeId = resultSet.getInt(1);
+                    employee.setId(employeeId);
                 }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al guardar empleado: {0}", e.getMessage());
         }
-        return idEmpleado;
+        return employeeId;
     }
 
     /**
      * Devuelve un listado con todos los valores de la BD correspondientes a los
-     * atributos del objeto de tipo Empleado.
+ atributos del objeto de tipo Employee.
      *
-     * @return Lista de tipo Empleado de la BD.
+     * @return Lista de tipo Employee de la BD.
      */
-    public List<Empleado> listar() {
-        List<Empleado> empleados = new ArrayList<>();
+    public List<Employee> listar() {
+        List<Employee> employees = new ArrayList<>();
         String sql = "SELECT ID_EMPLEADO, NOMBRE, APE_PAT, APE_MAT, ID_USUARIO, "
                 + "NOMBRE_CATEGORIA, EMPLEADOS.ID_CATEGORIA_EMPLEADO "
                 + "FROM CATEGORIA_EMPLEADO "
@@ -83,14 +83,13 @@ public class EmpleadoDAO extends ConnectionStatus {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    empleados.add(
-                            new Empleado(
+                    employees.add(new Employee(
                                     resultSet.getInt("ID_EMPLEADO"),
                                     resultSet.getString("NOMBRE"),
                                     resultSet.getString("APE_PAT"),
                                     resultSet.getString("APE_MAT"),
-                                    new Usuario(resultSet.getInt("ID_USUARIO")),
-                                    new EmpleadoCategoria(
+                                    new User(resultSet.getInt("ID_USUARIO")),
+                                    new EmployeeCategory(
                                             resultSet.getString("ID_CATEGORIA_EMPLEADO"),
                                             resultSet.getString("NOMBRE_CATEGORIA")
                                     )
@@ -101,7 +100,7 @@ public class EmpleadoDAO extends ConnectionStatus {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al consultar empleado: {0}", e.getMessage());
         }
-        return empleados;
+        return employees;
     }
 
     /**

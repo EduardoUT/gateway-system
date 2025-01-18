@@ -4,7 +4,7 @@
  */
 package com.mx.grupogateway.system.factory;
 
-import com.mx.grupogateway.user.Usuario;
+import com.mx.grupogateway.user.User;
 import java.sql.Timestamp;
 import java.util.Date;
 import javax.swing.ImageIcon;
@@ -16,7 +16,7 @@ import javax.swing.ImageIcon;
 public class TestKeyGenerator {
 
     public static void main(String[] args) {
-        //Usuario usuario = new Usuario("Lalo", "1234");
+        //Usuario usuario = new User("Lalo", "1234");
         //System.out.println(usuario.getPassword());
         //System.out.println(usuario.checkUser("Lalo", "1234"));
         //System.out.println(ProtectorData.encriptar("rtp333"));

@@ -8,7 +8,7 @@ import com.mx.grupogateway.purchaseorder.detail.PurchaseOrderDetailController;
 import com.mx.grupogateway.purchaseorder.PurchaseOrderController;
 import com.mx.grupogateway.purchaseorder.assignment.PurchaseOrderAssignmentDAO;
 import com.mx.grupogateway.factory.ConnectionFactory;
-import com.mx.grupogateway.employee.Empleado;
+import com.mx.grupogateway.employee.Employee;
 import com.mx.grupogateway.project.Project;
 import com.mx.grupogateway.purchaseorder.PurchaseOrder;
 import com.mx.grupogateway.purchaseorder.assignment.PurchaseOrderAssignment;
@@ -79,22 +79,22 @@ public class PurchaseOrderAssignmentController {
         List<Object[]> dataModelPurchaseOrderAssignments = new ArrayList<>();
         if (!purchaseOrderAssignments.isEmpty()) {
             for (PurchaseOrderAssignment purchaseOrderAssignment : purchaseOrderAssignments) {
-                Empleado empleado = purchaseOrderAssignment.getEmpleado();
+                Employee empleado = purchaseOrderAssignment.getEmployee();
                 PurchaseOrder purchaseOrder = purchaseOrderAssignment.getPurchaseOrder();
                 PurchaseOrderDetail purchaseOrderDetail = purchaseOrder.getPurchaseOrderDetail();
                 Project project = purchaseOrder.getProject();
                 Site site = project.getSite();
                 dataModelPurchaseOrderAssignments.add(
                         new Object[]{
-                            empleado.getIdEmpleado(),
-                            empleado.getNombre(),
-                            empleado.getApellidoPaterno(),
-                            empleado.getApellidoMaterno(),
-                            purchaseOrderAssignment.getFechaAsignacion(),
-                            project.getProjectId(),
-                            purchaseOrderDetail.getPurchaseOrderDetailIdentifier(),
-                            purchaseOrderAssignment.getImporte(),
-                            purchaseOrderAssignment.getTotalPagar(),
+                            empleado.getId(),
+                            empleado.getName(),
+                            empleado.getPaternalSurname(),
+                            empleado.getMaternalSurname(),
+                            purchaseOrderAssignment.getAssignmentDate(),
+                            project.getId(),
+                            purchaseOrderDetail.getId(),
+                            purchaseOrderAssignment.getAmount(),
+                            purchaseOrderAssignment.getTotalPayment(),
                             purchaseOrderAssignment.getStatus(),
                             project.getCustomer(),
                             project.getProjectName(),

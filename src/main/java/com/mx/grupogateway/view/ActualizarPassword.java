@@ -5,8 +5,8 @@
 package com.mx.grupogateway.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import com.mx.grupogateway.user.UsuarioController;
-import com.mx.grupogateway.user.Usuario;
+import com.mx.grupogateway.user.UserController;
+import com.mx.grupogateway.user.User;
 import com.mx.grupogateway.util.ValidacionJPasswordField;
 import com.mx.grupogateway.util.IconoVentana;
 import java.awt.event.MouseEvent;
@@ -20,8 +20,8 @@ import javax.swing.JOptionPane;
 public class ActualizarPassword extends javax.swing.JFrame {
 
     private JFrame jFrame;
-    private UsuarioController usuarioController;
-    private Usuario usuario;
+    private UserController userController;
+    private User user;
 
     public ActualizarPassword() {
         initComponents();
@@ -30,15 +30,15 @@ public class ActualizarPassword extends javax.swing.JFrame {
 
     private void iniciarProcesos() {
         cargarIconoVentana();
-        this.usuarioController = new UsuarioController();
+        this.userController = new UserController();
     }
 
     private void cargarIconoVentana() {
         this.setIconImage(IconoVentana.getIconoVentana());
     }
 
-    protected void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    protected void setUser(User user) {
+        this.user = user;
     }
 
     protected void setJFrame(JFrame jFrame) {
@@ -75,14 +75,14 @@ public class ActualizarPassword extends javax.swing.JFrame {
     }
 
     private void consultarPasswordActual() {
-        usuario.setPassword(String.valueOf(
+        user.setPassword(String.valueOf(
                 passwordActual.getPassword()
         ), false);
         boolean passwordValida
-                = this.usuarioController.esPasswordValida(usuario);
+                = this.userController.esPasswordValida(user);
         if (passwordValida) {
-            usuario.setPassword(String.valueOf(checkPassword.getPassword()), false);
-            int registrosAfectados = this.usuarioController.actualizarPassword(usuario);
+            user.setPassword(String.valueOf(checkPassword.getPassword()), false);
+            int registrosAfectados = this.userController.actualizarPassword(user);
             if (registrosAfectados > 0) {
                 JOptionPane.showMessageDialog(null,
                         "Usuario actualizado éxitosamente.",

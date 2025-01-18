@@ -5,12 +5,12 @@
 package com.mx.grupogateway.view;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
-import com.mx.grupogateway.employee.EmpleadoCategoriaController;
-import com.mx.grupogateway.employee.EmpleadoController;
-import com.mx.grupogateway.user.UsuarioController;
-import com.mx.grupogateway.employee.Empleado;
-import com.mx.grupogateway.employee.EmpleadoCategoria;
-import com.mx.grupogateway.user.Usuario;
+import com.mx.grupogateway.employee.category.EmployeeCategoryController;
+import com.mx.grupogateway.employee.EmployeeController;
+import com.mx.grupogateway.user.UserController;
+import com.mx.grupogateway.employee.Employee;
+import com.mx.grupogateway.employee.category.EmployeeCategory;
+import com.mx.grupogateway.user.User;
 import com.mx.grupogateway.util.IconoVentana;
 import com.mx.grupogateway.util.TableDataModelUtil;
 import com.mx.grupogateway.util.AccionesTabla;
@@ -27,10 +27,10 @@ import javax.swing.JOptionPane;
  */
 public class Gestion extends javax.swing.JFrame {
 
-    private EmpleadoController empleadoController;
-    private EmpleadoCategoriaController empleadoCargoController;
-    private UsuarioController usuarioController;
-    private Usuario usuario;
+    private EmployeeController employeeController;
+    private EmployeeCategoryController employeeCategoryController;
+    private UserController userController;
+    private User user;
 
     /**
      * Creates new form Gestion
@@ -42,9 +42,9 @@ public class Gestion extends javax.swing.JFrame {
 
     private void iniciarProcesos() {
         cargarIconoVentana();
-        this.empleadoController = new EmpleadoController();
-        this.empleadoCargoController = new EmpleadoCategoriaController();
-        this.usuarioController = new UsuarioController();
+        this.employeeController = new EmployeeController();
+        this.employeeCategoryController = new EmployeeCategoryController();
+        this.userController = new UserController();
         configurarFormularioEmpleado();
         cargarTablaUsuario();
     }
@@ -60,27 +60,27 @@ public class Gestion extends javax.swing.JFrame {
         this.setIconImage(IconoVentana.getIconoVentana());
     }
 
-    protected void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    protected void setUser(User user) {
+        this.user = user;
     }
 
     /**
-     * Construyendo objeto de tipo Empleado y pasandolo por parámetro en el
-     * método guardar() del EmpleadoController.
+     * Construyendo objeto de tipo Employee y pasandolo por parámetro en el
+ método guardar() del EmployeeController.
      */
     private void guardarEmpleado() {
         if (sonCamposValidosEmpleado()) {
-            Empleado empleado = new Empleado(
+            Employee empleado = new Employee(
                     campoNombre.getText(),
                     campoApellidoP.getText(),
                     campoApellidoM.getText(),
-                    new EmpleadoCategoria(
+                    new EmployeeCategory(
                             Integer.toString(
                                     empleadoCargos.getSelectedIndex()),
                             empleadoCargos.getSelectedItem().toString()
                     )
             );
-            int idEmpleado = this.empleadoController.guardar(empleado);
+            int idEmpleado = this.employeeController.guardar(empleado);
             if (idEmpleado != -1) {
                 JOptionPane.showMessageDialog(null, "Empleado guardado "
                         + "éxitosamente.");
@@ -103,11 +103,11 @@ public class Gestion extends javax.swing.JFrame {
     }
 
     /**
-     * Obteniendo List de tipo Empleado del método listar() del
-     * EmpleadoController y asignando registros en la tablaEmpleado.
+     * Obteniendo List de tipo Employee del método listar() del
+ EmployeeController y asignando registros en la tablaEmpleado.
      */
     private void cargarTablaEmpleado() {
-        List<Object[]> empleados = this.empleadoController.listar();
+        List<Object[]> empleados = this.employeeController.listar();
         TableDataModelUtil.loadTableDataModel(
                 tablaEmpleado.getModel(),
                 tablaEmpleado,
@@ -119,12 +119,12 @@ public class Gestion extends javax.swing.JFrame {
 
     /**
      * Método que recopila los datos adquiridos de la tablaEmpleado pasados por
-     * parámetro al método modificar() del EmpleadoController.
+ parámetro al método modificar() del EmployeeController.
      */
     private void actualizarEmpleado() {
         if (sonCamposValidosEmpleado()) {
             int lineasActualizadas;
-            lineasActualizadas = this.empleadoController
+            lineasActualizadas = this.employeeController
                     .actualizar(AccionesTabla
                             .obtenerUUID(tablaEmpleado, 0),
                             campoNombre.getText(),
@@ -148,10 +148,10 @@ public class Gestion extends javax.swing.JFrame {
 
     /**
      * Recopila el identificador del empleado de la tabla tablaEmpleado y lo
-     * pasa por parámetro en el método eliminar() del EmpleadoController.
+ pasa por parámetro en el método eliminar() del EmployeeController.
      */
     private void eliminarEmpleado() {
-        int registrosAfectados = this.empleadoController.eliminar(
+        int registrosAfectados = this.employeeController.eliminar(
                 AccionesTabla.obtenerUUID(tablaEmpleado, 0)
         );
         if (registrosAfectados > 0) {
@@ -219,19 +219,19 @@ public class Gestion extends javax.swing.JFrame {
         DefaultComboBoxModel<String> modeloComboBoxCargoEmpleado;
         modeloComboBoxCargoEmpleado = (DefaultComboBoxModel) empleadoCargos.getModel();
         modeloComboBoxCargoEmpleado.addElement("Seleccione un cargo");
-        List<EmpleadoCategoria> listaCargos = this.empleadoCargoController
+        List<EmployeeCategory> listaCargos = this.employeeCategoryController
                 .listar();
-        for (EmpleadoCategoria empleadoCategoria : listaCargos) {
-            modeloComboBoxCargoEmpleado.addElement(empleadoCategoria.getNombreCategoria());
+        for (EmployeeCategory empleadoCategoria : listaCargos) {
+            modeloComboBoxCargoEmpleado.addElement(empleadoCategoria.getCategoryName());
         }
     }
 
     /**
-     * Obteniendo List de tipo Usuario de UsuarioController y asignando
-     * registros en la TablaUsuario.
+     * Obteniendo List de tipo User de UserController y asignando
+ registros en la TablaUsuario.
      */
     private void cargarTablaUsuario() {
-        List<Object[]> usuarios = this.usuarioController.listar();
+        List<Object[]> usuarios = this.userController.listar();
         TableDataModelUtil.loadTableDataModel(
                 tablaUsuario.getModel(),
                 tablaUsuario,
@@ -250,11 +250,11 @@ public class Gestion extends javax.swing.JFrame {
     }
 
     /**
-     * Recopila el identificador del usuario de la tabla tablaUsuario y lo pasa
-     * por parámetro en el método eliminar() del UsuarioController.
+     * Recopila el identificador del user de la tabla tablaUsuario y lo pasa
+ por parámetro en el método eliminar() del UserController.
      */
     private void eliminarUsuario() {
-        int cantidadEliminada = this.usuarioController
+        int cantidadEliminada = this.userController
                 .eliminar(AccionesTabla
                         .obtenerID(tablaUsuario, 0));
         if (cantidadEliminada > 0) {
@@ -643,7 +643,7 @@ public class Gestion extends javax.swing.JFrame {
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         evt.getID();
         ActualizarPassword actualizarPassword = new ActualizarPassword();
-        actualizarPassword.setUsuario(usuario);
+        actualizarPassword.setUser(user);
         actualizarPassword.setJFrame(this);
         actualizarPassword.setVisible(true);
         this.setVisible(false);

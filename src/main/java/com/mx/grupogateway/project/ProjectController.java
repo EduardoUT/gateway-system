@@ -15,10 +15,10 @@ import java.util.List;
  */
 public class ProjectController {
 
-    private final ProjectDAO proyectoDAO;
+    private final ProjectDAO projectDAO;
 
     public ProjectController() {
-        this.proyectoDAO = new ProjectDAO(
+        this.projectDAO = new ProjectDAO(
                 new ConnectionFactory().realizarConexion()
         );
     }
@@ -26,10 +26,10 @@ public class ProjectController {
     /**
      * Realiza el guardado de un nuevo proyecto.
      *
-     * @param proyecto
+     * @param project
      */
-    public void guardar(Project proyecto) {
-        this.proyectoDAO.guardar(proyecto);
+    public void guardar(Project project) {
+        this.projectDAO.guardar(project);
     }
 
     /**
@@ -38,7 +38,7 @@ public class ProjectController {
      * @return
      */
     public List<Project> listar() {
-        return this.proyectoDAO.listar();
+        return this.projectDAO.listar();
     }
 
     /**
@@ -49,6 +49,6 @@ public class ProjectController {
      * @return Lista de identificadores,
      */
     public List<Long> listarProjectIdentifiers(Long projectId) {
-        return this.proyectoDAO.listarProjectId(projectId);
+        return this.projectDAO.listarProjectId(projectId);
     }
 }

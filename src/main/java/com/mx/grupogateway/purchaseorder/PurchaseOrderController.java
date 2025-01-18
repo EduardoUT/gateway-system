@@ -54,12 +54,12 @@ public class PurchaseOrderController {
                 Site site = project.getSite();
                 dataModelPurchaseOrder.add(
                         new Object[]{
-                            project.getProjectId(),
+                            project.getId(),
                             project.getProjectCode(),
                             project.getProjectName(),
                             project.getCustomer(),
                             purchaseOrderDetail.getPoStatus(),
-                            purchaseOrderDetail.getPurchaseOrderDetailIdentifier(),
+                            purchaseOrderDetail.getId(),
                             site.getShipmentNo(),
                             purchaseOrder.getPoLineNo(),
                             site.getSiteCode(),

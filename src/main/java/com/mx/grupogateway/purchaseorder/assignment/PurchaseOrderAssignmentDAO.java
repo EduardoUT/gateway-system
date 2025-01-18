@@ -5,7 +5,7 @@
 package com.mx.grupogateway.purchaseorder.assignment;
 
 import com.mx.grupogateway.config.LoggerConfig;
-import com.mx.grupogateway.employee.Empleado;
+import com.mx.grupogateway.employee.Employee;
 import com.mx.grupogateway.project.Project;
 import com.mx.grupogateway.purchaseorder.PurchaseOrder;
 import com.mx.grupogateway.purchaseorder.assignment.PurchaseOrderAssignment;
@@ -50,10 +50,10 @@ public class PurchaseOrderAssignmentDAO extends ConnectionStatus {
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
             for (Long purchaseOrderProjectIdentifier : purchaseOrderProjectIdentifiers) {
-                preparedStatement.setInt(1, purchaseOrderAssignment.getEmpleado().getIdEmpleado());
+                preparedStatement.setInt(1, purchaseOrderAssignment.getEmployee().getId());
                 preparedStatement.setLong(2, purchaseOrderProjectIdentifier);
-                preparedStatement.setBigDecimal(3, purchaseOrderAssignment.getImporte());
-                preparedStatement.setBigDecimal(4, purchaseOrderAssignment.getTotalPagar());
+                preparedStatement.setBigDecimal(3, purchaseOrderAssignment.getAmount());
+                preparedStatement.setBigDecimal(4, purchaseOrderAssignment.getTotalPayment());
                 preparedStatement.setString(5, purchaseOrderAssignment.getStatusAsBinary());
                 preparedStatement.execute();
             }
@@ -101,7 +101,7 @@ public class PurchaseOrderAssignmentDAO extends ConnectionStatus {
                     site.setSiteCode(resultSet.getString("SITE_CODE"));
                     site.setSiteName(resultSet.getString("SITE_NAME"));
                     Project project = new Project();
-                    project.setProjectId(resultSet.getLong("ID_PROJECT"));
+                    project.setId(resultSet.getLong("ID_PROJECT"));
                     project.setSite(site);
                     project.setProjectName(resultSet.getString("PROJECT_NAME"));
                     project.setCustomer(resultSet.getString("CUSTOMER"));
@@ -109,7 +109,7 @@ public class PurchaseOrderAssignmentDAO extends ConnectionStatus {
                     project.setPublishDate(resultSet.getTimestamp("PUBLISH_DATE")
                             .toLocalDateTime());
                     PurchaseOrderDetail purchaseOrderDetail = new PurchaseOrderDetail();
-                    purchaseOrderDetail.setPurchaseOrderDetailIdentifier(resultSet.getString("PO_NO"));
+                    purchaseOrderDetail.setId(resultSet.getString("PO_NO"));
                     purchaseOrderDetail.setPoStatus(resultSet.getString("PO_STATUS"));
                     purchaseOrderDetail.setItemDesc(resultSet.getString("ITEM_DESC"));
                     purchaseOrderDetail.setRequestedQty(resultSet.getBigDecimal("REQUESTED_QTY"));
@@ -123,20 +123,20 @@ public class PurchaseOrderAssignmentDAO extends ConnectionStatus {
                     purchaseOrder.setBilledQty(resultSet.getBigDecimal("BILLED_QTY"));
                     purchaseOrder.setUnit(resultSet.getString("UNIT"));
                     purchaseOrder.setUnitPrice(resultSet.getBigDecimal("UNIT_PRICE"));
-                    Empleado empleado = new Empleado(
+                    Employee empleado = new Employee(
                             resultSet.getInt("ID_EMPLEADO"),
                             resultSet.getString("NOMBRE"),
                             resultSet.getString("APE_PAT"),
                             resultSet.getString("APE_MAT")
                     );
                     PurchaseOrderAssignment purchaseOrderAssignment = new PurchaseOrderAssignment();
-                    purchaseOrderAssignment.setEmpleado(empleado);
+                    purchaseOrderAssignment.setEmployee(empleado);
                     purchaseOrderAssignment.setPurchaseOrder(purchaseOrder);
-                    purchaseOrderAssignment.setFechaAsignacion(
+                    purchaseOrderAssignment.setAssignmentDate(
                             resultSet.getTimestamp("FECHA_ASIGNACION")
                     );
-                    purchaseOrderAssignment.setImporte(resultSet.getBigDecimal("IMPORTE"));
-                    purchaseOrderAssignment.setTotalPagar(resultSet.getBigDecimal("TOTAL_PAGAR"));
+                    purchaseOrderAssignment.setAmount(resultSet.getBigDecimal("IMPORTE"));
+                    purchaseOrderAssignment.setTotalPayment(resultSet.getBigDecimal("TOTAL_PAGAR"));
                     purchaseOrderAssignment.setStatus(resultSet.getBoolean("STATUS_PAYMENT"));
                     purchaseOrderAssignments.add(purchaseOrderAssignment);
                 }

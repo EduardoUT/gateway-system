@@ -33,7 +33,7 @@ class ProjectTest {
     void testNullPointerExceptionOnProject() {
         NullPointerException e;
         e = assertThrowsExactly(NullPointerException.class, () -> {
-            project.setProjectId(null);
+            project.setId(null);
         });
         assertEquals("projectId no puede ser null.", e.getMessage());
 
@@ -73,9 +73,9 @@ class ProjectTest {
     @ParameterizedTest()
     @ValueSource(longs = {102517684201L, Long.MAX_VALUE})
     void testProjectId(Long projectId) {
-        project.setProjectId(projectId);
-        assertTrue(project.getProjectId() > 0);
-        assertTrue(project.getProjectId() <= Long.MAX_VALUE);
+        project.setId(projectId);
+        assertTrue(project.getId() > 0);
+        assertTrue(project.getId() <= Long.MAX_VALUE);
     }
 
     @DisplayName("Debería lanzar un IllegalArgumentException cuando se ingresa "
@@ -84,18 +84,18 @@ class ProjectTest {
     void testProjectIdBoundaries() {
         IllegalArgumentException e;
         e = assertThrowsExactly(IllegalArgumentException.class, () -> {
-            project.setProjectId(0L);
+            project.setId(0L);
         });
         assertEquals("id menor o igual a 0, o mayor al limite permitido.",
                 e.getMessage());
         e = assertThrowsExactly(IllegalArgumentException.class, () -> {
-            project.setProjectId(Long.MIN_VALUE);
+            project.setId(Long.MIN_VALUE);
         });
         assertEquals("id menor o igual a 0, o mayor al limite permitido.",
                 e.getMessage());
 
         e = assertThrowsExactly(IllegalArgumentException.class, () -> {
-            project.setProjectId(Long.MAX_VALUE + 1);
+            project.setId(Long.MAX_VALUE + 1);
         });
         assertEquals("id menor o igual a 0, o mayor al limite permitido.",
                 e.getMessage());
@@ -122,7 +122,7 @@ class ProjectTest {
     @Test
     void testProjectEquals() {
         Project projectB = new Project(62446507901L);
-        project.setProjectId(62446507901L);
+        project.setId(62446507901L);
         assertTrue(project.equals(projectB));
     }
 

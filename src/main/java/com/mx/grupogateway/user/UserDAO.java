@@ -5,10 +5,10 @@
 package com.mx.grupogateway.user;
 
 import com.mx.grupogateway.config.LoggerConfig;
-import com.mx.grupogateway.employee.Empleado;
-import com.mx.grupogateway.employee.EmpleadoCategoria;
+import com.mx.grupogateway.employee.Employee;
+import com.mx.grupogateway.employee.category.EmployeeCategory;
 import com.mx.grupogateway.config.ConnectionStatus;
-import com.mx.grupogateway.user.Usuario;
+import com.mx.grupogateway.user.User;
 import com.mx.grupogateway.util.SecurityPassword;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,13 +26,13 @@ import java.util.logging.Logger;
  *
  * @author Eduardo Reyes Hernández
  */
-public class UsuarioDAO extends ConnectionStatus {
+public class UserDAO extends ConnectionStatus {
 
-    private static final String ID_USUARIO = "ID_USUARIO";
-    private static final String PASSWORD_USUARIO = "PASSWORD_USUARIO";
+    private static final String ID_USER = "ID_USUARIO";
+    private static final String PASSWORD_USER = "PASSWORD_USUARIO";
     private static final Logger logger = LoggerConfig.getLogger();
 
-    public UsuarioDAO(Connection con) {
+    public UserDAO(Connection con) {
         super(con);
     }
 
@@ -41,73 +41,73 @@ public class UsuarioDAO extends ConnectionStatus {
      * en la BD, a fin de poder asegurar la integridad y relación con la tabla
      * empleados.
      *
-     * @param usuario
+     * @param user
      * @return Identificador del usuario generado por la Base de datos.
      */
-    public int guardar(Usuario usuario) {
-        int idUsuario = -1;
-        String sql = "INSERT INTO USUARIOS (NOMBRE_USUARIO, " + PASSWORD_USUARIO + ")"
+    public int guardar(User user) {
+        int userId = -1;
+        String sql = "INSERT INTO USUARIOS (NOMBRE_USUARIO, " + PASSWORD_USER + ")"
                 + "VALUES (?, ?)";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, usuario.getNombreUsuario());
-            preparedStatement.setString(2, usuario.getPassword());
+            preparedStatement.setString(1, user.getUserName());
+            preparedStatement.setString(2, user.getPassword());
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 if (resultSet.next()) {
-                    idUsuario = resultSet.getInt(1);
-                    usuario.setIdUsuario(idUsuario);
+                    userId = resultSet.getInt(1);
+                    user.setId(userId);
                 }
 
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al guardar usuario: {0}", e.getMessage());
         }
-        return idUsuario;
+        return userId;
     }
 
     /**
      *
-     * @return List de tipo Usuario de la BD.
+     * @return List de tipo User de la BD.
      */
-    public List<Usuario> listar() {
-        List<Usuario> resultado = new ArrayList<>();
-        String sql = "SELECT " + ID_USUARIO + ", NOMBRE_USUARIO FROM USUARIOS";
+    public List<User> listar() {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT " + ID_USER + ", NOMBRE_USUARIO FROM USUARIOS";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    Usuario fila = new Usuario(
-                            resultSet.getInt(ID_USUARIO),
+                    User fila = new User(
+                            resultSet.getInt(ID_USER),
                             resultSet.getString("NOMBRE_USUARIO")
                     );
-                    resultado.add(fila);
+                    users.add(fila);
                 }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al consultar usuarios: {0}", e.getMessage());
         }
-        return resultado;
+        return users;
     }
 
-    public boolean esPerfilValido(Usuario usuario) {
+    public boolean esPerfilValido(User user) {
         HashMap<String, Integer> hashMap = new HashMap<>();
-        String sql = "SELECT " + PASSWORD_USUARIO + ", " + ID_USUARIO + " FROM USUARIOS WHERE NOMBRE_USUARIO = ?";
+        String sql = "SELECT " + PASSWORD_USER + ", " + ID_USER + " FROM USUARIOS WHERE NOMBRE_USUARIO = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
-            preparedStatement.setString(1, usuario.getNombreUsuario());
+            preparedStatement.setString(1, user.getUserName());
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     hashMap.put(
-                            resultSet.getString(PASSWORD_USUARIO),
-                            resultSet.getInt(ID_USUARIO)
+                            resultSet.getString(PASSWORD_USER),
+                            resultSet.getInt(ID_USER)
                     );
                 }
                 for (Map.Entry<String, Integer> registro : hashMap.entrySet()) {
                     String clave = registro.getKey();
-                    if (SecurityPassword.assertData(clave, usuario.getPassword())) {
+                    if (SecurityPassword.assertData(clave, user.getPassword())) {
                         Integer valor = registro.getValue();
-                        usuario.setIdUsuario(valor);
+                        user.setId(valor);
                         break;
                     }
                 }
@@ -116,7 +116,7 @@ public class UsuarioDAO extends ConnectionStatus {
             logger.log(Level.SEVERE, "Error al verificar credenciales de usuario: {0}",
                     e.getMessage());
         }
-        return (usuario.getIdUsuario() != 0 || usuario.getIdUsuario() != null);
+        return (user.getId() != 0 || user.getId() != null);
     }
 
     /**
@@ -129,13 +129,13 @@ public class UsuarioDAO extends ConnectionStatus {
      */
     public boolean esPasswordNula(Integer idUsuario) {
         String passwordNula = "";
-        String sql = "SELECT " + PASSWORD_USUARIO + " FROM USUARIOS WHERE " + ID_USUARIO + " = ?";
+        String sql = "SELECT " + PASSWORD_USER + " FROM USUARIOS WHERE " + ID_USER + " = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setInt(1, idUsuario);
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    passwordNula = resultSet.getString(PASSWORD_USUARIO);
+                    passwordNula = resultSet.getString(PASSWORD_USER);
                 }
             }
         } catch (SQLException e) {
@@ -149,19 +149,19 @@ public class UsuarioDAO extends ConnectionStatus {
      * el usuario con la encriptada.<br>
      * Si es NULL se omite la consulta SQL.
      *
-     * @param usuario
+     * @param user
      * @return
      */
-    public boolean esPasswordValida(Usuario usuario) {
+    public boolean esPasswordValida(User user) {
         boolean esValida = false;
-        Usuario usuarioPassword = new Usuario();
-        String sql = "SELECT " + PASSWORD_USUARIO + " FROM USUARIOS WHERE " + ID_USUARIO + " = ?";
+        User usuarioPassword = new User();
+        String sql = "SELECT " + PASSWORD_USER + " FROM USUARIOS WHERE " + ID_USER + " = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
-            preparedStatement.setInt(1, usuario.getIdUsuario());
+            preparedStatement.setInt(1, user.getId());
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    usuarioPassword.setPassword(resultSet.getString(PASSWORD_USUARIO), false);
+                    usuarioPassword.setPassword(resultSet.getString(PASSWORD_USER), false);
                 }
             }
         } catch (SQLException e) {
@@ -170,7 +170,7 @@ public class UsuarioDAO extends ConnectionStatus {
         if (usuarioPassword.getPassword() != null || !usuarioPassword.getPassword().isEmpty()) {
             esValida = SecurityPassword.assertData(
                     usuarioPassword.getPassword(),
-                    usuario.getPassword());
+                    user.getPassword());
         }
         return esValida;
     }
@@ -179,28 +179,28 @@ public class UsuarioDAO extends ConnectionStatus {
      * Consulta los identificadores de usuario y la categoría a la que pertenece
      * un empleado.
      *
-     * @param usuario
+     * @param user
      * @return
      */
-    public Empleado consultarPerfilUsuario(Usuario usuario) {
-        Empleado empleado = null;
-        EmpleadoCategoria empleadoCategoria = new EmpleadoCategoria();
-        if (esPerfilValido(usuario)) {
-            String sql = "SELECT USUARIOS." + ID_USUARIO + ", ID_CATEGORIA_EMPLEADO "
+    public Employee consultarPerfilUsuario(User user) {
+        Employee employee = null;
+        EmployeeCategory employeeCategory = new EmployeeCategory();
+        if (esPerfilValido(user)) {
+            String sql = "SELECT USUARIOS." + ID_USER + ", ID_CATEGORIA_EMPLEADO "
                     + "FROM EMPLEADOS "
                     + "INNER JOIN USUARIOS "
-                    + "ON EMPLEADOS." + ID_USUARIO + " = USUARIOS." + ID_USUARIO + " "
-                    + "WHERE USUARIOS.NOMBRE_USUARIO = ? AND USUARIOS." + ID_USUARIO + " = ?";
+                    + "ON EMPLEADOS." + ID_USER + " = USUARIOS." + ID_USER + " "
+                    + "WHERE USUARIOS.NOMBRE_USUARIO = ? AND USUARIOS." + ID_USER + " = ?";
             try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
-                preparedStatement.setString(1, usuario.getNombreUsuario());
-                preparedStatement.setInt(2, usuario.getIdUsuario());
+                preparedStatement.setString(1, user.getUserName());
+                preparedStatement.setInt(2, user.getId());
                 preparedStatement.execute();
                 try (ResultSet resultSet = preparedStatement.getResultSet()) {
                     while (resultSet.next()) {
-                        empleadoCategoria.setIdCategoria(resultSet.getString("ID_CATEGORIA_EMPLEADO"));
-                        empleado = new Empleado(
-                                new Usuario(resultSet.getInt(ID_USUARIO)),
-                                empleadoCategoria
+                        employeeCategory.setId(resultSet.getString("ID_CATEGORIA_EMPLEADO"));
+                        employee = new Employee(
+                                new User(resultSet.getInt(ID_USER)),
+                                employeeCategory
                         );
                     }
                 }
@@ -208,7 +208,7 @@ public class UsuarioDAO extends ConnectionStatus {
                 logger.log(Level.SEVERE, "Error al consultar el perfil de usuario: {0}", e.getMessage());
             }
         }
-        return empleado;
+        return employee;
     }
 
     /**
@@ -220,13 +220,13 @@ public class UsuarioDAO extends ConnectionStatus {
      */
     public Integer consultarIdUsuario(Integer idUsuario) {
         Integer idUsuarioObtenido = -1;
-        String sql = "SELECT " + ID_USUARIO + " FROM USUARIOS WHERE " + ID_USUARIO + " = ?";
+        String sql = "SELECT " + ID_USER + " FROM USUARIOS WHERE " + ID_USER + " = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setInt(1, idUsuario);
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    idUsuarioObtenido = resultSet.getInt(ID_USUARIO);
+                    idUsuarioObtenido = resultSet.getInt(ID_USER);
                 }
             }
         } catch (SQLException e) {
@@ -238,13 +238,13 @@ public class UsuarioDAO extends ConnectionStatus {
     /**
      * Actualiza la password dado el nombre y el id del usuario.
      *
-     * @param usuario
+     * @param user
      */
-    public void actualizarPasswordNula(Usuario usuario) {
-        String sql = "UPDATE USUARIOS SET " + PASSWORD_USUARIO + " = ? WHERE " + ID_USUARIO + " = ?";
+    public void actualizarPasswordNula(User user) {
+        String sql = "UPDATE USUARIOS SET " + PASSWORD_USER + " = ? WHERE " + ID_USER + " = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
-            preparedStatement.setString(1, usuario.getPassword());
-            preparedStatement.setInt(2, usuario.getIdUsuario());
+            preparedStatement.setString(1, user.getPassword());
+            preparedStatement.setInt(2, user.getId());
             preparedStatement.execute();
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al actualizar password nula: {0}", e.getMessage());
@@ -254,15 +254,15 @@ public class UsuarioDAO extends ConnectionStatus {
     /**
      * Actualiza la password de un usuario existente acorde al idUsuario.
      *
-     * @param usuario
+     * @param user
      * @return Retorna la cantidad de registros afectados.
      */
-    public int actualizarPassword(Usuario usuario) {
+    public int actualizarPassword(User user) {
         int registrosAfectados = 0;
-        String sql = "UPDATE USUARIOS SET " + PASSWORD_USUARIO + " = ? WHERE " + ID_USUARIO + " = ? ";
+        String sql = "UPDATE USUARIOS SET " + PASSWORD_USER + " = ? WHERE " + ID_USER + " = ? ";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
-            preparedStatement.setString(1, usuario.getPassword());
-            preparedStatement.setInt(2, usuario.getIdUsuario());
+            preparedStatement.setString(1, user.getPassword());
+            preparedStatement.setInt(2, user.getId());
             preparedStatement.execute();
             registrosAfectados = preparedStatement.getUpdateCount();
         } catch (SQLException e) {
@@ -278,7 +278,7 @@ public class UsuarioDAO extends ConnectionStatus {
      * @param idEmpleado
      */
     public void actualizarIdUsuarioEnTablaEmpleado(String idUsuario, String idEmpleado) {
-        String sql = "UPDATE EMPLEADOS SET " + ID_USUARIO + " = ? WHERE ID_EMPLEADO = ?";
+        String sql = "UPDATE EMPLEADOS SET " + ID_USER + " = ? WHERE ID_EMPLEADO = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, idUsuario);
             preparedStatement.setString(2, idEmpleado);
@@ -296,7 +296,7 @@ public class UsuarioDAO extends ConnectionStatus {
      * @param idUsuario
      */
     private void actualizarRelacionEmpleadoUsuario(Integer idUsuario) {
-        String sql = "UPDATE EMPLEADOS SET " + ID_USUARIO + " = ? WHERE " + ID_USUARIO + " = ?";
+        String sql = "UPDATE EMPLEADOS SET " + ID_USER + " = ? WHERE " + ID_USER + " = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, "NULL");
             preparedStatement.setInt(2, idUsuario);
@@ -317,7 +317,7 @@ public class UsuarioDAO extends ConnectionStatus {
     public int eliminar(Integer idUsuario) {
         int updateCount = 0;
         actualizarRelacionEmpleadoUsuario(idUsuario);
-        String sql = "DELETE FROM USUARIOS WHERE " + ID_USUARIO + " = ?";
+        String sql = "DELETE FROM USUARIOS WHERE " + ID_USER + " = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setInt(1, idUsuario);
             preparedStatement.execute();

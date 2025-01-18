@@ -47,8 +47,8 @@ public class PurchaseOrderDAO extends ConnectionStatus {
                 + "VALUES(?,?,?,?,?,?,?)";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, purchaseOrder.getPurchaseOrderDetail().getPurchaseOrderDetailIdentifier());
-            preparedStatement.setLong(2, purchaseOrder.getProject().getProjectId());
+            preparedStatement.setString(1, purchaseOrder.getPurchaseOrderDetail().getId());
+            preparedStatement.setLong(2, purchaseOrder.getProject().getId());
             preparedStatement.setInt(3, purchaseOrder.getPoLineNo());
             preparedStatement.setBigDecimal(4, purchaseOrder.getDueQty());
             preparedStatement.setBigDecimal(5, purchaseOrder.getBilledQty());
@@ -96,7 +96,7 @@ public class PurchaseOrderDAO extends ConnectionStatus {
                     site.setShipmentNo(resultSet.getInt("SHIPMENT_NO"));
 
                     Project project = new Project();
-                    project.setProjectId(resultSet.getLong(ID_PROJECT));
+                    project.setId(resultSet.getLong(ID_PROJECT));
                     project.setSite(site);
                     project.setProjectCode(resultSet.getString("PROJECT_CODE"));
                     project.setProjectName(resultSet.getString("PROJECT_NAME"));
@@ -106,7 +106,7 @@ public class PurchaseOrderDAO extends ConnectionStatus {
                             .toLocalDateTime());
 
                     PurchaseOrderDetail purchaseOrderDetail = new PurchaseOrderDetail();
-                    purchaseOrderDetail.setPurchaseOrderDetailIdentifier(resultSet.getString("PO_NO"));
+                    purchaseOrderDetail.setId(resultSet.getString("PO_NO"));
                     purchaseOrderDetail.setPoStatus(resultSet.getString("PO_STATUS"));
                     purchaseOrderDetail.setItemCode(resultSet.getLong("ITEM_CODE"));
                     purchaseOrderDetail.setItemDesc(resultSet.getString("ITEM_DESC"));
@@ -154,8 +154,8 @@ public class PurchaseOrderDAO extends ConnectionStatus {
                     purchaseOrder.setPurchaseOrderDetail(new PurchaseOrderDetail(resultSet.getString("PO_NO")));
                     purchaseOrder.setProject(new Project(resultSet.getLong(ID_PROJECT)));
                     purchaseOrderIdentifiers.put(
-                            purchaseOrder.getProject().getProjectId(),
-                            purchaseOrder.getPurchaseOrderDetail().getPurchaseOrderDetailIdentifier()
+                            purchaseOrder.getProject().getId(),
+                            purchaseOrder.getPurchaseOrderDetail().getId()
                     );
                 }
             }
@@ -175,13 +175,13 @@ public class PurchaseOrderDAO extends ConnectionStatus {
         List<Long> purchaseOrderProjectIdentifiers = new ArrayList<>();
         String sql = "SELECT ID_PROJECT FROM PURCHASE_HAS_ORDER WHERE PO_NO = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
-            preparedStatement.setString(1, purchaseOrder.getPurchaseOrderDetail().getPurchaseOrderDetailIdentifier());
+            preparedStatement.setString(1, purchaseOrder.getPurchaseOrderDetail().getId());
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     PurchaseOrder purchaseOrderProject = new PurchaseOrder();
                     purchaseOrderProject.setProject(new Project(resultSet.getLong(ID_PROJECT)));
-                    purchaseOrderProjectIdentifiers.add(purchaseOrderProject.getProject().getProjectId());
+                    purchaseOrderProjectIdentifiers.add(purchaseOrderProject.getProject().getId());
                 }
             }
         } catch (SQLException e) {

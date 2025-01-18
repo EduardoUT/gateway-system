@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mx.grupogateway.employee;
+package com.mx.grupogateway.employee.category;
 
 import com.mx.grupogateway.config.LoggerConfig;
 import com.mx.grupogateway.config.ConnectionStatus;
@@ -20,30 +20,30 @@ import java.util.logging.Logger;
  *
  * @author Eduardo Reyes Hernández
  */
-public class EmpleadoCategoriaDAO extends ConnectionStatus {
+public class EmployeeCategoryDAO extends ConnectionStatus {
 
     private static final Logger logger = LoggerConfig.getLogger();
     private static final String ID_CATEGORIA_EMPLEADO = "ID_CATEGORIA_EMPLEADO";
 
-    public EmpleadoCategoriaDAO(Connection con) {
+    public EmployeeCategoryDAO(Connection con) {
         super(con);
     }
 
     /**
      * Guarda los datos de una nueva categoría de empleado.
      *
-     * @param empleadoCategoria
+     * @param employeeCategory
      */
-    public void guardar(EmpleadoCategoria empleadoCategoria) {
+    public void guardar(EmployeeCategory employeeCategory) {
         String sql = "INSERT INTO EMPLEADO_CATEGORIA "
                 + "(" + ID_CATEGORIA_EMPLEADO + ", NOMBRE_CATEGORIA) "
                 + "VALUES (?, ?)";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1,
-                    empleadoCategoria.getidCategoria());
+                    employeeCategory.getId());
             preparedStatement.setString(2,
-                    empleadoCategoria.getNombreCategoria());
+                    employeeCategory.getCategoryName());
             preparedStatement.execute();
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al guardar categor\u00eda: {0}", e.getMessage());
@@ -54,15 +54,15 @@ public class EmpleadoCategoriaDAO extends ConnectionStatus {
      *
      * @return List de tipo EmpleadoCargo de la BD.
      */
-    public List<EmpleadoCategoria> listar() {
-        List<EmpleadoCategoria> empleadoCategorias = new ArrayList<>();
+    public List<EmployeeCategory> listar() {
+        List<EmployeeCategory> employeeCategories = new ArrayList<>();
         String sql = "SELECT " + ID_CATEGORIA_EMPLEADO + ", NOMBRE_CATEGORIA "
                 + "FROM CATEGORIA_EMPLEADO";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    empleadoCategorias.add(new EmpleadoCategoria(
+                    employeeCategories.add(new EmployeeCategory(
                             resultSet
                                     .getString(ID_CATEGORIA_EMPLEADO),
                             resultSet
@@ -73,7 +73,7 @@ public class EmpleadoCategoriaDAO extends ConnectionStatus {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al consultar categor\u00edas: {0}", e.getMessage());
         }
-        return empleadoCategorias;
+        return employeeCategories;
     }
 
     /**

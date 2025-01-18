@@ -14,7 +14,7 @@ import java.util.Objects;
  */
 public class PurchaseOrderDetail {
 
-    private String purchaseOrderDetailIdentifier;
+    private String id;
     private String poStatus;
     private Long itemCode;
     private String itemDesc;
@@ -23,7 +23,7 @@ public class PurchaseOrderDetail {
     private String paymentTerms;
 
     public PurchaseOrderDetail() {
-        this.purchaseOrderDetailIdentifier = "0000000000-00";
+        this.id = "0000000000-00";
         this.poStatus = "NEW";
         this.itemCode = Long.MAX_VALUE;
         this.itemDesc = "No Item Desc";
@@ -34,13 +34,13 @@ public class PurchaseOrderDetail {
 
     public PurchaseOrderDetail(String poNo) {
         this();
-        this.purchaseOrderDetailIdentifier = poNo;
+        this.id = poNo;
     }
 
-    public PurchaseOrderDetail(String poNo, String poStatus, Long itemCode,
+    public PurchaseOrderDetail(String id, String poStatus, Long itemCode,
             String itemDesc, BigDecimal requestedQty, BigDecimal lineAmount,
             String paymentTerms) {
-        this.purchaseOrderDetailIdentifier = poNo;
+        this.id = id;
         this.poStatus = poStatus;
         this.itemCode = itemCode;
         this.itemDesc = itemDesc;
@@ -50,18 +50,18 @@ public class PurchaseOrderDetail {
     }
 
     /**
-     * @return the purchaseOrderDetailIdentifier
+     * @return the id
      */
-    public String getPurchaseOrderDetailIdentifier() {
-        return purchaseOrderDetailIdentifier;
+    public String getId() {
+        return id;
     }
 
     /**
-     * @param purchaseOrderDetailIdentifier the purchaseOrderDetailIdentifier to
-     * set
+     * @param id the id to
+ set
      */
-    public void setPurchaseOrderDetailIdentifier(String purchaseOrderDetailIdentifier) {
-        this.purchaseOrderDetailIdentifier = purchaseOrderDetailIdentifier;
+    public void setId(String id) {
+        this.id = id;
     }
 
     /**
@@ -164,8 +164,7 @@ public class PurchaseOrderDetail {
         }
         PurchaseOrderDetail otherPurchaseOrderDetail
                 = (PurchaseOrderDetail) purchaseOrderDetail;
-        if (purchaseOrderDetailIdentifier.equals(
-                otherPurchaseOrderDetail.getPurchaseOrderDetailIdentifier())) {
+        if (id.equals(otherPurchaseOrderDetail.getId())) {
             return true;
         }
         return purchaseOrderDetail instanceof PurchaseOrderDetail;
@@ -173,6 +172,6 @@ public class PurchaseOrderDetail {
 
     @Override
     public int hashCode() {
-        return Objects.hash(purchaseOrderDetailIdentifier);
+        return Objects.hash(id);
     }
 }

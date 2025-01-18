@@ -5,9 +5,9 @@
 package com.mx.grupogateway.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import com.mx.grupogateway.user.UsuarioController;
-import com.mx.grupogateway.employee.Empleado;
-import com.mx.grupogateway.user.Usuario;
+import com.mx.grupogateway.user.UserController;
+import com.mx.grupogateway.employee.Employee;
+import com.mx.grupogateway.user.User;
 import com.mx.grupogateway.util.ValidacionJPasswordField;
 import com.mx.grupogateway.util.FondoLogin;
 import com.mx.grupogateway.util.IconoVentana;
@@ -22,8 +22,8 @@ import javax.swing.JOptionPane;
  */
 public class Login extends javax.swing.JFrame {
 
-    private UsuarioController usuarioController;
-    protected Empleado empleado;
+    private UserController userController;
+    protected Employee employee;
 
     /**
      * Creates new form Login
@@ -35,7 +35,7 @@ public class Login extends javax.swing.JFrame {
 
     private void iniciarProcesos() {
         cargarIconoVentana();
-        this.usuarioController = new UsuarioController();
+        this.userController = new UserController();
         campoUsuario.requestFocus();
     }
 
@@ -45,18 +45,18 @@ public class Login extends javax.swing.JFrame {
 
     /**
      * Realiza el llamado de la ventana que corresponda a la categoría del
-     * empleado.
+ employee.
      *
      * @param idCategoria Identificador de categoría obtenido de la BD.
      */
     private void validarCategoria(String idCategoria) {
         if (idCategoria.equals("1")) {
             Gestion gestion = new Gestion();
-            gestion.setUsuario(empleado.getUsuario());
+            gestion.setUser(employee.getUser());
             gestion.setVisible(true);
         } else {
             Facturacion facturacion = new Facturacion();
-            facturacion.setUsuario(empleado.getUsuario());
+            facturacion.setUser(employee.getUser());
             facturacion.setVisible(true);
         }
         this.dispose();
@@ -64,21 +64,21 @@ public class Login extends javax.swing.JFrame {
 
     /**
      * Toma el nombre del usuario y la contraseña para posteriormente,
-     * consultarlos en la BD y de ser validos consultar los identificadores
-     * (Categoría y Usuario) a los que corresponde.
+ consultarlos en la BD y de ser validos consultar los identificadores
+ (Categoría y User) a los que corresponde.
      */
     private void validarPerfilUsuario() {
         String nombreUsuario = campoUsuario.getText();
         String password = String.valueOf(campoPassword.getPassword());
-        Usuario usuario = new Usuario();
+        User usuario = new User();
         usuario.setPassword(password, false);
-        usuario.setNombreUsuario(nombreUsuario);
-        empleado = this.usuarioController.consultarPerfilUsuario(usuario);
-        if (empleado == null) {
+        usuario.setUserName(nombreUsuario);
+        employee = this.userController.consultarPerfilUsuario(usuario);
+        if (employee == null) {
             JOptionPane.showMessageDialog(null,
                     "El usuario o la contraseña son incorrectos.");
         } else {
-            validarCategoria(empleado.getEmpleadoCategoria().getidCategoria());
+            validarCategoria(employee.getEmployeeCategory().getId());
         }
     }
 

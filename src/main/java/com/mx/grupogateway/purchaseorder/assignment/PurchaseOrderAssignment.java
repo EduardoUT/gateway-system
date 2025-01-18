@@ -5,7 +5,7 @@
 package com.mx.grupogateway.purchaseorder.assignment;
 
 import com.mx.grupogateway.purchaseorder.PurchaseOrder;
-import com.mx.grupogateway.employee.Empleado;
+import com.mx.grupogateway.employee.Employee;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.sql.Timestamp;
@@ -16,64 +16,64 @@ import java.sql.Timestamp;
  */
 public final class PurchaseOrderAssignment {
 
-    private Empleado empleado;
+    private Employee employee;
     private PurchaseOrder purchaseOrder;
-    private Timestamp fechaAsignacion;
-    private BigDecimal importe;
-    private BigDecimal totalPagar;
+    private Timestamp assignmentDate;
+    private BigDecimal amount;
+    private BigDecimal totalPayment;
     private Boolean status = false;
 
     public PurchaseOrderAssignment() {
     }
 
     /**
-     * Constructor para representar una asignación de proyecto-empleado.
+     * Constructor para representar una asignación de proyecto-employee.
      *
-     * @param empleado
+     * @param employee
      * @param purchaseOrder
-     * @param fechaAsignacion
-     * @param importe
-     * @param totalPagar
+     * @param assignmentDate
+     * @param amount
+     * @param totalPayment
      * @param status
      */
-    public PurchaseOrderAssignment(Empleado empleado, PurchaseOrder purchaseOrder,
-            Timestamp fechaAsignacion, BigDecimal importe,
-            BigDecimal totalPagar, String status) {
-        this.empleado = empleado;
+    public PurchaseOrderAssignment(Employee employee, PurchaseOrder purchaseOrder,
+            Timestamp assignmentDate, BigDecimal amount,
+            BigDecimal totalPayment, String status) {
+        this.employee = employee;
         this.purchaseOrder = purchaseOrder;
-        this.fechaAsignacion = fechaAsignacion;
-        this.importe = importe;
-        this.totalPagar = totalPagar;
+        this.assignmentDate = assignmentDate;
+        this.amount = amount;
+        this.totalPayment = totalPayment;
         this.status = getStatusAsBoolean(status);
     }
 
     /**
      * Constructor para almacenar una nueva asignación de proyecto asociado a un
-     * empleado.
+ employee.
      *
      * @param purchaseOrder
-     * @param empleado Datos del empleado.
+     * @param employee Datos del employee.
      */
-    public PurchaseOrderAssignment(Empleado empleado, PurchaseOrder purchaseOrder) {
-        this.empleado = empleado;
+    public PurchaseOrderAssignment(Employee employee, PurchaseOrder purchaseOrder) {
+        this.employee = employee;
         this.purchaseOrder = purchaseOrder;
-        setFechaAsignacion(fechaAsignacion);
-        this.importe = new BigDecimal("0.0");
-        this.totalPagar = new BigDecimal("0.0");
+        setAssignmentDate(assignmentDate);
+        this.amount = new BigDecimal("0.0");
+        this.totalPayment = new BigDecimal("0.0");
     }
 
     /**
-     * @return the empleado
+     * @return the employee
      */
-    public Empleado getEmpleado() {
-        return empleado;
+    public Employee getEmployee() {
+        return employee;
     }
 
     /**
-     * @param empleado the empleado to set
+     * @param employee the employee to set
      */
-    public void setEmpleado(Empleado empleado) {
-        this.empleado = empleado;
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
     /**
@@ -91,45 +91,45 @@ public final class PurchaseOrderAssignment {
     }
 
     /**
-     * @return the fechaAsignacion
+     * @return the assignmentDate
      */
-    public Timestamp getFechaAsignacion() {
-        return fechaAsignacion;
+    public Timestamp getAssignmentDate() {
+        return assignmentDate;
     }
 
     /**
-     * @param fechaAsignacion the fechaAsignacion to set
+     * @param assignmentDate the assignmentDate to set
      */
-    public void setFechaAsignacion(Timestamp fechaAsignacion) {
-        this.fechaAsignacion = fechaAsignacion;
+    public void setAssignmentDate(Timestamp assignmentDate) {
+        this.assignmentDate = assignmentDate;
     }
 
     /**
-     * @return the importe
+     * @return the amount
      */
-    public BigDecimal getImporte() {
-        return importe;
+    public BigDecimal getAmount() {
+        return amount;
     }
 
     /**
-     * @param importe the importe to set
+     * @param amount the amount to set
      */
-    public void setImporte(BigDecimal importe) {
-        this.importe = importe;
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
     }
 
     /**
-     * @return the totalPagar
+     * @return the totalPayment
      */
-    public BigDecimal getTotalPagar() {
-        return totalPagar;
+    public BigDecimal getTotalPayment() {
+        return totalPayment;
     }
 
     /**
-     * @param totalPagar the totalPagar to set
+     * @param totalPayment the totalPayment to set
      */
-    public void setTotalPagar(BigDecimal totalPagar) {
-        this.totalPagar = totalPagar;
+    public void setTotalPayment(BigDecimal totalPayment) {
+        this.totalPayment = totalPayment;
     }
 
     /**
@@ -170,7 +170,7 @@ public final class PurchaseOrderAssignment {
      * Crea un Timestamp con la fecha y tiempo actual.
      */
     public void setLocalDateTime() {
-        this.fechaAsignacion = new Timestamp(new Date().getTime());
+        this.assignmentDate = new Timestamp(new Date().getTime());
     }
 
     @Override
@@ -179,10 +179,10 @@ public final class PurchaseOrderAssignment {
         return String.format("[ID_Empleado: %s | ID_Proyecto: %d | "
                 + "Fecha Asignación: %s | Importe: %d | Total Pagar: %d | "
                 + "Status: %s]",
-                this.getEmpleado().getIdEmpleado(),
-                this.getPurchaseOrder().getProject().getProjectId(),
-                this.fechaAsignacion,
-                this.importe,
-                this.totalPagar, this.getStatus());
+                this.getEmployee().getId(),
+                this.getPurchaseOrder().getProject().getId(),
+                this.assignmentDate,
+                this.amount,
+                this.totalPayment, this.getStatus());
     }
 }
