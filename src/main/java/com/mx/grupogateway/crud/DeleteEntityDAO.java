@@ -7,8 +7,12 @@ package com.mx.grupogateway.crud;
 /**
  *
  * @author eduar
- * @param <T>
+ * @param <T> The type of Entity model.
  */
 public interface DeleteEntityDAO<T> {
-    int delete(T t);
+    /**
+     * 
+     * @param t Deletes a given entity model. 
+     */
+    void delete(T t);
 }

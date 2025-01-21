@@ -6,7 +6,9 @@ package com.mx.grupogateway.project;
 
 import com.mx.grupogateway.config.LoggerConfig;
 import com.mx.grupogateway.config.ConnectionStatus;
-import com.mx.grupogateway.project.Project;
+import com.mx.grupogateway.crud.CreateEntityDAO;
+import com.mx.grupogateway.crud.GetAllById;
+import com.mx.grupogateway.crud.GetAllDAO;
 import com.mx.grupogateway.site.Site;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,11 +25,12 @@ import java.util.logging.Logger;
  *
  * @author eduar
  */
-public class ProjectDAO extends ConnectionStatus {
+public class ProjectImpl extends ConnectionStatus
+        implements CreateEntityDAO<Project>, GetAllDAO<Project>, GetAllById<Long, Long> {
 
     private static final Logger logger = LoggerConfig.getLogger();
 
-    public ProjectDAO(Connection con) {
+    public ProjectImpl(Connection con) {
         super(con);
     }
 
@@ -36,7 +39,8 @@ public class ProjectDAO extends ConnectionStatus {
      *
      * @param project
      */
-    public void guardar(Project project) {
+    @Override
+    public void create(Project project) {
         String sql = "INSERT INTO PROJECT "
                 + "(ID_PROJECT, ID_SITE, PROJECT_CODE, PROJECT_NAME, CUSTOMER, "
                 + "CATEGORY, PUBLISH_DATE) "
@@ -61,7 +65,8 @@ public class ProjectDAO extends ConnectionStatus {
      *
      * @return
      */
-    public List<Project> listar() {
+    @Override
+    public List<Project> getAll() {
         List<Project> projects = new ArrayList<>();
         String sql = "SELECT PROJECT.ID_PROJECT, PROJECT.PROJECT_CODE, "
                 + "PROJECT.PROJECT_NAME, PROJECT.CUSTOMER, "
@@ -105,8 +110,9 @@ public class ProjectDAO extends ConnectionStatus {
      * @param id
      * @return
      */
-    public List<Long> listarProjectId(Long id) {
-        List<Long> projectIds = new ArrayList<>();
+    @Override
+    public List<Long> getAllById(Long id) {
+        List<Long> projectIdentifiers = new ArrayList<>();
         String sql = "SELECT ID_PROJECT FROM PROJECT WHERE ID_PROJECT = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setLong(1, id);
@@ -114,14 +120,13 @@ public class ProjectDAO extends ConnectionStatus {
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     Project projectId = new Project(resultSet.getLong("ID_PROJECT"));
-                    projectIds.add(projectId.getId());
+                    projectIdentifiers.add(projectId.getId());
                 }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al consultar identificador de proyecto: {0}",
                     e.getMessage());
         }
-
-        return projectIds;
+        return projectIdentifiers;
     }
 }

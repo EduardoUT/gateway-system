@@ -6,7 +6,6 @@ package com.mx.grupogateway.user;
 
 import com.mx.grupogateway.employee.Employee;
 import com.mx.grupogateway.util.SecurityPassword;
-import java.util.UUID;
 
 /**
  *
@@ -16,8 +15,8 @@ public class User {
 
     private Integer id;
     private String userName;
-    private String password;
-    private String claveSeguridad;
+    private char[] password;
+    private String hash;
 
     public User() {
         id = 0;
@@ -31,10 +30,10 @@ public class User {
      * @param password
      */
     public User(Integer id, String userName,
-            String password) {
+            char[] password) {
         this.id = id;
         this.userName = userName;
-        this.password = encriptarPass(password);
+        this.hash = encriptarPass(password);
     }
 
     /**
@@ -44,10 +43,9 @@ public class User {
      * @param userName
      * @param password
      */
-    public User(String userName, String password) {
+    public User(String userName, char[] password) {
         this.userName = userName;
-        this.password = encriptarPass(password);
-        this.claveSeguridad = generarClaveSeguridad();
+        this.hash = encriptarPass(password);
     }
 
     /**
@@ -63,10 +61,10 @@ public class User {
 
     /**
      * Constructor para crear un nuevo Usuario con nombre de usuario,
- identificador y sin password desde un objeto Employee.
+     * identificador y sin password desde un objeto Employee.
      *
      * @param employee Recibe un objeto Employee para crear el nombre de Usuario
- con el nombre del empleado.
+     * con el nombre del empleado.
      */
     public User(Employee employee) {
         this.id = 0;
@@ -75,7 +73,7 @@ public class User {
                 employee.getPaternalSurname(),
                 employee.getMaternalSurname()
         );
-        this.password = "NULL";
+        this.hash = "NULL";
     }
 
     /**
@@ -118,7 +116,7 @@ public class User {
     /**
      * @return the password
      */
-    public String getPassword() {
+    public char[] getPassword() {
         return password;
     }
 
@@ -129,30 +127,26 @@ public class User {
      * @param password the password to set
      * @param encrypt true para encriptar.
      */
-    public void setPassword(String password, boolean encrypt) {
+    public void setPassword(char[] password, boolean encrypt) {
         if (encrypt) {
-            this.password = encriptarPass(password);
+            this.setHash(encriptarPass(password));
         } else {
             this.password = password;
         }
     }
 
     /**
-     * @return the claveSeguridad
+     * @return the hash
      */
-    public String getClaveSeguridad() {
-        return claveSeguridad;
+    public String getHash() {
+        return hash;
     }
 
     /**
-     * Genera una clave de 16 carácteres encriptada.
-     *
-     * @return Hash de la clave generada.
+     * @param hash the hash to set
      */
-    private String generarClaveSeguridad() {
-        return SecurityPassword.encriptar(
-                UUID.randomUUID().toString()
-                        .substring(19, 35));
+    public void setHash(String hash) {
+        this.hash = hash;
     }
 
     /**
@@ -174,17 +168,21 @@ public class User {
         return this.userName;
     }
 
-    private String encriptarPass(String password) {
+    /**
+     * Encripta la contraseña.
+     *
+     * @param password Contraseña a encriptar.
+     * @return Hash.
+     */
+    private String encriptarPass(char[] password) {
         return SecurityPassword.encriptar(password);
     }
 
     @Override
     public String toString() {
-        return String.format("[ID: %s | Nombre Usuario: %s | Contraseña: %s | "
-                + "Clave Seguridad: %s]",
+        return String.format("[ID: %d | Nombre Usuario: %s ]",
                 this.getId(),
-                this.userName,
-                this.password,
-                this.claveSeguridad);
+                this.userName
+        );
     }
 }

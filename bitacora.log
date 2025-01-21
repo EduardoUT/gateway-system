@@ -202,3 +202,87 @@ dic 15, 2024 6:36:44 PM com.mx.grupogateway.system.LoggerConfig config
 INFORMACIÓN: Log de registro iniciado.
 dic 15, 2024 6:45:04 PM com.mx.grupogateway.system.LoggerConfig config
 INFORMACIÓN: Log de registro iniciado.
+ene 18, 2025 11:49:08 AM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 18, 2025 11:58:11 AM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 18, 2025 12:06:11 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 18, 2025 12:26:27 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 12:34:33 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 12:34:59 PM com.mx.grupogateway.user.UserImpl getEmployeeByUser
+GRAVE: Error al consultar el perfil de usuario: Unknown column 'USUARIOS.ID_USER' in 'field list'
+ene 21, 2025 12:34:59 PM com.mx.grupogateway.user.UserImpl getEntityByUser
+GRAVE: Error al verificar credenciales de usuario: Unknown column 'PASSWORD_USER' in 'field list'
+ene 21, 2025 12:41:17 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 12:45:19 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 12:46:57 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 12:51:04 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 12:54:26 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 12:56:16 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 1:05:33 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 1:06:34 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 1:18:11 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 1:22:39 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 1:28:00 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 1:29:25 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 1:30:58 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 1:32:32 PM com.mx.grupogateway.user.UserImpl getEntityById
+GRAVE: Error al consultar el identificador de usuario: Unknown column 'PASSWORD' in 'field list'
+ene 21, 2025 1:33:38 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 1:35:52 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 1:40:48 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 2:05:39 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 2:19:52 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 2:21:48 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 2:22:18 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 2:23:00 PM com.mx.grupogateway.user.UserImpl getEntityById
+GRAVE: Error al consultar el identificador de usuario: Column 'PASSWORD_USUAIO' not found.
+ene 21, 2025 2:23:39 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 4:00:53 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 4:24:21 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 4:35:43 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 4:38:17 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 4:40:49 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 4:42:15 PM com.mx.grupogateway.user.UserImpl updatePassword
+GRAVE: Error al actualizar password existente: Column 'PASSWORD_USUARIO' cannot be null
+ene 21, 2025 4:45:12 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 4:47:27 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 4:51:02 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 4:58:41 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 5:11:34 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.
+ene 21, 2025 5:24:56 PM com.mx.grupogateway.config.LoggerConfig config
+INFORMACIÓN: Log de registro iniciado.

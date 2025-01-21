@@ -6,6 +6,9 @@ package com.mx.grupogateway.purchaseorder.detail;
 
 import com.mx.grupogateway.config.LoggerConfig;
 import com.mx.grupogateway.config.ConnectionStatus;
+import com.mx.grupogateway.crud.CreateEntityDAO;
+import com.mx.grupogateway.crud.GetAllById;
+import com.mx.grupogateway.crud.UpdateEntityDAO;
 import com.mx.grupogateway.purchaseorder.detail.PurchaseOrderDetail;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,11 +24,13 @@ import java.util.logging.Logger;
  *
  * @author eduar
  */
-public class PurchaseOrderDetailDAO extends ConnectionStatus {
+public class PurchaseOrderDetailImpl extends ConnectionStatus implements
+        CreateEntityDAO<PurchaseOrderDetail>, GetAllById<String, String>,
+        UpdateEntityDAO<PurchaseOrderDetail> {
 
     private static final Logger logger = LoggerConfig.getLogger();
 
-    public PurchaseOrderDetailDAO(Connection con) {
+    public PurchaseOrderDetailImpl(Connection con) {
         super(con);
     }
 
@@ -34,7 +39,8 @@ public class PurchaseOrderDetailDAO extends ConnectionStatus {
      *
      * @param purchaseOrderDetail
      */
-    public void guardar(PurchaseOrderDetail purchaseOrderDetail) {
+    @Override
+    public void create(PurchaseOrderDetail purchaseOrderDetail) {
         String sql = "INSERT INTO PURCHASE_ORDER "
                 + "(PO_NO, PO_STATUS, ITEM_CODE, ITEM_DESC, REQUESTED_QTY, "
                 + "LINE_AMOUNT, PAYMENT_TERMS)"
@@ -57,14 +63,15 @@ public class PurchaseOrderDetailDAO extends ConnectionStatus {
     /**
      * Consulta el purchaseOrderIdentifier acorde al mismo.
      *
-     * @param purchaseOrderIdentifier
+     * @param id
      * @return
      */
-    public List<String> listarPurchaseOrderDetailIdentifiers(String purchaseOrderIdentifier) {
+    @Override
+    public List<String> getAllById(String id) {
         List<String> purchaseOrders = new ArrayList<>();
         String sql = "SELECT PO_NO FROM PURCHASE_ORDER WHERE PO_NO = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
-            preparedStatement.setString(1, purchaseOrderIdentifier);
+            preparedStatement.setString(1, id);
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
@@ -84,8 +91,8 @@ public class PurchaseOrderDetailDAO extends ConnectionStatus {
      *
      * @param purchaseOrderDetail
      */
-    public void actualizarPurchaseOrderDetailStatus(
-            PurchaseOrderDetail purchaseOrderDetail) {
+    @Override
+    public void update(PurchaseOrderDetail purchaseOrderDetail) {
         String sql = "UPDATE PURCHASE_ORDER SET PO_STATUS = ? WHERE PO_NO = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, purchaseOrderDetail.getPoStatus());

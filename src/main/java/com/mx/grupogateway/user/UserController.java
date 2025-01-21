@@ -4,30 +4,23 @@
  */
 package com.mx.grupogateway.user;
 
-import com.mx.grupogateway.user.UserDAO;
-import com.mx.grupogateway.factory.ConnectionFactory;
 import com.mx.grupogateway.employee.Employee;
-import com.mx.grupogateway.user.User;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import com.mx.grupogateway.crud.DataModelForJTable;
 
 /**
  *
  * @author Eduardo Reyes Hernández
  */
-public class UserController {
+public class UserController implements DataModelForJTable {
 
-    private final UserDAO userDAO;
+    private final UserService userService;
 
     public UserController() {
-        this.userDAO = new UserDAO(
-                new ConnectionFactory().realizarConexion()
-        );
-    }
-
-    public boolean isConnectionStatusNotActive() {
-        return this.userDAO.isStatusConnectionNotActive();
+        this.userService = new UserService();
     }
 
     /**
@@ -37,16 +30,17 @@ public class UserController {
      * @param user
      * @return Identificador del usuario guardado.
      */
-    public int guardar(User user) {
-        return this.userDAO.guardar(user);
+    public int create(User user) {
+        return userService.create(user);
     }
 
     /**
      *
      * @return List de tipo User.
      */
-    public List<Object[]> listar() {
-        List<User> users = this.userDAO.listar();
+    @Override
+    public List<Object[]> getDataModelForJTable() {
+        List<User> users = userService.getAll();
         List<Object[]> dataModelUsers = new ArrayList<>();
         if (!users.isEmpty()) {
             for (User usuario : users) {
@@ -54,7 +48,7 @@ public class UserController {
                         new Object[]{
                             usuario.getId(),
                             usuario.getUserName(),
-                            usuario.getClaveSeguridad()
+                            usuario.getHash()
                         }
                 );
             }
@@ -69,9 +63,10 @@ public class UserController {
      * existente.
      *
      * @param id
+     * @return Optional de tipo User.
      */
-    public Integer consultarIdUsuario(Integer id) {
-        return this.userDAO.consultarIdUsuario(id);
+    public Optional<User> getEntityById(Integer id) {
+        return userService.getEntityById(id);
     }
 
     /**
@@ -79,20 +74,11 @@ public class UserController {
      * valor por defecto NULL al crearse un nuevo empleado.
      *
      * @param user
-     * @return
+     * @return Devuelve el status del servicio para la consulta del password
+     * actual.
      */
-    public boolean esPasswordValida(User user) {
-        return this.userDAO.esPasswordValida(user);
-    }
-
-    /**
-     * Vslida si una password contiene NULL en la BD.
-     *
-     * @param id
-     * @return
-     */
-    public boolean esPasswordNula(Integer id) {
-        return this.userDAO.esPasswordNula(id);
+    public boolean isCurrentPasswordValid(User user) {
+        return userService.isCurrentPasswordValid(user);
     }
 
     /**
@@ -100,10 +86,10 @@ public class UserController {
      * usuario.
      *
      * @param user
-     * @return
+     * @return Optional de tipo Employee.
      */
-    public Employee consultarPerfilUsuario(User user) {
-        return this.userDAO.consultarPerfilUsuario(user);
+    public Optional<Employee> getUserProfile(User user) {
+        return userService.getUserProfile(user);
     }
 
     /**
@@ -111,27 +97,29 @@ public class UserController {
      * usuario
      *
      * @param user
-     * @return
+     * @return Status de la operaión.
      */
-    public int actualizarPasswordNula(User user) {
-        int id = this.consultarIdUsuario(user.getId());
-        if (id > 0 && this.esPasswordNula(id)) {
-            this.userDAO.actualizarPasswordNula(user);
-        }
-        return id;
-    }
-
-    public int actualizarPassword(User user) {
-        return this.userDAO.actualizarPassword(user);
+    public int updateNullPassword(User user) {
+        return userService.updateNullPassword(user);
     }
 
     /**
-     * Obtiene el identificador de usuario como referencia de la tablaUsuario.
+     * Actualiza la password actual.
      *
-     * @param id
+     * @param user Credenciales del user.
+     * @return Status de la operación.
+     */
+    public int updatePassword(User user) {
+        return userService.updatePassword(user);
+    }
+
+    /**
+     * Elimina el usuario como referencia de la tablaUsuario.
+     *
+     * @param user
      * @return
      */
-    public int eliminar(Integer id) {
-        return this.userDAO.eliminar(id);
+    public int delete(User user) {
+        return userService.delete(user);
     }
 }

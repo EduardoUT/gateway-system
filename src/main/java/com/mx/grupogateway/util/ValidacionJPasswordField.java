@@ -101,8 +101,7 @@ public class ValidacionJPasswordField {
      */
     public static boolean esPasswordSimilar(JPasswordField password,
             JPasswordField passwordCheck) {
-        boolean coincidePassword = String.valueOf(password.getPassword())
+        return String.valueOf(password.getPassword())
                 .equals(String.valueOf(passwordCheck.getPassword()));
-        return coincidePassword;
     }
 }

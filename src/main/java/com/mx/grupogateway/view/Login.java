@@ -14,6 +14,7 @@ import com.mx.grupogateway.util.IconoVentana;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.Optional;
 import javax.swing.JOptionPane;
 
 /**
@@ -23,7 +24,7 @@ import javax.swing.JOptionPane;
 public class Login extends javax.swing.JFrame {
 
     private UserController userController;
-    protected Employee employee;
+    protected Optional<Employee> optionalEmployee;
 
     /**
      * Creates new form Login
@@ -45,18 +46,18 @@ public class Login extends javax.swing.JFrame {
 
     /**
      * Realiza el llamado de la ventana que corresponda a la categoría del
- employee.
+     * optionalEmployee.
      *
      * @param idCategoria Identificador de categoría obtenido de la BD.
      */
-    private void validarCategoria(String idCategoria) {
-        if (idCategoria.equals("1")) {
+    private void validarCategoria(Integer idCategoria) {
+        if (idCategoria.equals(1)) {
             Gestion gestion = new Gestion();
-            gestion.setUser(employee.getUser());
+            gestion.setUser(optionalEmployee.get().getUser());
             gestion.setVisible(true);
         } else {
             Facturacion facturacion = new Facturacion();
-            facturacion.setUser(employee.getUser());
+            facturacion.setUser(optionalEmployee.get().getUser());
             facturacion.setVisible(true);
         }
         this.dispose();
@@ -64,21 +65,20 @@ public class Login extends javax.swing.JFrame {
 
     /**
      * Toma el nombre del usuario y la contraseña para posteriormente,
- consultarlos en la BD y de ser validos consultar los identificadores
- (Categoría y User) a los que corresponde.
+     * consultarlos en la BD y de ser validos consultar los identificadores
+     * (Categoría y User) a los que corresponde.
      */
     private void validarPerfilUsuario() {
         String nombreUsuario = campoUsuario.getText();
-        String password = String.valueOf(campoPassword.getPassword());
         User usuario = new User();
-        usuario.setPassword(password, false);
+        usuario.setPassword(campoPassword.getPassword(), false);
         usuario.setUserName(nombreUsuario);
-        employee = this.userController.consultarPerfilUsuario(usuario);
-        if (employee == null) {
+        optionalEmployee = this.userController.getUserProfile(usuario);
+        if (!optionalEmployee.isPresent()) {
             JOptionPane.showMessageDialog(null,
                     "El usuario o la contraseña son incorrectos.");
         } else {
-            validarCategoria(employee.getEmployeeCategory().getId());
+            validarCategoria(optionalEmployee.get().getEmployeeCategory().getId());
         }
     }
 
@@ -247,7 +247,7 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel2MouseClicked
 
     private void campoPasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_campoPasswordKeyPressed
-        if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             botonIngresar.doClick();
         }
     }//GEN-LAST:event_campoPasswordKeyPressed

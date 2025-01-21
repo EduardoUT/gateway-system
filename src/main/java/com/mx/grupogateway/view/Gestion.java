@@ -66,7 +66,7 @@ public class Gestion extends javax.swing.JFrame {
 
     /**
      * Construyendo objeto de tipo Employee y pasandolo por parámetro en el
- método guardar() del EmployeeController.
+     * método create() del EmployeeController.
      */
     private void guardarEmpleado() {
         if (sonCamposValidosEmpleado()) {
@@ -75,8 +75,7 @@ public class Gestion extends javax.swing.JFrame {
                     campoApellidoP.getText(),
                     campoApellidoM.getText(),
                     new EmployeeCategory(
-                            Integer.toString(
-                                    empleadoCargos.getSelectedIndex()),
+                            empleadoCargos.getSelectedIndex(),
                             empleadoCargos.getSelectedItem().toString()
                     )
             );
@@ -103,8 +102,8 @@ public class Gestion extends javax.swing.JFrame {
     }
 
     /**
-     * Obteniendo List de tipo Employee del método listar() del
- EmployeeController y asignando registros en la tablaEmpleado.
+     * Obteniendo List de tipo Employee del método getAll() del
+     * EmployeeController y asignando registros en la tablaEmpleado.
      */
     private void cargarTablaEmpleado() {
         List<Object[]> empleados = this.employeeController.listar();
@@ -119,21 +118,22 @@ public class Gestion extends javax.swing.JFrame {
 
     /**
      * Método que recopila los datos adquiridos de la tablaEmpleado pasados por
- parámetro al método modificar() del EmployeeController.
+     * parámetro al método modificar() del EmployeeController.
      */
     private void actualizarEmpleado() {
         if (sonCamposValidosEmpleado()) {
+            EmployeeCategory employeeCategory = new EmployeeCategory();
+            employeeCategory.setCategoryName(
+                    String.valueOf(empleadoCargos.getSelectedIndex())
+            );
+            Employee employee = new Employee(AccionesTabla.obtenerID(tablaEmpleado, 0));
+            employee.setName(campoNombre.getText());
+            employee.setPaternalSurname(campoApellidoP.getText());
+            employee.setMaternalSurname(campoApellidoM.getText());
+            employee.setEmployeeCategory(employeeCategory);
             int lineasActualizadas;
             lineasActualizadas = this.employeeController
-                    .actualizar(AccionesTabla
-                            .obtenerUUID(tablaEmpleado, 0),
-                            campoNombre.getText(),
-                            campoApellidoP.getText(),
-                            campoApellidoM.getText(),
-                            String.valueOf(
-                                    empleadoCargos.getSelectedIndex()
-                            )
-                    );
+                    .actualizar(employee);
             JOptionPane.showMessageDialog(null, lineasActualizadas
                     + " registro actualizado exitosamente.");
             limpiarCamposFormularioEmpleado();
@@ -148,7 +148,7 @@ public class Gestion extends javax.swing.JFrame {
 
     /**
      * Recopila el identificador del empleado de la tabla tablaEmpleado y lo
- pasa por parámetro en el método eliminar() del EmployeeController.
+     * pasa por parámetro en el método delete() del EmployeeController.
      */
     private void eliminarEmpleado() {
         int registrosAfectados = this.employeeController.eliminar(
@@ -227,11 +227,11 @@ public class Gestion extends javax.swing.JFrame {
     }
 
     /**
-     * Obteniendo List de tipo User de UserController y asignando
- registros en la TablaUsuario.
+     * Obteniendo List de tipo User de UserController y asignando registros en
+     * la TablaUsuario.
      */
     private void cargarTablaUsuario() {
-        List<Object[]> usuarios = this.userController.listar();
+        List<Object[]> usuarios = this.userController.getDataModelForJTable();
         TableDataModelUtil.loadTableDataModel(
                 tablaUsuario.getModel(),
                 tablaUsuario,
@@ -250,13 +250,13 @@ public class Gestion extends javax.swing.JFrame {
     }
 
     /**
-     * Recopila el identificador del user de la tabla tablaUsuario y lo pasa
- por parámetro en el método eliminar() del UserController.
+     * Recopila el identificador del user de la tabla tablaUsuario y lo pasa por
+     * parámetro en el método delete() del UserController.
      */
     private void eliminarUsuario() {
-        int cantidadEliminada = this.userController
-                .eliminar(AccionesTabla
-                        .obtenerID(tablaUsuario, 0));
+        User userIdentifier = new User();
+        userIdentifier.setId(AccionesTabla.obtenerID(tablaUsuario, 0));
+        int cantidadEliminada = this.userController.delete(userIdentifier);
         if (cantidadEliminada > 0) {
             JOptionPane.showMessageDialog(null, "Registro eliminado exitosamente.");
             cargarTablaUsuario();

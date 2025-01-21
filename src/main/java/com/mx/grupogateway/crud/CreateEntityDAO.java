@@ -10,5 +10,5 @@ package com.mx.grupogateway.crud;
  * @param <T>
  */
 public interface CreateEntityDAO<T> {
-    int create(T entity);
+    void create(T entity);
 }

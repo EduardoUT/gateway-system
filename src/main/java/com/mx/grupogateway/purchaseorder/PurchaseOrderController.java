@@ -4,10 +4,8 @@
  */
 package com.mx.grupogateway.purchaseorder;
 
-import com.mx.grupogateway.purchaseorder.PurchaseOrderDAO;
 import com.mx.grupogateway.factory.ConnectionFactory;
 import com.mx.grupogateway.project.Project;
-import com.mx.grupogateway.purchaseorder.PurchaseOrder;
 import com.mx.grupogateway.purchaseorder.detail.PurchaseOrderDetail;
 import com.mx.grupogateway.site.Site;
 import java.util.ArrayList;
@@ -21,10 +19,10 @@ import java.util.Map;
  */
 public class PurchaseOrderController {
 
-    private final PurchaseOrderDAO purchaseOrderDAO;
+    private final PurchaseOrderImpl purchaseOrderImpl;
 
     public PurchaseOrderController() {
-        this.purchaseOrderDAO = new PurchaseOrderDAO(
+        this.purchaseOrderImpl = new PurchaseOrderImpl(
                 new ConnectionFactory().realizarConexion()
         );
     }
@@ -35,7 +33,7 @@ public class PurchaseOrderController {
      * @param purchaseOrder
      */
     public void guardar(PurchaseOrder purchaseOrder) {
-        this.purchaseOrderDAO.guardar(purchaseOrder);
+        this.purchaseOrderImpl.create(purchaseOrder);
     }
 
     /**
@@ -45,7 +43,7 @@ public class PurchaseOrderController {
      * @return
      */
     public List<Object[]> listar() {
-        List<PurchaseOrder> purchaseOrders = this.purchaseOrderDAO.listar();
+        List<PurchaseOrder> purchaseOrders = this.purchaseOrderImpl.getAll();
         List<Object[]> dataModelPurchaseOrder = new ArrayList<>();
         if (!purchaseOrders.isEmpty()) {
             for (PurchaseOrder purchaseOrder : purchaseOrders) {
@@ -95,7 +93,7 @@ public class PurchaseOrderController {
      */
     public Map<Long, String> listarPurchaseOrderIdentifiers(
             String purchaseOrderIdentifier, Long purchaseOrderProjectId) {
-        return this.purchaseOrderDAO.listarPurchaseOrderIdentifiers(
+        return this.purchaseOrderImpl.getAllPurchaseOrderIdentifiers(
                 purchaseOrderIdentifier,
                 purchaseOrderProjectId
         );
@@ -110,8 +108,8 @@ public class PurchaseOrderController {
      */
     public List<Long> listarPurchaseOrderProjectIdentifiers(
             PurchaseOrder purchaseOrder) {
-        return this.purchaseOrderDAO.listarPurchaseOrderProjectIdentifiers(
-                purchaseOrder
+        return this.purchaseOrderImpl.getAllById(
+                purchaseOrder.getPurchaseOrderDetail().getId()
         );
     }
 }

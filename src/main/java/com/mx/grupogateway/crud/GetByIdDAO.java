@@ -7,9 +7,15 @@ package com.mx.grupogateway.crud;
 /**
  *
  * @author eduar
- * @param <T>
- * @param <ID>
+ * @param <T> The type of Entity model.
+ * @param <I> The type of id.
  */
-public interface GetByIdDAO<T, ID> {
-    T getEntityById(ID id);
+public interface GetByIdDAO<T, I> {
+
+    /**
+     *
+     * @param id The id of the identity type.
+     * @return An entity of the model.
+     */
+    T getEntityById(I id);
 }

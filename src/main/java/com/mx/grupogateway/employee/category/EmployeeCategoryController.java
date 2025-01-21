@@ -4,6 +4,7 @@
  */
 package com.mx.grupogateway.employee.category;
 
+import com.mx.grupogateway.employee.Employee;
 import com.mx.grupogateway.factory.ConnectionFactory;
 import java.util.List;
 
@@ -13,10 +14,10 @@ import java.util.List;
  */
 public class EmployeeCategoryController {
 
-    private final EmployeeCategoryDAO employeeCategoryDAO;
+    private final EmployeeCategoryImpl employeeCategoryImpl;
 
     public EmployeeCategoryController() {
-        this.employeeCategoryDAO = new EmployeeCategoryDAO(
+        this.employeeCategoryImpl = new EmployeeCategoryImpl(
                 new ConnectionFactory().realizarConexion()
         );
     }
@@ -27,7 +28,7 @@ public class EmployeeCategoryController {
      * @param employeeCategory
      */
     public void guardar(EmployeeCategory employeeCategory) {
-        this.employeeCategoryDAO.guardar(employeeCategory);
+        this.employeeCategoryImpl.create(employeeCategory);
     }
 
     /**
@@ -35,27 +36,24 @@ public class EmployeeCategoryController {
      * @return List de tipo EmployeeCategory.
      */
     public List<EmployeeCategory> listar() {
-        return this.employeeCategoryDAO.listar();
+        return this.employeeCategoryImpl.getAll();
     }
 
     /**
-     * Actualiza el nombre de una categoría de empleado acorde al id.
+     * Actualiza el nombre de una categoría de emplead.
      *
-     * @param idCategoria
-     * @param nombreCategoria
-     * @return
+     * @param employeeCategory
      */
-    public int actualizar(String idCategoria, String nombreCategoria) {
-        return this.employeeCategoryDAO.actualizar(idCategoria, nombreCategoria);
+    public void actualizar(EmployeeCategory employeeCategory) {
+        this.employeeCategoryImpl.update(employeeCategory);
     }
 
     /**
      * Elimina una categoría de empleado.
      *
-     * @param idCategoria
-     * @return
+     * @param employee
      */
-    public int eliminar(String idCategoria) {
-        return this.employeeCategoryDAO.eliminar(idCategoria);
+    public void eliminar(Employee employee) {
+        this.employeeCategoryImpl.delete(employee);
     }
 }

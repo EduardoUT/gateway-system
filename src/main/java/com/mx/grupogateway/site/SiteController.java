@@ -4,9 +4,7 @@
  */
 package com.mx.grupogateway.site;
 
-import com.mx.grupogateway.site.SiteDAO;
 import com.mx.grupogateway.factory.ConnectionFactory;
-import com.mx.grupogateway.site.Site;
 import java.util.List;
 
 /**
@@ -15,10 +13,10 @@ import java.util.List;
  */
 public class SiteController {
 
-    private final SiteDAO siteDAO;
+    private final SiteImpl siteImpl;
 
     public SiteController() {
-        this.siteDAO = new SiteDAO(new ConnectionFactory().realizarConexion());
+        this.siteImpl = new SiteImpl(new ConnectionFactory().realizarConexion());
     }
 
     /**
@@ -27,7 +25,7 @@ public class SiteController {
      * @param site
      */
     public void guardar(Site site) {
-        this.siteDAO.guardar(site);
+        this.siteImpl.create(site);
     }
 
     /**
@@ -38,6 +36,6 @@ public class SiteController {
      * @return
      */
     public List<Long> listarSiteIdentifiers(Long idSite) {
-        return this.siteDAO.listarSiteIdentifiers(idSite);
+        return this.siteImpl.getAllById(idSite);
     }
 }

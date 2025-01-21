@@ -4,9 +4,7 @@
  */
 package com.mx.grupogateway.project;
 
-import com.mx.grupogateway.project.ProjectDAO;
 import com.mx.grupogateway.factory.ConnectionFactory;
-import com.mx.grupogateway.project.Project;
 import java.util.List;
 
 /**
@@ -15,10 +13,10 @@ import java.util.List;
  */
 public class ProjectController {
 
-    private final ProjectDAO projectDAO;
+    private final ProjectImpl projectImpl;
 
     public ProjectController() {
-        this.projectDAO = new ProjectDAO(
+        this.projectImpl = new ProjectImpl(
                 new ConnectionFactory().realizarConexion()
         );
     }
@@ -29,7 +27,7 @@ public class ProjectController {
      * @param project
      */
     public void guardar(Project project) {
-        this.projectDAO.guardar(project);
+        this.projectImpl.create(project);
     }
 
     /**
@@ -38,7 +36,7 @@ public class ProjectController {
      * @return
      */
     public List<Project> listar() {
-        return this.projectDAO.listar();
+        return this.projectImpl.getAll();
     }
 
     /**
@@ -49,6 +47,6 @@ public class ProjectController {
      * @return Lista de identificadores,
      */
     public List<Long> listarProjectIdentifiers(Long projectId) {
-        return this.projectDAO.listarProjectId(projectId);
+        return this.projectImpl.getAllById(projectId);
     }
 }

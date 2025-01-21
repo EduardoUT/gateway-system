@@ -6,10 +6,12 @@ package com.mx.grupogateway.purchaseorder;
 
 import com.mx.grupogateway.config.LoggerConfig;
 import com.mx.grupogateway.project.Project;
-import com.mx.grupogateway.purchaseorder.PurchaseOrder;
 import com.mx.grupogateway.purchaseorder.detail.PurchaseOrderDetail;
 import com.mx.grupogateway.site.Site;
 import com.mx.grupogateway.config.ConnectionStatus;
+import com.mx.grupogateway.crud.CreateEntityDAO;
+import com.mx.grupogateway.crud.GetAllById;
+import com.mx.grupogateway.crud.GetAllDAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,12 +28,14 @@ import java.util.logging.Logger;
  *
  * @author eduar
  */
-public class PurchaseOrderDAO extends ConnectionStatus {
+public class PurchaseOrderImpl extends ConnectionStatus
+        implements CreateEntityDAO<PurchaseOrder>, GetAllDAO<PurchaseOrder>,
+        GetAllById<Long, String> {
 
     private static final Logger logger = LoggerConfig.getLogger();
     private static final String ID_PROJECT = "ID_PROJECT";
 
-    public PurchaseOrderDAO(Connection con) {
+    public PurchaseOrderImpl(Connection con) {
         super(con);
     }
 
@@ -40,7 +44,8 @@ public class PurchaseOrderDAO extends ConnectionStatus {
      *
      * @param purchaseOrder
      */
-    public void guardar(PurchaseOrder purchaseOrder) {
+    @Override
+    public void create(PurchaseOrder purchaseOrder) {
         String sql = "INSERT INTO PURCHASE_HAS_ORDER "
                 + "(PO_NO," + ID_PROJECT + ", PO_LINE_NO, DUE_QTY, BILLED_QTY, UNIT, "
                 + "UNIT_PRICE) "
@@ -66,7 +71,8 @@ public class PurchaseOrderDAO extends ConnectionStatus {
      *
      * @return
      */
-    public List<PurchaseOrder> listar() {
+    @Override
+    public List<PurchaseOrder> getAll() {
         List<PurchaseOrder> purchaseOrders = new ArrayList<>();
         String sql = "SELECT PROJECT.ID_PROJECT, PROJECT.PROJECT_CODE, "
                 + "PROJECT.PROJECT_NAME, PROJECT.CUSTOMER, "
@@ -133,49 +139,16 @@ public class PurchaseOrderDAO extends ConnectionStatus {
     }
 
     /**
-     * Consulta los identificadores que conforman la tabla compuesta.
-     *
-     * @param purchaseOrderIdentifier
-     * @param purchaseOrderProjectId
-     * @return
-     */
-    public Map<Long, String> listarPurchaseOrderIdentifiers(
-            String purchaseOrderIdentifier, Long purchaseOrderProjectId) {
-        Map<Long, String> purchaseOrderIdentifiers = new HashMap<>();
-        String sql = "SELECT PO_NO, ID_PROJECT FROM PURCHASE_HAS_ORDER "
-                + "WHERE PO_NO = ? AND ID_PROJECT = ?";
-        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
-            preparedStatement.setString(1, purchaseOrderIdentifier);
-            preparedStatement.setLong(2, purchaseOrderProjectId);
-            preparedStatement.execute();
-            try (ResultSet resultSet = preparedStatement.getResultSet()) {
-                while (resultSet.next()) {
-                    PurchaseOrder purchaseOrder = new PurchaseOrder();
-                    purchaseOrder.setPurchaseOrderDetail(new PurchaseOrderDetail(resultSet.getString("PO_NO")));
-                    purchaseOrder.setProject(new Project(resultSet.getLong(ID_PROJECT)));
-                    purchaseOrderIdentifiers.put(
-                            purchaseOrder.getProject().getId(),
-                            purchaseOrder.getPurchaseOrderDetail().getId()
-                    );
-                }
-            }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al consultar PurchasOrder: {0}", e.getMessage());
-        }
-        return purchaseOrderIdentifiers;
-    }
-
-    /**
      * Consulta los identificadores de project acorde al purchaseOrderIdentifier
      *
-     * @param purchaseOrder
      * @return
      */
-    public List<Long> listarPurchaseOrderProjectIdentifiers(PurchaseOrder purchaseOrder) {
+    @Override
+    public List<Long> getAllById(String id) {
         List<Long> purchaseOrderProjectIdentifiers = new ArrayList<>();
         String sql = "SELECT ID_PROJECT FROM PURCHASE_HAS_ORDER WHERE PO_NO = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
-            preparedStatement.setString(1, purchaseOrder.getPurchaseOrderDetail().getId());
+            preparedStatement.setString(1, id);
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
@@ -188,5 +161,43 @@ public class PurchaseOrderDAO extends ConnectionStatus {
             logger.log(Level.SEVERE, "Error al consultar PurchasOrder: {0}", e.getMessage());
         }
         return purchaseOrderProjectIdentifiers;
+    }
+
+    /**
+     * Consulta los identificadores que conforman la tabla compuesta.
+     *
+     * @param purchaseOrderIdentifier Identificador del detalle de la orden de
+     * compra.
+     * @param purchaseOrderProjectId Identificador del proyecto.
+     * @return
+     */
+    public Map<Long, String> getAllPurchaseOrderIdentifiers(
+            String purchaseOrderIdentifier, Long purchaseOrderProjectId) {
+        Map<Long, String> purchaseOrderIdentifiers = new HashMap<>();
+        String sql = "SELECT PO_NO, ID_PROJECT FROM PURCHASE_HAS_ORDER "
+                + "WHERE PO_NO = ? AND ID_PROJECT = ?";
+        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
+            preparedStatement.setString(1, purchaseOrderIdentifier);
+            preparedStatement.setLong(2, purchaseOrderProjectId);
+            preparedStatement.execute();
+            try (ResultSet resultSet = preparedStatement.getResultSet()) {
+                while (resultSet.next()) {
+                    PurchaseOrder purchaseOrder = new PurchaseOrder();
+                    purchaseOrder.setPurchaseOrderDetail(
+                            new PurchaseOrderDetail(resultSet.getString("PO_NO"))
+                    );
+                    purchaseOrder.setProject(
+                            new Project(resultSet.getLong(ID_PROJECT))
+                    );
+                    purchaseOrderIdentifiers.put(
+                            purchaseOrder.getProject().getId(),
+                            purchaseOrder.getPurchaseOrderDetail().getId()
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al consultar PurchasOrder: {0}", e.getMessage());
+        }
+        return purchaseOrderIdentifiers;
     }
 }

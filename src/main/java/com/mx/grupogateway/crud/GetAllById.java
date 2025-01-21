@@ -9,9 +9,14 @@ import java.util.List;
 /**
  *
  * @author eduar
- * @param <T>
- * @param <ID>
+ * @param <T> The type of Entity model.
+ * @param <I> The type of id.
  */
-public interface GetAllById<T, ID> {
-    List<T> getAllById(ID id);
+public interface GetAllById<T, I> {
+    /**
+     * 
+     * @param id The id of the identity type.
+     * @return A list of entities of the model type given an id.
+     */
+    List<T> getAllById(I id);
 }

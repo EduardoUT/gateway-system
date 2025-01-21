@@ -14,7 +14,7 @@ import com.mx.grupogateway.user.User;
 public class Employee {
 
     private static final String MESSAGE_VOID_FIELD = "El campo nombre está vacío.";
-    private Integer employeeId;
+    private Integer id;
     private String name;
     private String paternalSurname;
     private String maternalSurname;
@@ -35,7 +35,7 @@ public class Employee {
             String maternalSurname, User user,
             EmployeeCategory employeeCategory) {
         validarEmpleado(name, paternalSurname, maternalSurname);
-        this.employeeId = id;
+        this.id = id;
         this.name = name;
         this.paternalSurname = paternalSurname;
         this.maternalSurname = maternalSurname;
@@ -54,7 +54,7 @@ public class Employee {
     public Employee(String name, String paternalSurname,
             String maternalSurname, EmployeeCategory employeeCategory) {
         validarEmpleado(name, paternalSurname, maternalSurname);
-        this.employeeId = 0;
+        this.id = 0;
         this.name = name;
         this.paternalSurname = paternalSurname;
         this.maternalSurname = maternalSurname;
@@ -91,7 +91,7 @@ public class Employee {
     public Employee(Integer id, String name, String paternalSurname,
             String maternalSurname) {
         validarEmpleado(name, paternalSurname, maternalSurname);
-        this.employeeId = id;
+        this.id = id;
         this.name = name;
         this.paternalSurname = paternalSurname;
         this.maternalSurname = maternalSurname;
@@ -114,18 +114,18 @@ public class Employee {
      * @param id
      */
     public Employee(Integer id) {
-        this.employeeId = id;
+        this.id = id;
     }
 
     /**
      * @return the employeeId
      */
     public Integer getId() {
-        return employeeId;
+        return id;
     }
 
-    public void setId(Integer employeeId) {
-        this.employeeId = employeeId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     /**
@@ -185,6 +185,13 @@ public class Employee {
     }
 
     /**
+     * @param employeeCategory the employeeCategory to set
+     */
+    public void setEmployeeCategory(EmployeeCategory employeeCategory) {
+        this.employeeCategory = employeeCategory;
+    }
+
+    /**
      * Asigna el employeeId de user al método propio de un objeto user.
      *
      * @param id
@@ -219,7 +226,7 @@ public class Employee {
     public String toString() {
         return String.format("[ID: %s | Nombre: %s | Apellido P: %s "
                 + "| Apellido M: %s | ID Categoría: %s | ID Usuario: %s]",
-                this.employeeId, this.getName(), this.getPaternalSurname(), this.getMaternalSurname(),
+                this.id, this.getName(), this.getPaternalSurname(), this.getMaternalSurname(),
                 this.getEmployeeCategory().getId(),
                 this.getUser().getId());
     }

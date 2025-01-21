@@ -7,8 +7,14 @@ package com.mx.grupogateway.crud;
 /**
  *
  * @author eduar
- * @param <T>
+ * @param <T> The type of Entity model.
  */
 public interface UpdateEntityDAO<T> {
-    int update(T t);
+
+    /**
+     * Update an entity.
+     *
+     * @param t The entity model.
+     */
+    void update(T t);
 }

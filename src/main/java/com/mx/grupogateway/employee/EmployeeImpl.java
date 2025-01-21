@@ -7,6 +7,7 @@ package com.mx.grupogateway.employee;
 import com.mx.grupogateway.employee.category.EmployeeCategory;
 import com.mx.grupogateway.config.LoggerConfig;
 import com.mx.grupogateway.config.ConnectionStatus;
+import com.mx.grupogateway.crud.GetAllDAO;
 import com.mx.grupogateway.user.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,11 +23,11 @@ import java.util.logging.Logger;
  *
  * @author Eduardo Reyes Hernández
  */
-public class EmployeeDAO extends ConnectionStatus {
+public class EmployeeImpl extends ConnectionStatus implements GetAllDAO<Employee> {
 
     private static final Logger logger = LoggerConfig.getLogger();
 
-    public EmployeeDAO(Connection con) {
+    public EmployeeImpl(Connection con) {
         super(con);
     }
 
@@ -37,7 +38,7 @@ public class EmployeeDAO extends ConnectionStatus {
      * @return Devuelve el identificador si la inserción se ejecuto
      * correctamente, caso contrario devuelve -1.
      */
-    public int guardar(Employee employee) {
+    public int create(Employee employee) {
         int employeeId = -1;
         String sql = "INSERT INTO EMPLEADOS "
                 + "(NOMBRE, APE_PAT, "
@@ -49,7 +50,7 @@ public class EmployeeDAO extends ConnectionStatus {
             preparedStatement.setString(2, employee.getPaternalSurname());
             preparedStatement.setString(3, employee.getMaternalSurname());
             preparedStatement.setInt(4, employee.getUser().getId());
-            preparedStatement.setString(5, employee.getEmployeeCategory().getId());
+            preparedStatement.setInt(5, employee.getEmployeeCategory().getId());
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 if (resultSet.next()) {
@@ -65,11 +66,12 @@ public class EmployeeDAO extends ConnectionStatus {
 
     /**
      * Devuelve un listado con todos los valores de la BD correspondientes a los
- atributos del objeto de tipo Employee.
+     * atributos del objeto de tipo Employee.
      *
      * @return Lista de tipo Employee de la BD.
      */
-    public List<Employee> listar() {
+    @Override
+    public List<Employee> getAll() {
         List<Employee> employees = new ArrayList<>();
         String sql = "SELECT ID_EMPLEADO, NOMBRE, APE_PAT, APE_MAT, ID_USUARIO, "
                 + "NOMBRE_CATEGORIA, EMPLEADOS.ID_CATEGORIA_EMPLEADO "
@@ -84,16 +86,16 @@ public class EmployeeDAO extends ConnectionStatus {
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     employees.add(new Employee(
-                                    resultSet.getInt("ID_EMPLEADO"),
-                                    resultSet.getString("NOMBRE"),
-                                    resultSet.getString("APE_PAT"),
-                                    resultSet.getString("APE_MAT"),
-                                    new User(resultSet.getInt("ID_USUARIO")),
-                                    new EmployeeCategory(
-                                            resultSet.getString("ID_CATEGORIA_EMPLEADO"),
-                                            resultSet.getString("NOMBRE_CATEGORIA")
-                                    )
+                            resultSet.getInt("ID_EMPLEADO"),
+                            resultSet.getString("NOMBRE"),
+                            resultSet.getString("APE_PAT"),
+                            resultSet.getString("APE_MAT"),
+                            new User(resultSet.getInt("ID_USUARIO")),
+                            new EmployeeCategory(
+                                    resultSet.getInt("ID_CATEGORIA_EMPLEADO"),
+                                    resultSet.getString("NOMBRE_CATEGORIA")
                             )
+                    )
                     );
                 }
             }
@@ -107,26 +109,21 @@ public class EmployeeDAO extends ConnectionStatus {
      * Realiza la actualización de los registros del empleado acorde a su
      * empleadoId.
      *
-     * @param idEmpleado
-     * @param nombre
-     * @param apellidoP
-     * @param apellidoM
-     * @param idCategoria
+     * @param employee
      * @return Cantidad de registros afectados.
      */
-    public int actualizar(String idEmpleado, String nombre, String apellidoP,
-            String apellidoM, String idCategoria) {
+    public int update(Employee employee) {
         int updateCount = 0;
         String sql = "UPDATE EMPLEADOS "
                 + "SET NOMBRE = ?, APE_PAT = ?, APE_MAT = ?, "
                 + "ID_CATEGORIA_EMPLEADO = ? "
                 + "WHERE ID_EMPLEADO = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
-            preparedStatement.setString(1, nombre);
-            preparedStatement.setString(2, apellidoP);
-            preparedStatement.setString(3, apellidoM);
-            preparedStatement.setString(4, idCategoria);
-            preparedStatement.setString(5, idEmpleado);
+            preparedStatement.setString(1, employee.getName());
+            preparedStatement.setString(2, employee.getPaternalSurname());
+            preparedStatement.setString(3, employee.getMaternalSurname());
+            preparedStatement.setInt(4, employee.getEmployeeCategory().getId());
+            preparedStatement.setInt(5, employee.getId());
             preparedStatement.execute();
             updateCount = preparedStatement.getUpdateCount();
         } catch (SQLException e) {
@@ -141,7 +138,7 @@ public class EmployeeDAO extends ConnectionStatus {
      * @param idEmpleado
      * @return Código de error
      */
-    public int eliminar(String idEmpleado) {
+    public int delete(String idEmpleado) {
         int registrosAfectados = 0;
         String sql = "DELETE FROM EMPLEADOS WHERE ID_EMPLEADO = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {

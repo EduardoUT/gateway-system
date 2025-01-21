@@ -75,15 +75,13 @@ public class ActualizarPassword extends javax.swing.JFrame {
     }
 
     private void consultarPasswordActual() {
-        user.setPassword(String.valueOf(
-                passwordActual.getPassword()
-        ), false);
+        user.setPassword(passwordActual.getPassword(), false);
         boolean passwordValida
-                = this.userController.esPasswordValida(user);
+                = this.userController.isCurrentPasswordValid(user);
         if (passwordValida) {
-            user.setPassword(String.valueOf(checkPassword.getPassword()), false);
-            int registrosAfectados = this.userController.actualizarPassword(user);
-            if (registrosAfectados > 0) {
+            user.setPassword(checkPassword.getPassword(), true);
+            int status = this.userController.updatePassword(user);
+            if (status > 0) {
                 JOptionPane.showMessageDialog(null,
                         "Usuario actualizado éxitosamente.",
                         "Actualización de contraseña éxitosa.",

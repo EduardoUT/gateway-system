@@ -7,14 +7,17 @@ package com.mx.grupogateway.crud;
 import java.util.List;
 
 /**
+ * Para adaptar la información obtenida de un servicio en las filas de un
+ * JTable.
  *
  * @author eduar
- * @param <T> The type of Entity model.
  */
-public interface GetAllDAO<T>{
+public interface DataModelForJTable {
+
     /**
-     * 
-     * @return A list of entities of the model type.
+     * Representa el modelo de filas en un JTable.
+     *
+     * @return Lista de filas para llenar un JTable.
      */
-    List<T> getAll();
+    List<Object[]> getDataModelForJTable();
 }

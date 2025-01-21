@@ -4,9 +4,7 @@
  */
 package com.mx.grupogateway.purchaseorder.detail;
 
-import com.mx.grupogateway.purchaseorder.detail.PurchaseOrderDetailDAO;
 import com.mx.grupogateway.factory.ConnectionFactory;
-import com.mx.grupogateway.purchaseorder.detail.PurchaseOrderDetail;
 import com.mx.grupogateway.purchaseorder.PurchaseOrderStatus;
 import java.util.List;
 
@@ -16,10 +14,10 @@ import java.util.List;
  */
 public class PurchaseOrderDetailController {
 
-    private final PurchaseOrderDetailDAO purchaseOrderDetailDAO;
+    private final PurchaseOrderDetailImpl purchaseOrderDetailImpl;
 
     public PurchaseOrderDetailController() {
-        this.purchaseOrderDetailDAO = new PurchaseOrderDetailDAO(
+        this.purchaseOrderDetailImpl = new PurchaseOrderDetailImpl(
                 new ConnectionFactory().realizarConexion()
         );
     }
@@ -29,8 +27,8 @@ public class PurchaseOrderDetailController {
      *
      * @param purchaseOrderDetail
      */
-    public void guardar(PurchaseOrderDetail purchaseOrderDetail) {
-        this.purchaseOrderDetailDAO.guardar(purchaseOrderDetail);
+    public void create(PurchaseOrderDetail purchaseOrderDetail) {
+        this.purchaseOrderDetailImpl.create(purchaseOrderDetail);
     }
 
     /**
@@ -42,9 +40,7 @@ public class PurchaseOrderDetailController {
      */
     public List<String> listarPurchaseOrderDetailIdentifiers(
             String purchaseOrderIdentifier) {
-        return this.purchaseOrderDetailDAO.listarPurchaseOrderDetailIdentifiers(
-                purchaseOrderIdentifier
-        );
+        return this.purchaseOrderDetailImpl.getAllById(purchaseOrderIdentifier);
     }
 
     /**
@@ -58,8 +54,6 @@ public class PurchaseOrderDetailController {
             PurchaseOrderDetail purchaseOrderDetail) {
         purchaseOrderDetail
                 .setPoStatus(PurchaseOrderStatus.ASSIGNED.toString());
-        this.purchaseOrderDetailDAO.actualizarPurchaseOrderDetailStatus(
-                purchaseOrderDetail
-        );
+        this.purchaseOrderDetailImpl.update(purchaseOrderDetail);
     }
 }

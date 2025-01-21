@@ -10,7 +10,7 @@ package com.mx.grupogateway.employee.category;
  */
 public class EmployeeCategory {
 
-    private String id;
+    private Integer id;
     private String categoryName;
 
     /**
@@ -20,7 +20,7 @@ public class EmployeeCategory {
      * @param id
      * @param categoryName
      */
-    public EmployeeCategory(String id, String categoryName) {
+    public EmployeeCategory(Integer id, String categoryName) {
         validarCategoriaEmpleado(id, categoryName);
         this.id = id;
         this.categoryName = categoryName;
@@ -32,14 +32,14 @@ public class EmployeeCategory {
     /**
      * @return the categoriaId
      */
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
     /**
      * @param id the id to set
      */
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -50,11 +50,18 @@ public class EmployeeCategory {
         return categoryName;
     }
 
-    private void validarCategoriaEmpleado(String id,
+    /**
+     * @param categoryName the categoryName to set
+     */
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    private void validarCategoriaEmpleado(Integer id,
             String categoryName) {
-        if (id.equals("") || id.isEmpty()) {
+        if (id <= 0 && id > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("El campo " + id
-                    + " está vacío");
+                    + " está fuera de rango");
         }
 
         if (categoryName == null || categoryName.isEmpty()) {
@@ -65,7 +72,7 @@ public class EmployeeCategory {
 
     @Override
     public String toString() {
-        return String.format("[ID Categoria: %s | Nombre: %s]",
+        return String.format("[ID Categoria: %d | Nombre: %s]",
                 this.id,
                 this.categoryName);
     }

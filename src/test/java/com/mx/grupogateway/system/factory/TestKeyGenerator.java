@@ -4,7 +4,11 @@
  */
 package com.mx.grupogateway.system.factory;
 
+import com.mx.grupogateway.employee.Employee;
+import com.mx.grupogateway.employee.EmployeeController;
+import com.mx.grupogateway.employee.category.EmployeeCategory;
 import com.mx.grupogateway.user.User;
+import com.mx.grupogateway.user.UserController;
 import java.sql.Timestamp;
 import java.util.Date;
 import javax.swing.ImageIcon;
@@ -29,5 +33,17 @@ public class TestKeyGenerator {
 
         // Imprime el Timestamp
         System.out.println("Timestamp actual: " + timestamp);
+        /*
+        EmployeeCategory employeeCategory = new EmployeeCategory(1, "Administrador Principal");
+        Employee empleado = new Employee("John", "Doe", "Hetfield", employeeCategory);
+        char[] defaultPass = {'J','o','h','n','6','4','2','@'};
+        empleado.getUser().setPassword(defaultPass, true);
+        EmployeeController employeeController = new EmployeeController();
+        employeeController.guardar(empleado);*/
+        
+        
+        
+        
+        
     }
 }

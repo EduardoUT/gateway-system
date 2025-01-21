@@ -134,7 +134,7 @@ public class ExcelDAO extends SwingWorker<Void, Integer> {
 
         for (PurchaseOrderDetail purchaseOrderDetail : dataImport.getPurchaseOrderDetails()) {
             if (isPurchaseOrderDetailNotStoredInDatabase(purchaseOrderDetail)) {
-                purchaseOrderDetailController.guardar(purchaseOrderDetail);
+                purchaseOrderDetailController.create(purchaseOrderDetail);
             }
         }
 

@@ -6,7 +6,8 @@ package com.mx.grupogateway.site;
 
 import com.mx.grupogateway.config.LoggerConfig;
 import com.mx.grupogateway.config.ConnectionStatus;
-import com.mx.grupogateway.site.Site;
+import com.mx.grupogateway.crud.CreateEntityDAO;
+import com.mx.grupogateway.crud.GetAllById;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,11 +22,12 @@ import java.util.logging.Logger;
  *
  * @author eduar
  */
-public class SiteDAO extends ConnectionStatus {
+public class SiteImpl extends ConnectionStatus implements CreateEntityDAO<Site>,
+        GetAllById<Long, Long> {
 
     private static final Logger logger = LoggerConfig.getLogger();
 
-    public SiteDAO(Connection con) {
+    public SiteImpl(Connection con) {
         super(con);
     }
 
@@ -34,7 +36,8 @@ public class SiteDAO extends ConnectionStatus {
      *
      * @param site
      */
-    public void guardar(Site site) {
+    @Override
+    public void create(Site site) {
         String sql = "INSERT INTO SITE "
                 + "(ID_SITE, SITE_CODE, SITE_NAME, BIDDING_AREA, SHIPMENT_NO) "
                 + "VALUES (?,?,?,?,?)";
@@ -54,25 +57,25 @@ public class SiteDAO extends ConnectionStatus {
     /**
      * Consulta los identificadores de Site acorde al mismo.
      *
-     * @param idSite
      * @return
      */
-    public List<Long> listarSiteIdentifiers(Long idSite) {
-        List<Long> siteIdList = new ArrayList<>();
+    @Override
+    public List<Long> getAllById(Long id) {
+        List<Long> siteIdentifiers = new ArrayList<>();
         String sql = "SELECT ID_SITE FROM SITE WHERE ID_SITE = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
-            preparedStatement.setLong(1, idSite);
+            preparedStatement.setLong(1, id);
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     Site siteId = new Site();
                     siteId.setSiteId(resultSet.getLong("ID_SITE"));
-                    siteIdList.add(siteId.getSiteId());
+                    siteIdentifiers.add(siteId.getSiteId());
                 }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al consultar Site: {0}", e.getMessage());
         }
-        return siteIdList;
+        return siteIdentifiers;
     }
 }
