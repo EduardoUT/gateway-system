@@ -66,7 +66,7 @@ public final class Asignaciones extends javax.swing.JFrame {
     }
 
     private void cargarTablaEmpleados() {
-        List<Object[]> empleados = this.employeeController.listar();
+        List<Object[]> empleados = this.employeeController.getDataModelForJTable();
         TableDataModelUtil.loadTableDataModel(
                 tablaEmpleados.getModel(),
                 tablaEmpleados,
@@ -77,7 +77,7 @@ public final class Asignaciones extends javax.swing.JFrame {
     }
 
     private void cargarTablaProyectos() {
-        List<Object[]> purchaseOrders = this.purchaseOrderController.listar();
+        List<Object[]> purchaseOrders = this.purchaseOrderController.getDataModelForJTable();
         TableDataModelUtil.loadTableDataModel(
                 tablaProyectos.getModel(),
                 tablaProyectos,
@@ -88,7 +88,7 @@ public final class Asignaciones extends javax.swing.JFrame {
 
     private void cargarTablaProyectosAsignados() {
         List<Object[]> purchaseOrderAssignments
-                = this.purchaseOrderAssignmentController.listar();
+                = this.purchaseOrderAssignmentController.getDataModelForJTable();
         TableDataModelUtil.loadTableDataModel(
                 tablaAsignaciones.getModel(),
                 tablaAsignaciones,
@@ -148,7 +148,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                             tablaEmpleados.getValueAt(filaTablaEmpleados, 3).toString()),
                     purchaseOrder
             );
-            this.purchaseOrderAssignmentController.guardar(purchaseOrderAssignment);
+            this.purchaseOrderAssignmentController.create(purchaseOrderAssignment);
         }
     }
 
@@ -181,7 +181,7 @@ public final class Asignaciones extends javax.swing.JFrame {
                         + "seleccione un empleado diferente.", "Asignación existente.",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
-                this.purchaseOrderAssignmentController.actualizar(
+                this.purchaseOrderAssignmentController.updateAssignment(
                         empleadoActualId, empleadoNuevoId, purchaseOrderAssignment
                 );
             }
