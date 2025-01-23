@@ -135,14 +135,14 @@ public class EmployeeImpl extends ConnectionStatus implements GetAllDAO<Employee
     /**
      * Realiza la eliminación del registro en la BD, acorde al empleadoId.
      *
-     * @param idEmpleado
+     * @param employee
      * @return Código de error
      */
-    public int delete(String idEmpleado) {
+    public int delete(Employee employee) {
         int registrosAfectados = 0;
         String sql = "DELETE FROM EMPLEADOS WHERE ID_EMPLEADO = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
-            preparedStatement.setString(1, idEmpleado);
+            preparedStatement.setInt(1, employee.getId());
             preparedStatement.execute();
             registrosAfectados = preparedStatement.getUpdateCount();
         } catch (SQLException e) {
