@@ -4,7 +4,6 @@
  */
 package com.mx.grupogateway.user;
 
-import com.mx.grupogateway.employee.Employee;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +19,7 @@ public class UserController implements DataModelForJTable {
     private final UserService userService;
 
     public UserController() {
-        this.userService = new UserService();
+        userService = new UserService();
     }
 
     /**
@@ -35,8 +34,11 @@ public class UserController implements DataModelForJTable {
     }
 
     /**
+     * Recibe un List de tipo User para construir el modelo de filas de un
+     * JTable.
      *
-     * @return List de tipo User.
+     * @return Lista de Object[] con los datos del User a mostrar en el
+     * JTable.
      */
     @Override
     public List<Object[]> getDataModelForJTable() {
@@ -79,17 +81,6 @@ public class UserController implements DataModelForJTable {
      */
     public boolean isCurrentPasswordValid(User user) {
         return userService.isCurrentPasswordValid(user);
-    }
-
-    /**
-     * Obtiene los identificadores de Categoría de empleado e identificador de
-     * usuario.
-     *
-     * @param user
-     * @return Optional de tipo Employee.
-     */
-    public Optional<Employee> getUserProfile(User user) {
-        return userService.getUserProfile(user);
     }
 
     /**
