@@ -9,7 +9,6 @@ import com.mx.grupogateway.config.ConnectionStatus;
 import com.mx.grupogateway.crud.CreateEntityDAO;
 import com.mx.grupogateway.crud.GetAllById;
 import com.mx.grupogateway.crud.UpdateEntityDAO;
-import com.mx.grupogateway.purchaseorder.detail.PurchaseOrderDetail;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
