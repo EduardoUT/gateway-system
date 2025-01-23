@@ -4,55 +4,60 @@
  */
 package com.mx.grupogateway.employee;
 
+import com.mx.grupogateway.crud.DataModelForJTable;
 import com.mx.grupogateway.user.UserController;
 import com.mx.grupogateway.factory.ConnectionFactory;
+import com.mx.grupogateway.user.User;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  *
  * @author Eduardo Reyes Hernández
  */
-public class EmployeeController {
+public class EmployeeController implements DataModelForJTable {
 
     private final EmployeeImpl employeeImpl;
     private final UserController userController;
+    private final EmployeeService employeeService;
 
     public EmployeeController() {
-        this.employeeImpl = new EmployeeImpl(
-                new ConnectionFactory().realizarConexion()
-        );
+        employeeImpl = new EmployeeImpl(new ConnectionFactory().realizarConexion());
         userController = new UserController();
+        employeeService = new EmployeeService();
     }
 
     /**
      * Guarda el User generado, si la operación es éxitosa obtiene el nuevo
- identificador generado y guarda los datos necesarios para el Employee.
+     * identificador generado y guarda los datos necesarios para el Employee.
      *
      * @param employee Objeto de tipo Employee.
      * @return Devuelve el id generado, si es -1 el empleado no fue almacenado.
      */
-    public int guardar(Employee employee) {
+    public int create(Employee employee) {
         int employeeId = -1;
-        int userId = this.userController.create(employee.getUser());
+        int userId = userController.create(employee.getUser());
         if (userId != -1 || employee.getUser().getId() != 0) {
-            employeeId = this.employeeImpl.create(employee);
+            employeeId = employeeImpl.create(employee);
             if (employeeId == -1 || employee.getId() == 0) {
-                this.userController.delete(employee.getUser());
+                userController.delete(employee.getUser());
             }
         }
         return employeeId;
     }
 
     /**
-     * Lista de empleados a mostrar en el JTable.
+     * Recibe un List de tipo Employee para construir el modelo de filas de un
+     * JTable.
      *
      * @return Lista de Object[] con los datos del Employee a mostrar en el
- TableModel.
+     * JTable.
      */
-    public List<Object[]> listar() {
-        List<Employee> employees = this.employeeImpl.getAll();
+    @Override
+    public List<Object[]> getDataModelForJTable() {
+        List<Employee> employees = employeeImpl.getAll();
         List<Object[]> dataModelEmployees = new ArrayList<>();
         if (!employees.isEmpty()) {
             for (Employee employee : employees) {
@@ -74,23 +79,34 @@ public class EmployeeController {
     }
 
     /**
+     * Obtiene los identificadores de Categoría de empleado e identificador de
+     * usuario.
+     *
+     * @param user
+     * @return Optional de tipo Employee.
+     */
+    public Optional<Employee> getEmployeeIdentifiersByUserAutenticated(User user) {
+        return employeeService.getEmployeeIdentifiersByUserAutenticated(user);
+    }
+
+    /**
      * Recibe los valores registrados en la tablaEmpleado a ser modificados.
      *
      * @param employee
      * @return Cantidad de registros actualizados.
      */
-    public int actualizar(Employee employee) {
-        return this.employeeImpl.update(employee);
+    public int update(Employee employee) {
+        return employeeImpl.update(employee);
     }
 
     /**
      * Recibe el identificador del empleado de la tabla de registros
      * tablaEmpleado.
      *
-     * @param id
+     * @param employee
      * @return Código de error.
      */
-    public int eliminar(String id) {
-        return this.employeeImpl.delete(id);
+    public int delete(Employee employee) {
+        return employeeImpl.delete(employee);
     }
 }
