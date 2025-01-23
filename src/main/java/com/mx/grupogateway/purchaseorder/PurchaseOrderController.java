@@ -4,6 +4,7 @@
  */
 package com.mx.grupogateway.purchaseorder;
 
+import com.mx.grupogateway.crud.DataModelForJTable;
 import com.mx.grupogateway.factory.ConnectionFactory;
 import com.mx.grupogateway.project.Project;
 import com.mx.grupogateway.purchaseorder.detail.PurchaseOrderDetail;
@@ -17,12 +18,12 @@ import java.util.Map;
  *
  * @author eduar
  */
-public class PurchaseOrderController {
+public class PurchaseOrderController implements DataModelForJTable {
 
     private final PurchaseOrderImpl purchaseOrderImpl;
 
     public PurchaseOrderController() {
-        this.purchaseOrderImpl = new PurchaseOrderImpl(
+        purchaseOrderImpl = new PurchaseOrderImpl(
                 new ConnectionFactory().realizarConexion()
         );
     }
@@ -32,18 +33,22 @@ public class PurchaseOrderController {
      *
      * @param purchaseOrder
      */
-    public void guardar(PurchaseOrder purchaseOrder) {
-        this.purchaseOrderImpl.create(purchaseOrder);
+    public void create(PurchaseOrder purchaseOrder) {
+        if (isPurchaseOrderNotStoredInDatabase(purchaseOrder)) {
+            purchaseOrderImpl.create(purchaseOrder);
+        }
     }
 
     /**
-     * Lista el modelo PurchaseOrder almacenados en la Base de Datos, el cual
-     * contiene el modelo completo de datos importados de Excel.
+     * Recibe un List de tipo PurchaseOrder para construir el modelo de filas de
+     * un JTable.
      *
-     * @return
+     * @return Lista de Object[] con los datos del PurchaseOrder a mostrar en el
+     * JTable.
      */
-    public List<Object[]> listar() {
-        List<PurchaseOrder> purchaseOrders = this.purchaseOrderImpl.getAll();
+    @Override
+    public List<Object[]> getDataModelForJTable() {
+        List<PurchaseOrder> purchaseOrders = purchaseOrderImpl.getAll();
         List<Object[]> dataModelPurchaseOrder = new ArrayList<>();
         if (!purchaseOrders.isEmpty()) {
             for (PurchaseOrder purchaseOrder : purchaseOrders) {
@@ -111,5 +116,22 @@ public class PurchaseOrderController {
         return this.purchaseOrderImpl.getAllById(
                 purchaseOrder.getPurchaseOrderDetail().getId()
         );
+    }
+
+    /**
+     * Realiza la consulta de la existencia del identificador de PurchaseOrder
+     * en la Base de Datos con el fin de evitar duplicidad antes de ser
+     * guardado.
+     *
+     * @param purchaseOrder
+     * @return
+     */
+    private boolean isPurchaseOrderNotStoredInDatabase(PurchaseOrder purchaseOrder) {
+        Map<Long, String> purchaseOrderIdentifiers = purchaseOrderImpl
+                .getAllPurchaseOrderIdentifiers(
+                        purchaseOrder.getPurchaseOrderDetail().getId(),
+                        purchaseOrder.getProject().getId()
+                );
+        return purchaseOrderIdentifiers.isEmpty();
     }
 }
