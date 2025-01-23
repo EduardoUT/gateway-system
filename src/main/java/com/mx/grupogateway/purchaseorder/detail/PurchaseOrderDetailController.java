@@ -17,7 +17,7 @@ public class PurchaseOrderDetailController {
     private final PurchaseOrderDetailImpl purchaseOrderDetailImpl;
 
     public PurchaseOrderDetailController() {
-        this.purchaseOrderDetailImpl = new PurchaseOrderDetailImpl(
+        purchaseOrderDetailImpl = new PurchaseOrderDetailImpl(
                 new ConnectionFactory().realizarConexion()
         );
     }
@@ -28,7 +28,9 @@ public class PurchaseOrderDetailController {
      * @param purchaseOrderDetail
      */
     public void create(PurchaseOrderDetail purchaseOrderDetail) {
-        this.purchaseOrderDetailImpl.create(purchaseOrderDetail);
+        if (isPurchaseOrderDetailNotStoredInDatabase(purchaseOrderDetail)) {
+            purchaseOrderDetailImpl.create(purchaseOrderDetail);
+        }
     }
 
     /**
@@ -38,9 +40,8 @@ public class PurchaseOrderDetailController {
      * @param purchaseOrderIdentifier
      * @return
      */
-    public List<String> listarPurchaseOrderDetailIdentifiers(
-            String purchaseOrderIdentifier) {
-        return this.purchaseOrderDetailImpl.getAllById(purchaseOrderIdentifier);
+    public List<String> getAlById(String purchaseOrderIdentifier) {
+        return purchaseOrderDetailImpl.getAllById(purchaseOrderIdentifier);
     }
 
     /**
@@ -50,10 +51,23 @@ public class PurchaseOrderDetailController {
      *
      * @param purchaseOrderDetail
      */
-    public void actualizarPurchaseOrderDetailStatus(
+    public void update(PurchaseOrderDetail purchaseOrderDetail) {
+        purchaseOrderDetail.setPoStatus(PurchaseOrderStatus.ASSIGNED.toString());
+        purchaseOrderDetailImpl.update(purchaseOrderDetail);
+    }
+
+    /**
+     * Realiza la consulta de la existencia del identificador de
+     * PurchaseOrderDetail en la Base de Datos con el fin de evitar duplicidad
+     * antes de ser guardado.
+     *
+     * @param purchaseOrderDetail
+     * @return
+     */
+    private boolean isPurchaseOrderDetailNotStoredInDatabase(
             PurchaseOrderDetail purchaseOrderDetail) {
-        purchaseOrderDetail
-                .setPoStatus(PurchaseOrderStatus.ASSIGNED.toString());
-        this.purchaseOrderDetailImpl.update(purchaseOrderDetail);
+        List<String> purchaseOrdersDetailIdentifiers
+                = purchaseOrderDetailImpl.getAllById(purchaseOrderDetail.getId());
+        return purchaseOrdersDetailIdentifiers.isEmpty();
     }
 }
