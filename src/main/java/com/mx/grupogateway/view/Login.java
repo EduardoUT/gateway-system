@@ -5,8 +5,8 @@
 package com.mx.grupogateway.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import com.mx.grupogateway.user.UserController;
 import com.mx.grupogateway.employee.Employee;
+import com.mx.grupogateway.employee.EmployeeController;
 import com.mx.grupogateway.user.User;
 import com.mx.grupogateway.util.ValidacionJPasswordField;
 import com.mx.grupogateway.util.FondoLogin;
@@ -23,7 +23,7 @@ import javax.swing.JOptionPane;
  */
 public class Login extends javax.swing.JFrame {
 
-    private UserController userController;
+    private EmployeeController employeeController;
     protected Optional<Employee> optionalEmployee;
 
     /**
@@ -36,7 +36,7 @@ public class Login extends javax.swing.JFrame {
 
     private void iniciarProcesos() {
         cargarIconoVentana();
-        this.userController = new UserController();
+        employeeController = new EmployeeController();
         campoUsuario.requestFocus();
     }
 
@@ -73,7 +73,7 @@ public class Login extends javax.swing.JFrame {
         User usuario = new User();
         usuario.setPassword(campoPassword.getPassword(), false);
         usuario.setUserName(nombreUsuario);
-        optionalEmployee = this.userController.getUserProfile(usuario);
+        optionalEmployee = employeeController.getEmployeeIdentifiersByUserAutenticated(usuario);
         if (!optionalEmployee.isPresent()) {
             JOptionPane.showMessageDialog(null,
                     "El usuario o la contraseña son incorrectos.");
