@@ -48,7 +48,7 @@ public final class Facturacion extends javax.swing.JFrame {
     }
 
     protected void cargarTablaProyectos() {
-        List<Object[]> purchaseOrders = this.purchaseOrderController.listar();
+        List<Object[]> purchaseOrders = this.purchaseOrderController.getDataModelForJTable();
         TableDataModelUtil.loadTableDataModel(
                 tablaProyectos.getModel(),
                 tablaProyectos,
