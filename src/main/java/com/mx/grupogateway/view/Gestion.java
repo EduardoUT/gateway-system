@@ -79,7 +79,7 @@ public class Gestion extends javax.swing.JFrame {
                             empleadoCargos.getSelectedItem().toString()
                     )
             );
-            int idEmpleado = this.employeeController.guardar(empleado);
+            int idEmpleado = this.employeeController.create(empleado);
             if (idEmpleado != -1) {
                 JOptionPane.showMessageDialog(null, "Empleado guardado "
                         + "éxitosamente.");
@@ -106,7 +106,7 @@ public class Gestion extends javax.swing.JFrame {
      * EmployeeController y asignando registros en la tablaEmpleado.
      */
     private void cargarTablaEmpleado() {
-        List<Object[]> empleados = this.employeeController.listar();
+        List<Object[]> empleados = this.employeeController.getDataModelForJTable();
         TableDataModelUtil.loadTableDataModel(
                 tablaEmpleado.getModel(),
                 tablaEmpleado,
@@ -133,7 +133,7 @@ public class Gestion extends javax.swing.JFrame {
             employee.setEmployeeCategory(employeeCategory);
             int lineasActualizadas;
             lineasActualizadas = this.employeeController
-                    .actualizar(employee);
+                    .update(employee);
             JOptionPane.showMessageDialog(null, lineasActualizadas
                     + " registro actualizado exitosamente.");
             limpiarCamposFormularioEmpleado();
@@ -151,9 +151,9 @@ public class Gestion extends javax.swing.JFrame {
      * pasa por parámetro en el método delete() del EmployeeController.
      */
     private void eliminarEmpleado() {
-        int registrosAfectados = this.employeeController.eliminar(
-                AccionesTabla.obtenerUUID(tablaEmpleado, 0)
-        );
+        Integer employeeId = AccionesTabla.obtenerID(tablaEmpleado, 0);
+        Employee employee = new Employee(employeeId);
+        int registrosAfectados = this.employeeController.delete(employee);
         if (registrosAfectados > 0) {
             JOptionPane.showMessageDialog(null, "Registro "
                     + "eliminado exitosamente.", "Eliminación completada.",
@@ -219,8 +219,7 @@ public class Gestion extends javax.swing.JFrame {
         DefaultComboBoxModel<String> modeloComboBoxCargoEmpleado;
         modeloComboBoxCargoEmpleado = (DefaultComboBoxModel) empleadoCargos.getModel();
         modeloComboBoxCargoEmpleado.addElement("Seleccione un cargo");
-        List<EmployeeCategory> listaCargos = this.employeeCategoryController
-                .listar();
+        List<EmployeeCategory> listaCargos = this.employeeCategoryController.getAll();
         for (EmployeeCategory empleadoCategoria : listaCargos) {
             modeloComboBoxCargoEmpleado.addElement(empleadoCategoria.getCategoryName());
         }
