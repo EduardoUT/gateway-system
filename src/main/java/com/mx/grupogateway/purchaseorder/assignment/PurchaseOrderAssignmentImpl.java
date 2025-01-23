@@ -8,10 +8,10 @@ import com.mx.grupogateway.config.LoggerConfig;
 import com.mx.grupogateway.employee.Employee;
 import com.mx.grupogateway.project.Project;
 import com.mx.grupogateway.purchaseorder.PurchaseOrder;
-import com.mx.grupogateway.purchaseorder.assignment.PurchaseOrderAssignment;
 import com.mx.grupogateway.purchaseorder.detail.PurchaseOrderDetail;
 import com.mx.grupogateway.site.Site;
 import com.mx.grupogateway.config.ConnectionStatus;
+import com.mx.grupogateway.crud.GetAllDAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,11 +26,12 @@ import java.util.logging.Logger;
  *
  * @author eduar
  */
-public class PurchaseOrderAssignmentDAO extends ConnectionStatus {
+public class PurchaseOrderAssignmentImpl extends ConnectionStatus
+        implements GetAllDAO<PurchaseOrderAssignment> {
 
     private static final Logger logger = LoggerConfig.getLogger();
 
-    public PurchaseOrderAssignmentDAO(Connection con) {
+    public PurchaseOrderAssignmentImpl(Connection con) {
         super(con);
     }
 
@@ -38,10 +39,10 @@ public class PurchaseOrderAssignmentDAO extends ConnectionStatus {
      * Cuando se reciba más de un resultado en la lista se ejecutará este
      * método.
      *
-     * @param purchaseOrderAssignment Varios objetos de asignaciones.
+     * @param purchaseOrderAssignment
      * @param purchaseOrderProjectIdentifiers
      */
-    public void guardar(PurchaseOrderAssignment purchaseOrderAssignment,
+    public void create(PurchaseOrderAssignment purchaseOrderAssignment,
             List<Long> purchaseOrderProjectIdentifiers) {
         String sql = "INSERT INTO EMPLEADOS_HAS_PROJECTS "
                 + "(ID_EMPLEADO, ID_PROJECT, FECHA_ASIGNACION, IMPORTE, "
@@ -67,7 +68,8 @@ public class PurchaseOrderAssignmentDAO extends ConnectionStatus {
      *
      * @return LinkedList de objeto de tipo ProyectoAsignado.
      */
-    public List<PurchaseOrderAssignment> listar() {
+    @Override
+    public List<PurchaseOrderAssignment> getAll() {
         LinkedList<PurchaseOrderAssignment> purchaseOrderAssignments = new LinkedList<>();
         String sql = "SELECT EMPLEADOS.ID_EMPLEADO, EMPLEADOS.NOMBRE, "
                 + "EMPLEADOS.APE_PAT, EMPLEADOS.APE_MAT, "
@@ -159,7 +161,7 @@ public class PurchaseOrderAssignmentDAO extends ConnectionStatus {
      * @param purchaseOrderProjectIdentifiers Listado de proyectos que
      * coincidieron con PO_NO actual asignada.
      */
-    public void actualizar(Integer empleadoActualId, Integer empleadoNuevoId,
+    public void updateAssignment(Integer empleadoActualId, Integer empleadoNuevoId,
             PurchaseOrderAssignment purchaseOrderAssignment, List<Long> purchaseOrderProjectIdentifiers) {
         String sql = "UPDATE EMPLEADOS_HAS_PROJECTS "
                 + "SET ID_EMPLEADO = ? "
