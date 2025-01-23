@@ -16,7 +16,7 @@ public class SiteController {
     private final SiteImpl siteImpl;
 
     public SiteController() {
-        this.siteImpl = new SiteImpl(new ConnectionFactory().realizarConexion());
+        siteImpl = new SiteImpl(new ConnectionFactory().realizarConexion());
     }
 
     /**
@@ -24,8 +24,10 @@ public class SiteController {
      *
      * @param site
      */
-    public void guardar(Site site) {
-        this.siteImpl.create(site);
+    public void create(Site site) {
+        if (isSiteNotStoredInDatabase(site)) {
+            siteImpl.create(site);
+        }
     }
 
     /**
@@ -35,7 +37,19 @@ public class SiteController {
      * @param idSite
      * @return
      */
-    public List<Long> listarSiteIdentifiers(Long idSite) {
-        return this.siteImpl.getAllById(idSite);
+    public List<Long> getAllById(Long idSite) {
+        return siteImpl.getAllById(idSite);
+    }
+
+    /**
+     * Realiza la consulta de la existencia del identificador de Site en la Base
+     * de Datos con el fin de evitar duplicidad antes de ser guardado.
+     *
+     * @param site
+     * @return
+     */
+    private boolean isSiteNotStoredInDatabase(Site site) {
+        List<Long> siteIdentifiers = siteImpl.getAllById(site.getSiteId());
+        return siteIdentifiers.isEmpty();
     }
 }
