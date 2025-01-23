@@ -16,9 +16,7 @@ public class ProjectController {
     private final ProjectImpl projectImpl;
 
     public ProjectController() {
-        this.projectImpl = new ProjectImpl(
-                new ConnectionFactory().realizarConexion()
-        );
+        projectImpl = new ProjectImpl(new ConnectionFactory().realizarConexion());
     }
 
     /**
@@ -26,17 +24,19 @@ public class ProjectController {
      *
      * @param project
      */
-    public void guardar(Project project) {
-        this.projectImpl.create(project);
+    public void create(Project project) {
+        if (isProjectNotStoredInDatabase(project)) {
+            projectImpl.create(project);
+        }
     }
 
     /**
-     * Lista de objetos de tipo Proyecto.
+     * Lista de objetos de tipo Project.
      *
      * @return
      */
-    public List<Project> listar() {
-        return this.projectImpl.getAll();
+    public List<Project> getAll() {
+        return projectImpl.getAll();
     }
 
     /**
@@ -46,7 +46,19 @@ public class ProjectController {
      * @param projectId
      * @return Lista de identificadores,
      */
-    public List<Long> listarProjectIdentifiers(Long projectId) {
-        return this.projectImpl.getAllById(projectId);
+    public List<Long> getAllById(Long projectId) {
+        return projectImpl.getAllById(projectId);
+    }
+
+    /**
+     * Realiza la consulta de la existencia del identificador de Project en la
+     * Base de Datos con el fin de evitar duplicidad antes de ser guardado.
+     *
+     * @param project
+     * @return
+     */
+    private boolean isProjectNotStoredInDatabase(Project project) {
+        List<Long> projectIdentifiers = projectImpl.getAllById(project.getId());
+        return projectIdentifiers.isEmpty();
     }
 }
