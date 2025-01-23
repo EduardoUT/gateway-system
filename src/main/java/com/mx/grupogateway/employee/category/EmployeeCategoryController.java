@@ -17,7 +17,7 @@ public class EmployeeCategoryController {
     private final EmployeeCategoryImpl employeeCategoryImpl;
 
     public EmployeeCategoryController() {
-        this.employeeCategoryImpl = new EmployeeCategoryImpl(
+        employeeCategoryImpl = new EmployeeCategoryImpl(
                 new ConnectionFactory().realizarConexion()
         );
     }
@@ -27,16 +27,16 @@ public class EmployeeCategoryController {
      *
      * @param employeeCategory
      */
-    public void guardar(EmployeeCategory employeeCategory) {
-        this.employeeCategoryImpl.create(employeeCategory);
+    public void create(EmployeeCategory employeeCategory) {
+        employeeCategoryImpl.create(employeeCategory);
     }
 
     /**
      *
      * @return List de tipo EmployeeCategory.
      */
-    public List<EmployeeCategory> listar() {
-        return this.employeeCategoryImpl.getAll();
+    public List<EmployeeCategory> getAll() {
+        return employeeCategoryImpl.getAll();
     }
 
     /**
@@ -44,8 +44,8 @@ public class EmployeeCategoryController {
      *
      * @param employeeCategory
      */
-    public void actualizar(EmployeeCategory employeeCategory) {
-        this.employeeCategoryImpl.update(employeeCategory);
+    public void update(EmployeeCategory employeeCategory) {
+        employeeCategoryImpl.update(employeeCategory);
     }
 
     /**
@@ -53,7 +53,7 @@ public class EmployeeCategoryController {
      *
      * @param employee
      */
-    public void eliminar(Employee employee) {
-        this.employeeCategoryImpl.delete(employee);
+    public void delete(Employee employee) {
+        employeeCategoryImpl.delete(employee);
     }
 }
