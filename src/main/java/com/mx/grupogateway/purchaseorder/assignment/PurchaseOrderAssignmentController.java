@@ -4,14 +4,10 @@
  */
 package com.mx.grupogateway.purchaseorder.assignment;
 
-import com.mx.grupogateway.purchaseorder.detail.PurchaseOrderDetailController;
-import com.mx.grupogateway.purchaseorder.PurchaseOrderController;
-import com.mx.grupogateway.purchaseorder.assignment.PurchaseOrderAssignmentDAO;
-import com.mx.grupogateway.factory.ConnectionFactory;
+import com.mx.grupogateway.crud.DataModelForJTable;
 import com.mx.grupogateway.employee.Employee;
 import com.mx.grupogateway.project.Project;
 import com.mx.grupogateway.purchaseorder.PurchaseOrder;
-import com.mx.grupogateway.purchaseorder.assignment.PurchaseOrderAssignment;
 import com.mx.grupogateway.purchaseorder.detail.PurchaseOrderDetail;
 import com.mx.grupogateway.site.Site;
 import java.util.ArrayList;
@@ -22,60 +18,34 @@ import java.util.List;
  *
  * @author eduar
  */
-public class PurchaseOrderAssignmentController {
+public class PurchaseOrderAssignmentController implements DataModelForJTable {
 
-    private final PurchaseOrderAssignmentDAO purchaseOrderAssignmentDAO;
-    private final PurchaseOrderController purchaseOrderController;
-    private final PurchaseOrderDetailController purchaseOrderDetailController;
+    private final PurchaseOrderAssignmentService purchaseOrderAssignmentService;
 
     public PurchaseOrderAssignmentController() {
-        this.purchaseOrderAssignmentDAO = new PurchaseOrderAssignmentDAO(
-                new ConnectionFactory().realizarConexion()
-        );
-        this.purchaseOrderController = new PurchaseOrderController();
-        this.purchaseOrderDetailController = new PurchaseOrderDetailController();
+        purchaseOrderAssignmentService = new PurchaseOrderAssignmentService();
     }
 
     /**
-     * Evalúa si la asignación por medio del purchaseOrderIdentifier contiene
-     * una o más líneas.
+     * Crea un nuevo PurchaseOrderAssignment a un Employee.
      *
-     * Guarda una lista de tipo ProjectAssignment de acuerdo alas
-     * purchasOrderIdentifier obtenidas en el listado consultado.
-     *
-     * Actualiza el PO_STATUS correspondiente al purchaseOrderIdentifier
-     * proporcionado.
-     *
-     * @param purchaseOrderAssignment
+     * @param purchaseOrderAssignment Orden de compra a a asignar.
      */
-    public void guardar(PurchaseOrderAssignment purchaseOrderAssignment) {
-        List<Long> purchaseOrderProjectIdentifiers
-                = this.purchaseOrderController.
-                        listarPurchaseOrderProjectIdentifiers(
-                                purchaseOrderAssignment.getPurchaseOrder()
-                        );
-        if (!purchaseOrderProjectIdentifiers.isEmpty()) {
-            this.purchaseOrderAssignmentDAO.guardar(
-                    purchaseOrderAssignment,
-                    purchaseOrderProjectIdentifiers
-            );
-            this.purchaseOrderDetailController
-                    .actualizarPurchaseOrderDetailStatus(
-                            purchaseOrderAssignment
-                                    .getPurchaseOrder()
-                                    .getPurchaseOrderDetail()
-                    );
-        }
+    public void create(PurchaseOrderAssignment purchaseOrderAssignment) {
+        purchaseOrderAssignmentService.create(purchaseOrderAssignment);
     }
 
     /**
-     * Lista de asignaciones, con el empleado asociado al proyecto.
+     * Recibe un List de tipo PurchaseOrderAssignment para construir el modelo
+     * de filas de un JTable.
      *
-     * @return
+     * @return Lista de Object[] con los datos del PurchaseOrderAssignment a
+     * mostrar en el JTable.
      */
-    public List<Object[]> listar() {
+    @Override
+    public List<Object[]> getDataModelForJTable() {
         List<PurchaseOrderAssignment> purchaseOrderAssignments
-                = this.purchaseOrderAssignmentDAO.listar();
+                = purchaseOrderAssignmentService.getAll();
         List<Object[]> dataModelPurchaseOrderAssignments = new ArrayList<>();
         if (!purchaseOrderAssignments.isEmpty()) {
             for (PurchaseOrderAssignment purchaseOrderAssignment : purchaseOrderAssignments) {
@@ -122,28 +92,15 @@ public class PurchaseOrderAssignmentController {
     }
 
     /**
-     * Consulta el listado de projectId que coinciden con el
-     * purchaseOrderIdentifier, posteriormente realiza la actualización para los
-     * registros coincidentes.
+     * Actualiza una asignación a un Employee diferente.
      *
-     * @param empleadoNuevoId
      * @param empleadoActualId
+     * @param empleadoNuevoId
      * @param purchaseOrderAssignment
      */
-    public void actualizar(Integer empleadoActualId, Integer empleadoNuevoId,
+    public void updateAssignment(Integer empleadoActualId, Integer empleadoNuevoId,
             PurchaseOrderAssignment purchaseOrderAssignment) {
-        List<Long> purchaseOrderProjectIdentifiers
-                = this.purchaseOrderController
-                        .listarPurchaseOrderProjectIdentifiers(
-                                purchaseOrderAssignment.getPurchaseOrder()
-                        );
-        if (!purchaseOrderProjectIdentifiers.isEmpty()) {
-            this.purchaseOrderAssignmentDAO.actualizar(
-                    empleadoActualId,
-                    empleadoNuevoId,
-                    purchaseOrderAssignment,
-                    purchaseOrderProjectIdentifiers
-            );
-        }
+        purchaseOrderAssignmentService.updateAssignment(
+                empleadoActualId, empleadoNuevoId, purchaseOrderAssignment);
     }
 }
