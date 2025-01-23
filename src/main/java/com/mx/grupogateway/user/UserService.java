@@ -4,7 +4,6 @@
  */
 package com.mx.grupogateway.user;
 
-import com.mx.grupogateway.employee.Employee;
 import com.mx.grupogateway.factory.ConnectionFactory;
 import com.mx.grupogateway.util.SecurityPassword;
 import java.util.HashMap;
@@ -21,7 +20,14 @@ public class UserService {
     private final UserImpl userImpl;
 
     public UserService() {
-        this.userImpl = new UserImpl(new ConnectionFactory().realizarConexion());
+        userImpl = new UserImpl(new ConnectionFactory().realizarConexion());
+    }
+
+    /**
+     * @return the userImpl
+     */
+    public UserImpl getUserImpl() {
+        return userImpl;
     }
 
     /**
@@ -30,7 +36,7 @@ public class UserService {
      * @return
      */
     public boolean isConnectionStatusNotActive() {
-        return this.userImpl.isStatusConnectionNotActive();
+        return userImpl.isStatusConnectionNotActive();
     }
 
     /**
@@ -40,7 +46,7 @@ public class UserService {
      * @return Status de la operación.
      */
     public int create(User user) {
-        return this.userImpl.create(user);
+        return userImpl.create(user);
     }
 
     /**
@@ -48,7 +54,7 @@ public class UserService {
      * @return Listado de users.
      */
     public List<User> getAll() {
-        return this.userImpl.getAll();
+        return userImpl.getAll();
     }
 
     /**
@@ -57,7 +63,7 @@ public class UserService {
      * @return Optional de tipo User.
      */
     public Optional<User> getEntityById(Integer id) {
-        return this.userImpl.getEntityById(id);
+        return userImpl.getEntityById(id);
     }
 
     /**
@@ -69,7 +75,7 @@ public class UserService {
      * @return Status de la validación.
      */
     public boolean isCurrentPasswordValid(User user) {
-        Optional<User> userOptional = this.userImpl.getEntityById(user.getId());
+        Optional<User> userOptional = userImpl.getEntityById(user.getId());
         if (userOptional.isPresent()) {
             if (userOptional.get().getHash().equals("NULL")) {
                 return false;
@@ -93,7 +99,7 @@ public class UserService {
      * @return Status de la validación.
      */
     public boolean isPasswordNull(Integer id) {
-        Optional<User> user = this.userImpl.getEntityById(id);
+        Optional<User> user = userImpl.getEntityById(id);
         if (user.isPresent()) {
             return user.get().getHash().equals("NULL");
         } else {
@@ -106,8 +112,8 @@ public class UserService {
      * @param user User con userName asignado.
      * @return Status de la autenticación.
      */
-    private boolean authenticate(User user) {
-        HashMap<String, Integer> hashMap = this.userImpl.getEntityByUserName(user);
+    public boolean authenticate(User user) {
+        HashMap<String, Integer> hashMap = userImpl.getEntityByUserName(user);
         if (hashMap.isEmpty()) {
             return false;
         } else {
@@ -121,14 +127,6 @@ public class UserService {
             }
             return false;
         }
-    }
-
-    //Rename to getEmployeeByUser and declare in EmployeeService
-    public Optional<Employee> getUserProfile(User user) {
-        if (authenticate(user)) {
-            return this.userImpl.getEmployeeByUser(user);
-        }
-        return Optional.ofNullable(null);
     }
 
     /**
@@ -152,7 +150,7 @@ public class UserService {
      * @return Status de la operación.
      */
     public int updatePassword(User user) {
-        return this.userImpl.updatePassword(user);
+        return userImpl.updatePassword(user);
     }
 
     /**
@@ -161,6 +159,6 @@ public class UserService {
      * @return Status de la operación.
      */
     public int delete(User user) {
-        return this.userImpl.delete(user);
+        return userImpl.delete(user);
     }
 }
