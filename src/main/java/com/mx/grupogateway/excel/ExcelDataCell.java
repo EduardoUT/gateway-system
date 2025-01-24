@@ -17,18 +17,18 @@ import java.util.Set;
  *
  * @author eduar
  */
-public class DataImport {
+public class ExcelDataCell {
 
     private final Set<Project> projects;
     private final Set<Site> sites;
     private final Set<PurchaseOrder> purchaseOrders;
     private final Set<PurchaseOrderDetail> purchaseOrderDetails;
 
-    public DataImport() {
-        this.projects = new HashSet<>();
-        this.sites = new HashSet<>();
-        this.purchaseOrders = new HashSet<>();
-        this.purchaseOrderDetails = new HashSet<>();
+    public ExcelDataCell() {
+        projects = new HashSet<>();
+        sites = new HashSet<>();
+        purchaseOrders = new HashSet<>();
+        purchaseOrderDetails = new HashSet<>();
     }
 
     /**
@@ -42,7 +42,7 @@ public class DataImport {
      * @param project the projects to set
      */
     public void addProject(Project project) {
-        this.projects.add(project);
+        projects.add(project);
     }
 
     /**
@@ -56,7 +56,7 @@ public class DataImport {
      * @param site the sites to set
      */
     public void addSite(Site site) {
-        this.sites.add(site);
+        sites.add(site);
     }
 
     /**
@@ -70,7 +70,7 @@ public class DataImport {
      * @param purchaseOrder the purchaseOrders to set
      */
     public void addPurchaseOrders(PurchaseOrder purchaseOrder) {
-        this.purchaseOrders.add(purchaseOrder);
+        purchaseOrders.add(purchaseOrder);
     }
 
     /**
@@ -84,6 +84,14 @@ public class DataImport {
      * @param purchaseOrderDetail the purchaseOrderDetails to set
      */
     public void addPurchaseOrderDetail(PurchaseOrderDetail purchaseOrderDetail) {
-        this.purchaseOrderDetails.add(purchaseOrderDetail);
+        purchaseOrderDetails.add(purchaseOrderDetail);
+    }
+
+    public int totalDataCell() {
+        int siteSize = sites.size();
+        int projectsSize = projects.size();
+        int purchasOrderDetailSize = purchaseOrderDetails.size();
+        int purchaseOrderSize = purchaseOrders.size();
+        return siteSize + projectsSize + purchasOrderDetailSize + purchaseOrderSize;
     }
 }
