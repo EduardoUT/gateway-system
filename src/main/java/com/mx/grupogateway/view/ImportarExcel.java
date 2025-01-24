@@ -6,12 +6,10 @@ package com.mx.grupogateway.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.excel.ExcelController;
-import com.mx.grupogateway.excel.DataImport;
 import com.mx.grupogateway.user.User;
-import com.mx.grupogateway.util.IconoVentana;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 
 /**
  *
@@ -19,10 +17,8 @@ import javax.swing.JFrame;
  */
 public class ImportarExcel extends javax.swing.JFrame {
 
-    private ExcelController excelController;
+    private static final String MESSAGE_STATUS_FILE = "Ningún archivo ha sido seleccionado.";
     private User user;
-    private DataImport dataImport;
-    private JFrame jFrame;
 
     /**
      * Creates new form Facturacion
@@ -34,63 +30,42 @@ public class ImportarExcel extends javax.swing.JFrame {
 
     private void iniciarProcesos() {
         cargarIconoVentana();
-        lockButtonImportExcel();
+        nombreArchivo.setText(MESSAGE_STATUS_FILE);
+        botonImportarExcel.setVisible(false);
     }
 
     private void cargarIconoVentana() {
-        this.setIconImage(IconoVentana.getIconoVentana());
+        Image excelIconImage = Toolkit.getDefaultToolkit().getImage(
+                ClassLoader.getSystemResource("Imagenes/icons8-microsoft-excel-2019-48.png")
+        );
+        setIconImage(excelIconImage);
     }
-    
+
     public void setUser(User user) {
         this.user = user;
     }
 
-    private void lockButtonImportExcel() {
-        if (dataImport == null) {
-            botonImportarExcel.setVisible(false);
-        } else {
-            botonImportarExcel.setVisible(true);
-        }
-    }
-
     /**
      * Se encarga de abrir el explorador de archivos específicos de Excel,
- posteriormente importa la información en una Lista de objetos Excel
- mientras informa al user el progreso.
+     * posteriormente importa la información en una Lista de objetos Excel
+     * mientras informa al user el progreso.
      */
-    private void importExcelFile() {
-        String filePath;
-        ExcelFileChooser excelFileChooser = new ExcelFileChooser(
-                new JFileChooser(".")
-        );
+    private void exportDataCellFromExcelFileToDataBase() {
+        ExcelController excelController;
+        if (!nombreArchivo.getText().equals(MESSAGE_STATUS_FILE)) {
+            excelController = new ExcelController(nombreArchivo.getText(), progressBar, tituloStatus);
+            excelController.executeExcelSwingWorkers();
+            botonImportarExcel.setVisible(false);
+            nombreArchivo.setText(MESSAGE_STATUS_FILE);
+        }
+    }
+
+    private void selectExcelFile() {
+        ExcelFileChooser excelFileChooser = new ExcelFileChooser();
         if (excelFileChooser.isAnyFileSelected()) {
-            filePath = excelFileChooser.getRutaArchivo();
-            nombreArchivo.setText(filePath);
-            excelController = new ExcelController(filePath, progressBar, tituloStatus);
-            excelController.execute();
-            dataImport = excelController.getDataImport();
-            lockButtonImportExcel();
+            nombreArchivo.setText(excelFileChooser.getFilePath());
+            botonImportarExcel.setVisible(true);
         }
-    }
-    
-    private void exportExcelFile() {
-        if(dataImport != null) {
-            excelController.exportData();
-        }
-        lockButtonImportExcel();
-    }
-
-    /**
-     * Cuando la lista contiene la información extraida del archivo, informa al
- user el progreso y envía la información a la Base de Datos.
-     * @param jFrame
-     */
-    protected void setJFrame(JFrame jFrame) {
-        this.jFrame = jFrame;
-    }
-
-    private JFrame getFacturacion() {
-        return this.jFrame;
     }
 
     /**
@@ -141,7 +116,6 @@ public class ImportarExcel extends javax.swing.JFrame {
         indicadorArchivo.setText("Archivo Seleccionado:");
 
         nombreArchivo.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        nombreArchivo.setText("Ningun archivo seleccionado");
 
         botonImportarExcel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         botonImportarExcel.setText("Importar a la Base de Datos");
@@ -199,7 +173,7 @@ public class ImportarExcel extends javax.swing.JFrame {
                 .addComponent(indicadorArchivo)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(nombreArchivo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
                 .addComponent(botonImportarExcel)
                 .addGap(34, 34, 34)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -233,19 +207,19 @@ public class ImportarExcel extends javax.swing.JFrame {
 
     private void botonImportarExcelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonImportarExcelMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1) {
-            exportExcelFile();
+            exportDataCellFromExcelFileToDataBase();
         }
     }//GEN-LAST:event_botonImportarExcelMouseClicked
 
     private void botonExaminarArchivoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonExaminarArchivoMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1) {
-            importExcelFile();
+            selectExcelFile();
         }
     }//GEN-LAST:event_botonExaminarArchivoMouseClicked
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         evt.getID();
-        
+
     }//GEN-LAST:event_formWindowClosed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
