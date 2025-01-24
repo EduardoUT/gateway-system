@@ -16,11 +16,11 @@ import java.awt.Toolkit;
 public class IconoVentana {
 
     private IconoVentana() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
     public static Image getIconoVentana() {
-        Image imagen = Toolkit.getDefaultToolkit()
+        return Toolkit.getDefaultToolkit()
                 .getImage(ClassLoader.getSystemResource("Imagenes/Logo.png"));
-        return imagen;
     }
 }
