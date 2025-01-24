@@ -13,141 +13,86 @@ import com.mx.grupogateway.purchaseorder.PurchaseOrder;
 import com.mx.grupogateway.purchaseorder.detail.PurchaseOrderDetail;
 import com.mx.grupogateway.site.Site;
 import java.util.List;
-import java.util.Map;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
 /**
- * Clase de exportación de datos obtenidos del DataModel, el proceso se ejecuta
- * en segundo plano y mantiene actualizado el progeso por medio de un
+ * Clase de exportación de datos obtenidos del ExcelDataCell, el proceso se
+ * ejecuta en segundo plano y mantiene actualizado el progeso por medio de un
  * jProgressBar y un jLabel.
  *
  * @author eduar
  */
-public class ExcelDAO extends SwingWorker<Void, Integer> {
+class ExcelDataCellExportSwingWorker extends SwingWorker<Void, Integer> {
 
     private final JProgressBar jProgressBar;
     private final JLabel jLabel;
-    private final DataImport dataImport;
+    private final ExcelDataCell excelDataCell;
     private final ProjectController projectController;
     private final SiteController siteController;
     private final PurchaseOrderController purchaseOrderController;
     private final PurchaseOrderDetailController purchaseOrderDetailController;
 
-    public ExcelDAO(DataImport dataImport,
+    public ExcelDataCellExportSwingWorker(ExcelDataCell excelDataCell,
             JProgressBar jProgressBar, JLabel jLabel) {
-        this.dataImport = dataImport;
+        this.excelDataCell = excelDataCell;
         this.jProgressBar = jProgressBar;
         this.jLabel = jLabel;
-        this.projectController = new ProjectController();
-        this.siteController = new SiteController();
-        this.purchaseOrderDetailController = new PurchaseOrderDetailController();
-        this.purchaseOrderController = new PurchaseOrderController();
+        projectController = new ProjectController();
+        siteController = new SiteController();
+        purchaseOrderDetailController = new PurchaseOrderDetailController();
+        purchaseOrderController = new PurchaseOrderController();
     }
 
     /**
-     * Realiza la consulta del identificador de projecto en la Base de Datos a
-     * fin de evitar duplicidad.
-     *
-     * @param project
-     * @return
+     * Se procesa la información del ExcelDataCell acorde al respectivo modelo,
+     * para cada inserción se valida que el registro no haya sido almacenado ya
+     * en la BD, se actualiza el progreso en segundo plano en el jProgressBar en
+     * Project por cada modelo procesado de su respectivo listado de tipo
+     * HashSet.
      */
-    private boolean isProjectNotStoredInDatabase(Project project) {
-        List<Long> projectIdentifiers = projectController
-                .listarProjectIdentifiers(project.getId());
-        return projectIdentifiers.isEmpty();
-    }
-
-    /**
-     * Realiza la consulta del identificador de site en la Base de Datos a fin
-     * de evitar duplicidad.
-     *
-     * @param site
-     * @return
-     */
-    private boolean isSiteNotStoredInDatabase(Site site) {
-        List<Long> siteIdentifiers = siteController
-                .listarSiteIdentifiers(site.getSiteId());
-        return siteIdentifiers.isEmpty();
-    }
-
-    /**
-     * Realiza la consulta del identificador de orden de compra en la Base de
-     * Datos a fin de evitar duplicidad.
-     *
-     * @param purchaseOrderDetail
-     * @return
-     */
-    private boolean isPurchaseOrderDetailNotStoredInDatabase(
-            PurchaseOrderDetail purchaseOrderDetail) {
-        List<String> purchaseOrdersDetailIdentifiers
-                = purchaseOrderDetailController
-                        .listarPurchaseOrderDetailIdentifiers(
-                                purchaseOrderDetail
-                                        .getId()
-                        );
-        return purchaseOrdersDetailIdentifiers.isEmpty();
-    }
-
-    /**
-     * Realiza la consulta de los identificadores de proyecto y orden de compra
-     * asociados que conforman una clave compuesta en la Base de Datos a fin de
-     * evitar duplicidad.
-     *
-     * @param purchaseOrder
-     * @return
-     */
-    private boolean isPurchaseOrderNotStoredInDatabase(PurchaseOrder purchaseOrder) {
-        Map<Long, String> purchaseOrderIdentifiers = purchaseOrderController
-                .listarPurchaseOrderIdentifiers(
-                        purchaseOrder.getPurchaseOrderDetail()
-                                .getId(),
-                        purchaseOrder.getProject().getId()
-                );
-        return purchaseOrderIdentifiers.isEmpty();
-    }
-
-    /**
-     * Se procesa la información obtenida del DataModel acorde al respectivo
-     * modelo, para cada insrción se valida que el registro no haya sido
-     * almacenado, se actualiza el progreso en segundo plano en el jProgressBar
-     * en Project.
-     */
-    private void exportData() {
+    private void exportDataCellExcel() {
         int progressCounter = 0;
-        int projectsSize = dataImport.getProjects().size();
-        for (Site site : dataImport.getSites()) {
-            if (isSiteNotStoredInDatabase(site)) {
-                siteController.guardar(site);
-            }
-        }
-
-        for (Project project : dataImport.getProjects()) {
-            if (isProjectNotStoredInDatabase(project)) {
-                projectController.guardar(project);
-            }
+        int totalData = excelDataCell.totalDataCell();
+        for (Site site : excelDataCell.getSites()) {
+            siteController.create(site);
             progressCounter++;
-            int progress = progressCounter * 100 / projectsSize;
+            int progress = progressCounter * 100 / totalData;
             publish(progress);
         }
 
-        for (PurchaseOrderDetail purchaseOrderDetail : dataImport.getPurchaseOrderDetails()) {
-            if (isPurchaseOrderDetailNotStoredInDatabase(purchaseOrderDetail)) {
-                purchaseOrderDetailController.create(purchaseOrderDetail);
-            }
+        for (Project project : excelDataCell.getProjects()) {
+            projectController.create(project);
+            progressCounter++;
+            int progress = progressCounter * 100 / totalData;
+            publish(progress);
         }
 
-        for (PurchaseOrder purchaseOrder : dataImport.getPurchaseOrders()) {
-            if (isPurchaseOrderNotStoredInDatabase(purchaseOrder)) {
-                purchaseOrderController.guardar(purchaseOrder);
-            }
+        for (PurchaseOrderDetail purchaseOrderDetail : excelDataCell.getPurchaseOrderDetails()) {
+            purchaseOrderDetailController.create(purchaseOrderDetail);
+            progressCounter++;
+            int progress = progressCounter * 100 / totalData;
+            publish(progress);
+        }
+
+        for (PurchaseOrder purchaseOrder : excelDataCell.getPurchaseOrders()) {
+            purchaseOrderController.create(purchaseOrder);
+            progressCounter++;
+            int progress = progressCounter * 100 / totalData;
+            publish(progress);
         }
     }
 
+    /**
+     * Ejecuta en segundo plano la exportación de los datos a la BD.
+     *
+     * @return
+     * @throws Exception
+     */
     @Override
     protected Void doInBackground() throws Exception {
-        exportData();
+        exportDataCellExcel();
         return null;
     }
 
@@ -165,10 +110,10 @@ public class ExcelDAO extends SwingWorker<Void, Integer> {
     }
 
     /**
-     * Informa en la etiqueta la finalización del proceso de importación.
+     * Informa en la etiqueta la finalización del proceso de exportación.
      */
     @Override
     protected void done() {
-        jLabel.setText("Importación de datos finalizada.");
+        jLabel.setText("Exportación de datos finalizada.");
     }
 }
