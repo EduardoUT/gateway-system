@@ -20,12 +20,12 @@ public class ExcelDataCellFormatter {
     private ExcelDataCellFormatter() {
         throw new UnsupportedOperationException("Utility class");
     }
-    
+
     /**
      * Método para procesar el tipo de dato genérico según corresponda en la
      * celda a procesar.
      *
-     * @param <T>
+     * @param <T> Tipo correspondiente al dato de celda procesado y por defecto.
      * @param row Fila de la hoja de excel.
      * @param numCell Número de celda.
      * @param mapper Función a implementar acorde al tipo de dato a procesar.
@@ -33,8 +33,7 @@ public class ExcelDataCellFormatter {
      * valor.
      * @return Retorna un genérico acorde a la implementación del tipo de dato.
      */
-
-    public static <T> T getCellValue(Row row, int numCell, Function<String, T> mapper, T defaultValue) {
+    private static <T> T getCellValue(Row row, int numCell, Function<String, T> mapper, T defaultValue) {
         return Optional.ofNullable(row.getCell(numCell))
                 .map(cell -> cell.toString())
                 .map(mapper)
