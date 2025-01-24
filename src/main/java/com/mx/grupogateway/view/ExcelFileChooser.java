@@ -13,32 +13,27 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  *
  * @author eduar
  */
-public class ExcelFileChooser {
+public class ExcelFileChooser extends JFileChooser {
 
     private static final String ARCHIVO_DE_TIPO = "Archivos Excel (.xlsx)";
     private static final String EXTENSION_ARCHIVO = "xlsx";
-    private String rutaArchivo;
+    private String filePath;
     private int optionValueSelected = 0;
-    private final JFileChooser jFileChooser;
-    private final FileNameExtensionFilter fileNameExtensionFilter;
 
-    public ExcelFileChooser(JFileChooser jFileChooser) {
-        this.jFileChooser = jFileChooser;
-        this.fileNameExtensionFilter = new FileNameExtensionFilter(
+    public ExcelFileChooser() {
+        setFileFilter(new FileNameExtensionFilter(
                 ARCHIVO_DE_TIPO,
                 EXTENSION_ARCHIVO
-        );
-        this.jFileChooser.setFileFilter(fileNameExtensionFilter);
-        optionValueSelected = this.jFileChooser
-                .showOpenDialog(this.jFileChooser);
-        validarRutaArchivo(this.jFileChooser.getSelectedFile());
+        ));
+        optionValueSelected = showOpenDialog(null);
+        validarRutaArchivo(getSelectedFile());
     }
 
     /**
-     * @return the rutaArchivo
+     * @return the filePath
      */
-    public String getRutaArchivo() {
-        return rutaArchivo;
+    public String getFilePath() {
+        return filePath;
     }
 
     /**
@@ -50,13 +45,13 @@ public class ExcelFileChooser {
 
     private void validarRutaArchivo(File archivo) {
         if (archivo == null) {
-            this.rutaArchivo = "";
+            filePath = "";
         } else {
-            this.rutaArchivo = archivo.getAbsolutePath();
+            filePath = archivo.getAbsolutePath();
         }
     }
-    
+
     public boolean isAnyFileSelected() {
-        return !rutaArchivo.isEmpty();
+        return !filePath.isEmpty();
     }
 }
