@@ -4,6 +4,7 @@
  */
 package com.mx.grupogateway.purchaseorder.detail;
 
+import static com.mx.grupogateway.exception.IllegalArgumentExceptionTypeMessage.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
@@ -14,6 +15,11 @@ import java.util.Objects;
  */
 public class PurchaseOrderDetail {
 
+    private static final String DEFAULT_PO_STATUS = "No PO Status Info";
+    private static final Long DEFAULT_ITEM_CODE = 0L;
+    private static final String DEFAULT_ITEM_DESC = "No Item Desc";
+    private static final String DEFAULT_PAYMENT_TERMS = "No Payment Terms";
+
     private String id;
     private String poStatus;
     private Long itemCode;
@@ -23,23 +29,24 @@ public class PurchaseOrderDetail {
     private String paymentTerms;
 
     public PurchaseOrderDetail() {
-        this.id = "0000000000-00";
-        this.poStatus = "NEW";
-        this.itemCode = Long.MAX_VALUE;
-        this.itemDesc = "No Item Desc";
-        this.requestedQty = new BigDecimal(BigInteger.ZERO);
-        this.lineAmount = new BigDecimal("0.00");
-        this.paymentTerms = "No Payment Terms";
+        poStatus = DEFAULT_PO_STATUS;
+        itemCode = DEFAULT_ITEM_CODE;
+        itemDesc = DEFAULT_ITEM_DESC;
+        requestedQty = new BigDecimal(BigInteger.ZERO);
+        lineAmount = new BigDecimal("0.00");
+        paymentTerms = DEFAULT_PAYMENT_TERMS;
     }
 
-    public PurchaseOrderDetail(String poNo) {
+    public PurchaseOrderDetail(String id) {
         this();
-        this.id = poNo;
+        validateId(id);
+        this.id = id;
     }
 
     public PurchaseOrderDetail(String id, String poStatus, Long itemCode,
             String itemDesc, BigDecimal requestedQty, BigDecimal lineAmount,
             String paymentTerms) {
+        validatePurchaseOrderDetail(id, poStatus, itemCode, itemDesc, requestedQty, lineAmount, paymentTerms);
         this.id = id;
         this.poStatus = poStatus;
         this.itemCode = itemCode;
@@ -57,10 +64,10 @@ public class PurchaseOrderDetail {
     }
 
     /**
-     * @param id the id to
- set
+     * @param id the id to set
      */
     public void setId(String id) {
+        validateId(id);
         this.id = id;
     }
 
@@ -75,6 +82,7 @@ public class PurchaseOrderDetail {
      * @param poStatus the poStatus to set
      */
     public void setPoStatus(String poStatus) {
+        validatPoStatus(poStatus);
         this.poStatus = poStatus;
     }
 
@@ -89,6 +97,7 @@ public class PurchaseOrderDetail {
      * @param itemCode the itemCode to set
      */
     public void setItemCode(Long itemCode) {
+        validateItemCode(itemCode);
         this.itemCode = itemCode;
     }
 
@@ -103,6 +112,7 @@ public class PurchaseOrderDetail {
      * @param itemDesc the itemDesc to set
      */
     public void setItemDesc(String itemDesc) {
+        validateItemDesc(itemDesc);
         this.itemDesc = itemDesc;
     }
 
@@ -117,6 +127,7 @@ public class PurchaseOrderDetail {
      * @param requestedQty the requestedQty to set
      */
     public void setRequestedQty(BigDecimal requestedQty) {
+        validateRequestedQty(requestedQty);
         this.requestedQty = requestedQty;
     }
 
@@ -131,6 +142,7 @@ public class PurchaseOrderDetail {
      * @param lineAmount the lineAmount to set
      */
     public void setLineAmount(BigDecimal lineAmount) {
+        validateLineAmount(lineAmount);
         this.lineAmount = lineAmount;
     }
 
@@ -145,29 +157,92 @@ public class PurchaseOrderDetail {
      * @param paymentTerms the paymentTerms to set
      */
     public void setPaymentTerms(String paymentTerms) {
+        validatePaymentTerms(paymentTerms);
         this.paymentTerms = paymentTerms;
     }
 
+    private void validateId(String id) {
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException(NULL_VALUE_OR_EMPTY_MESSAGE.toString());
+        }
+    }
+
+    private void validatPoStatus(String poStatus) {
+        if (poStatus == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+        if (poStatus.isEmpty()) {
+            this.poStatus = DEFAULT_PO_STATUS;
+        }
+    }
+
+    private void validateItemCode(Long itemCode) {
+        if (itemCode == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+        if (itemCode < 0 || itemCode > Long.MAX_VALUE) {
+            throw new IllegalArgumentException(LESS_THAN_ZERO_OR_MAX_EXCEDED_MESSAGE.toString());
+        }
+    }
+
+    private void validateItemDesc(String itemDesc) {
+        if (itemDesc == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+        if (itemDesc.isEmpty()) {
+            this.itemDesc = DEFAULT_ITEM_DESC;
+        }
+    }
+
+    private void validateRequestedQty(BigDecimal requestedQty) {
+        if (requestedQty == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+    }
+
+    private void validateLineAmount(BigDecimal lineAmount) {
+        if (lineAmount == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+    }
+
+    private void validatePaymentTerms(String paymentTerms) {
+        if (paymentTerms == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+        if (paymentTerms.isEmpty()) {
+            this.paymentTerms = DEFAULT_PAYMENT_TERMS;
+        }
+    }
+
+    private void validatePurchaseOrderDetail(String id, String poStatus, Long itemCode,
+            String itemDesc, BigDecimal requestedQty, BigDecimal lineAmount, String paymentTerms) {
+        validateId(id);
+        validatPoStatus(poStatus);
+        validateItemCode(itemCode);
+        validateItemDesc(itemDesc);
+        validateRequestedQty(requestedQty);
+        validateLineAmount(lineAmount);
+        validatePaymentTerms(paymentTerms);
+    }
+
     /**
+     * Comparación de clase por medio de referencia, nombre de clase y
+     * identificador único.
      *
-     * @param purchaseOrderDetail
+     * @param object
      * @return
      */
     @Override
-    public boolean equals(Object purchaseOrderDetail) {
-        if (this == purchaseOrderDetail) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (purchaseOrderDetail == null
-                || getClass() != purchaseOrderDetail.getClass()) {
+        if (object == null || getClass() != object.getClass()) {
             return false;
         }
-        PurchaseOrderDetail otherPurchaseOrderDetail
-                = (PurchaseOrderDetail) purchaseOrderDetail;
-        if (id.equals(otherPurchaseOrderDetail.getId())) {
-            return true;
-        }
-        return purchaseOrderDetail instanceof PurchaseOrderDetail;
+        PurchaseOrderDetail otherPurchaseOrderDetail = (PurchaseOrderDetail) object;
+        return Objects.equals(id, otherPurchaseOrderDetail.getId());
     }
 
     @Override
