@@ -135,9 +135,10 @@ public final class Asignaciones extends javax.swing.JFrame {
             PurchaseOrderDetail purchaseOrderDetail = new PurchaseOrderDetail(
                     tablaProyectos.getValueAt(filaTablaProyectos, 5).toString()
             );
-            PurchaseOrder purchaseOrder = new PurchaseOrder();
-            purchaseOrder.setProject(project);
-            purchaseOrder.setPurchaseOrderDetail(purchaseOrderDetail);
+            PurchaseOrder purchaseOrder = new PurchaseOrder.PurchaseOrderBuilder()
+                    .withProject(project)
+                    .withPurchaseOrderDetail(purchaseOrderDetail)
+                    .build();
             PurchaseOrderAssignment purchaseOrderAssignment = new PurchaseOrderAssignment(
                     new Employee(
                             Integer.valueOf(
@@ -173,8 +174,9 @@ public final class Asignaciones extends javax.swing.JFrame {
                     filaTablaAsignaciones, 6)
                     .toString();
             PurchaseOrderAssignment purchaseOrderAssignment = new PurchaseOrderAssignment();
-            PurchaseOrder purchaseOrder = new PurchaseOrder();
-            purchaseOrder.setPurchaseOrderDetail(new PurchaseOrderDetail(purchaseOrderIdentifier));
+            PurchaseOrder purchaseOrder = new PurchaseOrder.PurchaseOrderBuilder()
+                    .withPurchaseOrderDetail(new PurchaseOrderDetail(purchaseOrderIdentifier))
+                    .build();
             purchaseOrderAssignment.setPurchaseOrder(purchaseOrder);
             if (empleadoActualId.equals(empleadoNuevoId)) {
                 JOptionPane.showMessageDialog(null, "Por favor, "
