@@ -4,7 +4,6 @@
  */
 package com.mx.grupogateway;
 
-import com.mx.grupogateway.config.LoggerConfig;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.view.Login;
 
@@ -15,7 +14,7 @@ import com.mx.grupogateway.view.Login;
 public class GrupoGatewayApp {
 
     public static void main(String[] args) {
-        LoggerConfig.config();
+        GlobalLogger.setUpLoggerConfigurationFile();
         FlatDarkLaf.setup();
         Login login = new Login();
         login.setVisible(true);
