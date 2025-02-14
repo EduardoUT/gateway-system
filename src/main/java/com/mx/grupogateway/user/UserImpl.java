@@ -4,7 +4,7 @@
  */
 package com.mx.grupogateway.user;
 
-import com.mx.grupogateway.config.LoggerConfig;
+import static com.mx.grupogateway.GlobalLogger.*;
 import com.mx.grupogateway.employee.Employee;
 import com.mx.grupogateway.employee.category.EmployeeCategory;
 import com.mx.grupogateway.config.ConnectionStatus;
@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -32,7 +30,6 @@ public class UserImpl extends ConnectionStatus implements GetAllDAO<User>,
 
     private static final String ID_USER = "ID_USUARIO";
     private static final String PASSWORD_USER = "PASSWORD_USUARIO";
-    private static final Logger logger = LoggerConfig.getLogger();
 
     public UserImpl(Connection con) {
         super(con);
@@ -62,7 +59,7 @@ public class UserImpl extends ConnectionStatus implements GetAllDAO<User>,
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al guardar usuario: {0}", e.getMessage());
+            registerLoggerSevere("Error al guardar usuario: {0}", e);
         }
         return userId;
     }
@@ -87,7 +84,7 @@ public class UserImpl extends ConnectionStatus implements GetAllDAO<User>,
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al consultar usuarios: {0}", e.getMessage());
+            registerLoggerSevere("Error al consultar usuarios: {0}", e);
         }
         return users;
     }
@@ -107,8 +104,7 @@ public class UserImpl extends ConnectionStatus implements GetAllDAO<User>,
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al verificar credenciales de usuario: {0}",
-                    e.getMessage());
+            registerLoggerSevere("Error al verificar credenciales de usuario: {0}", e);
         }
         return hashMap;
     }
@@ -122,8 +118,7 @@ public class UserImpl extends ConnectionStatus implements GetAllDAO<User>,
      */
     public Optional<Employee> getEmployeeByUser(User user) {
         Employee employee = null;
-        EmployeeCategory employeeCategory = new EmployeeCategory();
-        String sql = "SELECT USUARIOS.ID_USUARIO, ID_CATEGORIA_EMPLEADO "
+        String sql = "SELECT USUARIOS.ID_USUARIO, CARGO "
                 + "FROM EMPLEADOS "
                 + "INNER JOIN USUARIOS "
                 + "ON EMPLEADOS.ID_USUARIO = USUARIOS.ID_USUARIO "
@@ -132,26 +127,24 @@ public class UserImpl extends ConnectionStatus implements GetAllDAO<User>,
             preparedStatement.setString(1, user.getUserName());
             preparedStatement.setInt(2, user.getId());
             preparedStatement.execute();
-            employee = getEmployeeByUserResultSet(preparedStatement, employee, employeeCategory);
+            employee = getEmployeeByUserResultSet(preparedStatement, employee);
         } catch (SQLException e) {
-
-            logger.log(Level.SEVERE, "Error al consultar el perfil de usuario: {0}", e.getMessage());
+            registerLoggerSevere("Error al consultar el perfil de usuario: {0}", e);
         }
         return Optional.ofNullable(employee);
     }
 
     private Employee getEmployeeByUserResultSet(PreparedStatement preparedStatement,
-            Employee employee, EmployeeCategory employeeCategory) {
+            Employee employee) {
         try (ResultSet resultSet = preparedStatement.getResultSet()) {
             while (resultSet.next()) {
-                employeeCategory.setId(resultSet.getInt("ID_CATEGORIA_EMPLEADO"));
                 employee = new Employee(
                         new User(resultSet.getInt(ID_USER)),
-                        employeeCategory
+                        EmployeeCategory.fromString(resultSet.getString("CARGO"))
                 );
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los resultados de la consulta: {0}", e.getMessage());
+            registerLoggerSevere("Error al obtener los resultados de la consulta: {0}", e);
         }
         return employee;
     }
@@ -178,7 +171,7 @@ public class UserImpl extends ConnectionStatus implements GetAllDAO<User>,
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al consultar el identificador de usuario: {0}", e.getMessage());
+            registerLoggerSevere("Error al consultar el identificador de usuario: {0}", e);
         }
         return Optional.ofNullable(user);
     }
@@ -192,7 +185,7 @@ public class UserImpl extends ConnectionStatus implements GetAllDAO<User>,
             preparedStatement.execute();
             updateCount = preparedStatement.getUpdateCount();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al actualizar password existente: {0}", e.getMessage());
+            registerLoggerSevere("Error al actualizar password existente: {0}", e);
         }
         return updateCount;
     }
@@ -210,8 +203,9 @@ public class UserImpl extends ConnectionStatus implements GetAllDAO<User>,
             preparedStatement.setString(2, idEmpleado);
             preparedStatement.execute();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al actualizar clave foranea "
-                    + "idUsuario en tabla empleados según idEmpleado: {0}", e.getMessage());
+            registerLoggerSevere("Error al actualizar clave foranea "
+                    + "idUsuario en tabla empleados según idEmpleado: {0}", e
+            );
         }
     }
 
@@ -229,8 +223,9 @@ public class UserImpl extends ConnectionStatus implements GetAllDAO<User>,
             preparedStatement.setInt(2, user.getId());
             preparedStatement.execute();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al actualizar clave foranea "
-                    + "idUsuario en tabla empleados: {0}", e.getMessage());
+            registerLoggerSevere("Error al actualizar clave foranea "
+                    + "idUsuario en tabla empleados: {0}", e
+            );
         }
     }
 
@@ -250,9 +245,8 @@ public class UserImpl extends ConnectionStatus implements GetAllDAO<User>,
             preparedStatement.execute();
             updateCount = preparedStatement.getUpdateCount();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al eliminar usuario: {0}", e.getMessage());
+            registerLoggerSevere("Error al eliminar usuario: {0}", e);
         }
         return updateCount;
     }
-
 }
