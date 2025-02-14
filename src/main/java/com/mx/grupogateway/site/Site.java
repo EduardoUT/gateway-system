@@ -4,6 +4,7 @@
  */
 package com.mx.grupogateway.site;
 
+import static com.mx.grupogateway.exception.IllegalArgumentExceptionTypeMessage.*;
 import java.util.Objects;
 
 /**
@@ -12,45 +13,51 @@ import java.util.Objects;
  */
 public class Site {
 
-    private Long siteId;
+    private static final String DEFAULT_SITE_CODE = "No Site Code";
+    private static final String DEFAULT_SITE_NAME = "No Site Name";
+    private static final String DEFAULT_BIDDIG_AREA = "No Bidding Area";
+    private static final Integer DEFAULT_SHIPMENT_NO = 0;
+    private Long id;
     private String siteCode;
     private String siteName;
     private String biddigArea;
     private Integer shipmentNo;
 
     public Site() {
-        this.siteId = Long.MAX_VALUE;
-        this.siteCode = "No Site";
-        this.siteName = "No Name Site";
-        this.biddigArea = "No Bidding Area";
-        this.shipmentNo = Integer.MAX_VALUE;
+        siteCode = DEFAULT_SITE_CODE;
+        siteName = DEFAULT_SITE_NAME;
+        biddigArea = DEFAULT_BIDDIG_AREA;
+        shipmentNo = DEFAULT_SHIPMENT_NO;
     }
 
-    public Site(Long siteId) {
+    public Site(Long id) {
         this();
-        this.siteId = siteId;
+        validateId(id);
+        this.id = id;
     }
 
-    public Site(Long siteId, String siteCode, String siteName, String biddingArea, Integer shiplmentNo) {
-        this.siteId = siteId;
+    public Site(Long id, String siteCode, String siteName, String biddingArea, Integer shipmentNo) {
+        validateSite(id, siteCode, siteName, biddingArea, shipmentNo);
+        this.id = id;
         this.siteCode = siteCode;
         this.siteName = siteName;
         this.biddigArea = biddingArea;
-        this.shipmentNo = shiplmentNo;
+        this.shipmentNo = shipmentNo;
     }
 
     /**
-     * @return the siteId
+     * @return the id
      */
-    public Long getSiteId() {
-        return siteId;
+    public Long getId() {
+        return id;
     }
 
     /**
-     * @param siteId the siteId to set
+     * @param id the id to set
      */
-    public void setSiteId(Long siteId) {
-        this.siteId = siteId;
+    public void setId(Long id) {
+        validateId(id);
+        this.id = id;
     }
 
     /**
@@ -64,6 +71,7 @@ public class Site {
      * @param siteCode the siteCode to set
      */
     public void setSiteCode(String siteCode) {
+        validateSiteCode(siteCode);
         this.siteCode = siteCode;
     }
 
@@ -78,6 +86,7 @@ public class Site {
      * @param siteName the siteName to set
      */
     public void setSiteName(String siteName) {
+        validateSiteName(siteName);
         this.siteName = siteName;
     }
 
@@ -89,10 +98,11 @@ public class Site {
     }
 
     /**
-     * @param biddigArea the biddigArea to set
+     * @param biddingArea the biddigArea to set
      */
-    public void setBiddigArea(String biddigArea) {
-        this.biddigArea = biddigArea;
+    public void setBiddigArea(String biddingArea) {
+        validateBiddingArea(biddingArea);
+        this.biddigArea = biddingArea;
     }
 
     /**
@@ -106,32 +116,84 @@ public class Site {
      * @param shipmentNo the shipmentNo to set
      */
     public void setShipmentNo(Integer shipmentNo) {
+        validateShipmentNo(shipmentNo);
         this.shipmentNo = shipmentNo;
     }
 
+    private void validateId(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+        if (id <= 0 || id > Long.MAX_VALUE) {
+            throw new IllegalArgumentException(LESS_THAN_ZERO_OR_MAX_EXCEDED_MESSAGE.toString());
+        }
+    }
+
+    private void validateSiteCode(String siteCode) {
+        if (siteCode == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+        if (siteCode.isEmpty()) {
+            this.siteCode = DEFAULT_SITE_CODE;
+        }
+    }
+
+    private void validateSiteName(String siteName) {
+        if (siteName == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+        if (siteName.isEmpty()) {
+            this.siteName = DEFAULT_SITE_NAME;
+        }
+    }
+
+    private void validateBiddingArea(String biddingArea) {
+        if (biddingArea == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+        if (biddingArea.isEmpty()) {
+            this.biddigArea = DEFAULT_BIDDIG_AREA;
+        }
+    }
+
+    private void validateShipmentNo(Integer shipmentNo) {
+        if (shipmentNo == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+        if (shipmentNo < 0 || shipmentNo > Integer.MAX_VALUE) {
+            this.shipmentNo = DEFAULT_SHIPMENT_NO;
+        }
+    }
+
+    private void validateSite(Long id, String siteCode, String siteName,
+            String biddingArea, Integer shipmentNo) {
+        validateId(id);
+        validateSiteCode(siteCode);
+        validateSiteName(siteName);
+        validateBiddingArea(biddingArea);
+        validateShipmentNo(shipmentNo);
+    }
+
     /**
+     * Comparación por referencia, nombre de clase e identificadores únicos.
      *
-     * @param site
+     * @param object
      * @return
      */
     @Override
-    public boolean equals(Object site) {
-        if (this == site) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (site == null || getClass() != site.getClass()) {
+        if (object == null || getClass() != object.getClass()) {
             return false;
         }
-        Site otherSite = (Site) site;
-        if (siteId.equals(otherSite.getSiteId())) {
-            return true;
-        }
-        return site instanceof Site;
+        Site otherSite = (Site) object;
+        return Objects.equals(id, otherSite.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(siteId);
+        return Objects.hash(id);
     }
-
 }
