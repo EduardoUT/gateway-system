@@ -49,7 +49,7 @@ public class ExcelDataCellFormatter {
      * @return La representación del dato obtenido en un String.
      */
     public static String getCellValueString(Row row, int numCell) {
-        return getCellValue(row, numCell, String::valueOf, "");
+        return getCellValue(row, numCell, String::valueOf, "N/D");
     }
 
     /**
