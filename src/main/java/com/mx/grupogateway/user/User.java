@@ -33,7 +33,7 @@ public class User {
             char[] password) {
         this.id = id;
         this.userName = userName;
-        this.hash = encriptarPass(password);
+        this.hash = encryptPassword(password);
     }
 
     /**
@@ -45,7 +45,7 @@ public class User {
      */
     public User(String userName, char[] password) {
         this.userName = userName;
-        this.hash = encriptarPass(password);
+        this.hash = encryptPassword(password);
     }
 
     /**
@@ -68,7 +68,7 @@ public class User {
      */
     public User(Employee employee) {
         this.id = 0;
-        this.userName = generarNombreUsuario(
+        this.userName = generateUserMame(
                 employee.getName(),
                 employee.getPaternalSurname(),
                 employee.getMaternalSurname()
@@ -129,7 +129,7 @@ public class User {
      */
     public void setPassword(char[] password, boolean encrypt) {
         if (encrypt) {
-            this.setHash(encriptarPass(password));
+            this.setHash(encryptPassword(password));
         } else {
             this.password = password;
         }
@@ -156,7 +156,7 @@ public class User {
      * @param maternalSurname
      * @return Genera el nombre del usuario apartir de su nombre y apellidos.
      */
-    private String generarNombreUsuario(String employeeName,
+    private String generateUserMame(String employeeName,
             String paternalSurname, String maternalSurname) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
@@ -174,7 +174,7 @@ public class User {
      * @param password Contraseña a encriptar.
      * @return Hash.
      */
-    private String encriptarPass(char[] password) {
+    private String encryptPassword(char[] password) {
         return SecurityPassword.encriptar(password);
     }
 
