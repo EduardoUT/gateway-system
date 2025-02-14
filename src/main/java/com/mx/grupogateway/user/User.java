@@ -4,8 +4,10 @@
  */
 package com.mx.grupogateway.user;
 
+import static com.mx.grupogateway.exception.IllegalArgumentExceptionTypeMessage.*;
 import com.mx.grupogateway.employee.Employee;
 import com.mx.grupogateway.util.SecurityPassword;
+import com.mx.grupogateway.util.ValidacionPassword;
 
 /**
  *
@@ -29,11 +31,11 @@ public class User {
      * @param userName
      * @param password
      */
-    public User(Integer id, String userName,
-            char[] password) {
+    public User(Integer id, String userName, char[] password) {
+        validateUser(id, userName, password);
         this.id = id;
         this.userName = userName;
-        this.hash = encriptarPass(password);
+        hash = encriptarPass(password);
     }
 
     /**
@@ -67,13 +69,14 @@ public class User {
      * con el nombre del empleado.
      */
     public User(Employee employee) {
-        this.id = 0;
-        this.userName = generarNombreUsuario(
+        validateEmployee(employee);
+        id = 0;
+        userName = generarNombreUsuario(
                 employee.getName(),
                 employee.getPaternalSurname(),
                 employee.getMaternalSurname()
         );
-        this.hash = "NULL";
+        hash = "NULL";
     }
 
     /**
@@ -82,6 +85,7 @@ public class User {
      * @param id
      */
     public User(Integer id) {
+        validateId(id);
         this.id = id;
     }
 
@@ -96,6 +100,7 @@ public class User {
      * @param id the usuarioId to set
      */
     public void setId(Integer id) {
+        validateId(id);
         this.id = id;
     }
 
@@ -110,6 +115,7 @@ public class User {
      * @param userName the userName to set
      */
     public void setUserName(String userName) {
+        validateUserName(userName);
         this.userName = userName;
     }
 
@@ -128,8 +134,9 @@ public class User {
      * @param encrypt true para encriptar.
      */
     public void setPassword(char[] password, boolean encrypt) {
+        validatePassword(password);
         if (encrypt) {
-            this.setHash(encriptarPass(password));
+            setHash(encriptarPass(password));
         } else {
             this.password = password;
         }
@@ -146,6 +153,7 @@ public class User {
      * @param hash the hash to set
      */
     public void setHash(String hash) {
+        validateHash(hash);
         this.hash = hash;
     }
 
@@ -158,14 +166,12 @@ public class User {
      */
     private String generarNombreUsuario(String employeeName,
             String paternalSurname, String maternalSurname) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder
-                .append(employeeName.substring(0, 1))
-                .append(paternalSurname)
-                .append(maternalSurname.substring(0, 1));
-        String user = stringBuilder.toString().toLowerCase();
-        this.setUserName(user);
-        return this.userName;
+        String generatedUserName = ""
+                .concat(employeeName.substring(0, 1))
+                .concat(paternalSurname)
+                .concat(maternalSurname.substring(0, 1));
+        userName = generatedUserName.toLowerCase();
+        return userName;
     }
 
     /**
@@ -175,14 +181,66 @@ public class User {
      * @return Hash.
      */
     private String encriptarPass(char[] password) {
+        validatePassword(password);
         return SecurityPassword.encriptar(password);
+    }
+
+    private void validateId(Integer id) {
+        if (id == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+        if (id <= 0 || id > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException(LESS_THAN_ZERO_OR_MAX_EXCEDED_MESSAGE.toString());
+        }
+    }
+
+    private void validateUserName(String userName) {
+        if (userName == null || userName.isEmpty()) {
+            throw new IllegalArgumentException(NULL_VALUE_OR_EMPTY_MESSAGE.toString());
+        }
+    }
+
+    /**
+     * Para más información sobre los requisitos de la password:
+     *
+     * @see ValidacionPassword
+     * @param password
+     */
+    private void validatePassword(char[] password) {
+        if (password == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+        if (password.length == 0) {
+            throw new IllegalArgumentException(NULL_VALUE_OR_EMPTY_MESSAGE.toString());
+        }
+        if (!ValidacionPassword.esPasswordValida(password)) {
+            throw new IllegalArgumentException("Password inválida.");
+        }
+    }
+
+    private void validateHash(String hash) {
+        if (hash == null || hash.isEmpty()) {
+            throw new IllegalArgumentException(NULL_VALUE_OR_EMPTY_MESSAGE.toString());
+        }
+    }
+
+    private void validateEmployee(Employee employee) {
+        if (employee == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+    }
+
+    private void validateUser(Integer id, String userName, char[] password) {
+        validateId(id);
+        validateUserName(userName);
+        validatePassword(password);
     }
 
     @Override
     public String toString() {
         return String.format("[ID: %d | Nombre Usuario: %s ]",
-                this.getId(),
-                this.userName
+                id,
+                userName
         );
     }
 }
