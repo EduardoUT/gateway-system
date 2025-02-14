@@ -4,6 +4,7 @@
  */
 package com.mx.grupogateway.employee;
 
+import static com.mx.grupogateway.exception.IllegalArgumentExceptionTypeMessage.*;
 import com.mx.grupogateway.employee.category.EmployeeCategory;
 import com.mx.grupogateway.user.User;
 
@@ -13,13 +14,12 @@ import com.mx.grupogateway.user.User;
  */
 public class Employee {
 
-    private static final String MESSAGE_VOID_FIELD = "El campo nombre está vacío.";
     private Integer id;
     private String name;
     private String paternalSurname;
     private String maternalSurname;
-    private User user;
     private EmployeeCategory employeeCategory;
+    private User user;
 
     /**
      * Constructor para obtener datos Empleado de BD.
@@ -32,15 +32,14 @@ public class Employee {
      * @param user
      */
     public Employee(Integer id, String name, String paternalSurname,
-            String maternalSurname, User user,
-            EmployeeCategory employeeCategory) {
-        validarEmpleado(name, paternalSurname, maternalSurname);
+            String maternalSurname, EmployeeCategory employeeCategory, User user) {
+        validateEmployee(name, paternalSurname, maternalSurname, user, employeeCategory);
         this.id = id;
         this.name = name;
         this.paternalSurname = paternalSurname;
         this.maternalSurname = maternalSurname;
-        this.user = user;
         this.employeeCategory = employeeCategory;
+        this.user = user;
     }
 
     /**
@@ -53,30 +52,12 @@ public class Employee {
      */
     public Employee(String name, String paternalSurname,
             String maternalSurname, EmployeeCategory employeeCategory) {
-        validarEmpleado(name, paternalSurname, maternalSurname);
-        this.id = 0;
+        validateEmployee(name, paternalSurname, maternalSurname);
         this.name = name;
         this.paternalSurname = paternalSurname;
         this.maternalSurname = maternalSurname;
         this.employeeCategory = employeeCategory;
-        this.user = new User(this);
-    }
-
-    /**
-     * Constructor para crear un empleado y user.
-     *
-     * @param name
-     * @param paternalSurname
-     * @param maternalSurname
-     * @param user
-     */
-    public Employee(String name, String paternalSurname,
-            String maternalSurname, User user) {
-        validarEmpleado(name, paternalSurname, maternalSurname);
-        this.name = name;
-        this.paternalSurname = paternalSurname;
-        this.maternalSurname = maternalSurname;
-        this.user = user;
+        user = new User(this);
     }
 
     /**
@@ -90,7 +71,7 @@ public class Employee {
      */
     public Employee(Integer id, String name, String paternalSurname,
             String maternalSurname) {
-        validarEmpleado(name, paternalSurname, maternalSurname);
+        validateEmployee(name, paternalSurname, maternalSurname);
         this.id = id;
         this.name = name;
         this.paternalSurname = paternalSurname;
@@ -104,16 +85,19 @@ public class Employee {
      * @param employeeCategory
      */
     public Employee(User user, EmployeeCategory employeeCategory) {
+        validateUser(user);
+        validateEmployeeCategory(employeeCategory);
         this.user = user;
         this.employeeCategory = employeeCategory;
     }
 
     /**
-     * Constructor para asignar el employeeId.
+     * Constructor para asignar el id.
      *
      * @param id
      */
     public Employee(Integer id) {
+        validateId(id);
         this.id = id;
     }
 
@@ -125,6 +109,7 @@ public class Employee {
     }
 
     public void setId(Integer id) {
+        validateId(id);
         this.id = id;
     }
 
@@ -139,6 +124,7 @@ public class Employee {
      * @param name the name to set
      */
     public void setName(String name) {
+        validateName(name);
         this.name = name;
     }
 
@@ -153,6 +139,7 @@ public class Employee {
      * @param paternalSurname the paternalSurname to set
      */
     public void setPaternalSurname(String paternalSurname) {
+        validatePaternalSurname(paternalSurname);
         this.paternalSurname = paternalSurname;
     }
 
@@ -167,6 +154,7 @@ public class Employee {
      * @param maternalSurname the maternalSurname to set
      */
     public void setMaternalSurname(String maternalSurname) {
+        validateMaternalSurname(maternalSurname);
         this.maternalSurname = maternalSurname;
     }
 
@@ -188,6 +176,7 @@ public class Employee {
      * @param employeeCategory the employeeCategory to set
      */
     public void setEmployeeCategory(EmployeeCategory employeeCategory) {
+        validateEmployeeCategory(employeeCategory);
         this.employeeCategory = employeeCategory;
     }
 
@@ -197,7 +186,47 @@ public class Employee {
      * @param id
      */
     public void setUserId(Integer id) {
+        validateId(id);
         this.user.setId(id);
+    }
+
+    private void validateId(Integer id) {
+        if (id == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+        if (id <= 0 || id > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException(LESS_THAN_ZERO_OR_MAX_EXCEDED_MESSAGE.toString());
+        }
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException(NULL_VALUE_OR_EMPTY_MESSAGE.toString());
+        }
+    }
+
+    private void validatePaternalSurname(String paternalSurname) {
+        if (paternalSurname == null || paternalSurname.isEmpty()) {
+            throw new IllegalArgumentException(NULL_VALUE_OR_EMPTY_MESSAGE.toString());
+        }
+    }
+
+    private void validateMaternalSurname(String maternalSurname) {
+        if (maternalSurname == null || maternalSurname.isEmpty()) {
+            throw new IllegalArgumentException(NULL_VALUE_OR_EMPTY_MESSAGE.toString());
+        }
+    }
+
+    private void validateUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+    }
+
+    private void validateEmployeeCategory(EmployeeCategory employeeCategory) {
+        if (employeeCategory == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
     }
 
     /**
@@ -207,27 +236,28 @@ public class Employee {
      * @param paternalSurname
      * @param maternalSurname
      */
-    private void validarEmpleado(String name, String paternalSurname,
+    private void validateEmployee(String name, String paternalSurname,
+            String maternalSurname, User user, EmployeeCategory employeeCategory) {
+        validateName(name);
+        validatePaternalSurname(paternalSurname);
+        validateMaternalSurname(maternalSurname);
+        validateUser(user);
+        validateEmployeeCategory(employeeCategory);
+    }
+
+    private void validateEmployee(String name, String paternalSurname,
             String maternalSurname) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException(MESSAGE_VOID_FIELD);
-        }
-
-        if (paternalSurname == null || paternalSurname.isEmpty()) {
-            throw new IllegalArgumentException(MESSAGE_VOID_FIELD);
-        }
-
-        if (maternalSurname == null || maternalSurname.isEmpty()) {
-            throw new IllegalArgumentException(MESSAGE_VOID_FIELD);
-        }
+        validateName(name);
+        validatePaternalSurname(paternalSurname);
+        validateMaternalSurname(maternalSurname);
     }
 
     @Override
     public String toString() {
         return String.format("[ID: %s | Nombre: %s | Apellido P: %s "
-                + "| Apellido M: %s | ID Categoría: %s | ID Usuario: %s]",
-                this.id, this.getName(), this.getPaternalSurname(), this.getMaternalSurname(),
-                this.getEmployeeCategory().getId(),
-                this.getUser().getId());
+                + "| Apellido M: %s | Employee Category: %s | ID Usuario: %s]",
+                id, name, paternalSurname, maternalSurname,
+                employeeCategory.getEmployeeCategoryName(), user.getId()
+        );
     }
 }
