@@ -4,8 +4,6 @@
  */
 package com.mx.grupogateway.util;
 
-import com.mx.grupogateway.util.AccionesTabla;
-import com.mx.grupogateway.util.MarginTable;
 import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
