@@ -4,11 +4,13 @@
  */
 package com.mx.grupogateway.purchaseorder.assignment;
 
+import static com.mx.grupogateway.exception.IllegalArgumentExceptionTypeMessage.*;
 import com.mx.grupogateway.purchaseorder.PurchaseOrder;
 import com.mx.grupogateway.employee.Employee;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -21,9 +23,28 @@ public final class PurchaseOrderAssignment {
     private Timestamp assignmentDate;
     private BigDecimal amount;
     private BigDecimal totalPayment;
-    private Boolean status = false;
+    private Boolean status;
 
     public PurchaseOrderAssignment() {
+        assignmentDate = Timestamp.valueOf(LocalDateTime.now());
+        amount = new BigDecimal("0.0");
+        totalPayment = new BigDecimal("0.0");
+        status = false;
+    }
+
+    /**
+     * Constructor para almacenar una nueva asignación de proyecto asociado a un
+     * employee.
+     *
+     * @param purchaseOrder
+     * @param employee Datos del employee.
+     */
+    public PurchaseOrderAssignment(Employee employee, PurchaseOrder purchaseOrder) {
+        this();
+        validateEmployee(employee);
+        validatePurchaseOrder(purchaseOrder);
+        this.employee = employee;
+        this.purchaseOrder = purchaseOrder;
     }
 
     /**
@@ -38,28 +59,14 @@ public final class PurchaseOrderAssignment {
      */
     public PurchaseOrderAssignment(Employee employee, PurchaseOrder purchaseOrder,
             Timestamp assignmentDate, BigDecimal amount,
-            BigDecimal totalPayment, String status) {
+            BigDecimal totalPayment, Boolean status) {
+        validateEmployee(employee, purchaseOrder, assignmentDate, amount, totalPayment, status);
         this.employee = employee;
         this.purchaseOrder = purchaseOrder;
         this.assignmentDate = assignmentDate;
         this.amount = amount;
         this.totalPayment = totalPayment;
-        this.status = getStatusAsBoolean(status);
-    }
-
-    /**
-     * Constructor para almacenar una nueva asignación de proyecto asociado a un
- employee.
-     *
-     * @param purchaseOrder
-     * @param employee Datos del employee.
-     */
-    public PurchaseOrderAssignment(Employee employee, PurchaseOrder purchaseOrder) {
-        this.employee = employee;
-        this.purchaseOrder = purchaseOrder;
-        setAssignmentDate(assignmentDate);
-        this.amount = new BigDecimal("0.0");
-        this.totalPayment = new BigDecimal("0.0");
+        this.status = status;
     }
 
     /**
@@ -73,6 +80,7 @@ public final class PurchaseOrderAssignment {
      * @param employee the employee to set
      */
     public void setEmployee(Employee employee) {
+        validateEmployee(employee);
         this.employee = employee;
     }
 
@@ -87,6 +95,7 @@ public final class PurchaseOrderAssignment {
      * @param purchaseOrder the purchaseOrder to set
      */
     public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
+        validatePurchaseOrder(purchaseOrder);
         this.purchaseOrder = purchaseOrder;
     }
 
@@ -101,6 +110,7 @@ public final class PurchaseOrderAssignment {
      * @param assignmentDate the assignmentDate to set
      */
     public void setAssignmentDate(Timestamp assignmentDate) {
+        validateAssignmentDate(assignmentDate);
         this.assignmentDate = assignmentDate;
     }
 
@@ -115,6 +125,7 @@ public final class PurchaseOrderAssignment {
      * @param amount the amount to set
      */
     public void setAmount(BigDecimal amount) {
+        validateAmount(amount);
         this.amount = amount;
     }
 
@@ -129,6 +140,7 @@ public final class PurchaseOrderAssignment {
      * @param totalPayment the totalPayment to set
      */
     public void setTotalPayment(BigDecimal totalPayment) {
+        validateTotalPayment(totalPayment);
         this.totalPayment = totalPayment;
     }
 
@@ -143,46 +155,75 @@ public final class PurchaseOrderAssignment {
      * @param status the status to set
      */
     public void setStatus(Boolean status) {
+        validateStatus(status);
         this.status = status;
-    }
-
-    /**
-     * Tranforma el status a binario, para ser almacenado en la BD.
-     *
-     * @return 1 o 0
-     */
-    public String getStatusAsBinary() {
-        return (this.getStatus() ? "1" : "0");
-    }
-
-    /**
-     * Toma el estatus y lo define por defecto con 1 "false", esto al ser creada
-     * una nueva asignación.
-     *
-     * @param status
-     * @return
-     */
-    public boolean getStatusAsBoolean(String status) {
-        return status.equals("1");
     }
 
     /**
      * Crea un Timestamp con la fecha y tiempo actual.
      */
     public void setLocalDateTime() {
-        this.assignmentDate = new Timestamp(new Date().getTime());
+        assignmentDate = new Timestamp(new Date().getTime());
+    }
+
+    private void validateEmployee(Employee employee) {
+        if (employee == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+    }
+
+    private void validatePurchaseOrder(PurchaseOrder purchaseOrder) {
+        if (purchaseOrder == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+    }
+
+    private void validateAssignmentDate(Timestamp assignmentDate) {
+        if (assignmentDate == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+    }
+
+    private void validateAmount(BigDecimal amount) {
+        if (amount == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+    }
+
+    private void validateTotalPayment(BigDecimal totalPayment) {
+        if (totalPayment == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+    }
+
+    private void validateStatus(Boolean status) {
+        if (status == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+    }
+
+    private void validateEmployee(Employee employee, PurchaseOrder purchaseOrder,
+            Timestamp assignmentDate, BigDecimal amount, BigDecimal totalPayment,
+            Boolean status) {
+        validateEmployee(employee);
+        validatePurchaseOrder(purchaseOrder);
+        validateAssignmentDate(assignmentDate);
+        validateAmount(amount);
+        validateTotalPayment(totalPayment);
+        validateStatus(status);
     }
 
     @Override
     public String toString() {
-        //yyyy-MM-dd HH:mm:ss
         return String.format("[ID_Empleado: %s | ID_Proyecto: %d | "
                 + "Fecha Asignación: %s | Importe: %d | Total Pagar: %d | "
                 + "Status: %s]",
-                this.getEmployee().getId(),
-                this.getPurchaseOrder().getProject().getId(),
-                this.assignmentDate,
-                this.amount,
-                this.totalPayment, this.getStatus());
+                employee.getId(),
+                purchaseOrder.getProject().getId(),
+                assignmentDate,
+                amount,
+                totalPayment,
+                status
+        );
     }
 }
