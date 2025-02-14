@@ -49,7 +49,7 @@ public class SiteController {
      * @return
      */
     private boolean isSiteNotStoredInDatabase(Site site) {
-        List<Long> siteIdentifiers = siteImpl.getAllById(site.getSiteId());
+        List<Long> siteIdentifiers = siteImpl.getAllById(site.getId());
         return siteIdentifiers.isEmpty();
     }
 }
