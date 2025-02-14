@@ -4,10 +4,11 @@
  */
 package com.mx.grupogateway.factory;
 
-import static com.mx.grupogateway.GlobalLogger.*;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.sql.DataSource;
 import javax.swing.JOptionPane;
 
@@ -23,6 +24,7 @@ import javax.swing.JOptionPane;
  */
 public class ConnectionFactory {
 
+    private static final Logger logger = Logger.getLogger("com.mx.grupogateway.system.factory.ConnectionFactory");
     private final DataSource dataSource;
 
     public ConnectionFactory() {
@@ -39,9 +41,9 @@ public class ConnectionFactory {
         try {
             return this.dataSource.getConnection();
         } catch (SQLException e) {
-            registerLoggerSevere("Error al conectar con la Base de Datos "
-                    + "verificar estado de conexion del servicio MySQL: {0}", e
-            );
+            logger.log(Level.SEVERE, "Error al conectar con la Base de Datos "
+                    + "verificar estado de conexion del servicio MySQL: {0}",
+                    e.getMessage());
             int option = JOptionPane.showOptionDialog(
                     null,
                     "Error al intentar conectar con la Base de Datos.",
