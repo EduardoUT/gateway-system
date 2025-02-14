@@ -7,6 +7,7 @@ package com.mx.grupogateway.project;
 import com.mx.grupogateway.site.Site;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import static com.mx.grupogateway.exception.IllegalArgumentExceptionTypeMessage.*;
 
 /**
  *
@@ -14,6 +15,10 @@ import java.util.Objects;
  */
 public class Project {
 
+    private static final String DEFAULT_PROJECT_CODE = "No Project Code";
+    private static final String DEFAULT_PROJECT_NAME = "No Project Name";
+    private static final String DEFAULT_CUSTOMER = "No Customer Info";
+    private static final String DEFAULT_CATEGORY = "No Category Info";
     private Long id;
     private Site site;
     private String projectCode;
@@ -23,12 +28,11 @@ public class Project {
     private LocalDateTime publishDate;
 
     public Project() {
-        this.id = Long.MAX_VALUE;
-        this.site = new Site();
-        this.projectCode = "0";
-        this.projectName = "No Name";
-        this.category = "None";
-        this.publishDate = LocalDateTime.now();
+        site = new Site();
+        projectCode = DEFAULT_PROJECT_CODE;
+        projectName = DEFAULT_PROJECT_NAME;
+        category = DEFAULT_CATEGORY;
+        publishDate = LocalDateTime.now();
     }
 
     public Project(Long projectId) {
@@ -165,47 +169,58 @@ public class Project {
 
     private void validateId(Long id) {
         if (id == null) {
-            throw new NullPointerException("projectId no puede ser null.");
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
         }
         if (id <= 0 || id > Long.MAX_VALUE) {
-            throw new IllegalArgumentException("id menor o igual a 0, o mayor "
-                    + "al limite permitido.");
+            throw new IllegalArgumentException(LESS_THAN_ZERO_OR_MAX_EXCEDED_MESSAGE.toString());
         }
     }
 
     private void validateProjectSite(Site site) {
         if (site == null) {
-            throw new NullPointerException("Site no puede ser null.");
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
         }
     }
 
     private void validateProjectCode(String projectCode) {
         if (projectCode == null) {
-            throw new NullPointerException("projectCode no puede ser null.");
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+        if (projectCode.isEmpty()) {
+            this.projectCode = DEFAULT_PROJECT_CODE;
         }
     }
 
     private void validateProjectName(String projectName) {
         if (projectName == null) {
-            throw new NullPointerException("projectName no puede ser null.");
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+        if (projectName.isEmpty()) {
+            this.projectName = DEFAULT_PROJECT_NAME;
         }
     }
 
-    private void validateCustomer(String projectCustomer) {
-        if (projectCustomer == null) {
-            throw new NullPointerException("projectCustomer no puede ser null.");
+    private void validateCustomer(String customer) {
+        if (customer == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+        if (customer.isEmpty()) {
+            this.customer = DEFAULT_CUSTOMER;
         }
     }
 
-    private void validateCategory(String projectCategory) {
-        if (projectCategory == null) {
-            throw new NullPointerException("projectCategory no puede ser null.");
+    private void validateCategory(String category) {
+        if (category == null) {
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+        }
+        if (category.isEmpty()) {
+            this.category = DEFAULT_CATEGORY;
         }
     }
 
     private void validatePublishDate(LocalDateTime publishDate) {
         if (publishDate == null) {
-            throw new NullPointerException("publishDate no puede ser null.");
+            throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
         }
     }
 
@@ -229,23 +244,21 @@ public class Project {
     }
 
     /**
+     * Comparación por referencia, nombre de clase e identificador único.
      *
-     * @param project
+     * @param object
      * @return
      */
     @Override
-    public boolean equals(Object project) {
-        if (this == project) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (project == null || getClass() != project.getClass()) {
+        if (object == null || getClass() != object.getClass()) {
             return false;
         }
-        Project otherProject = (Project) project;
-        if (project.equals(otherProject.getId())) {
-            return true;
-        }
-        return project instanceof Project;
+        Project otherProject = (Project) object;
+        return Objects.equals(id, otherProject.getId());
     }
 
     @Override
