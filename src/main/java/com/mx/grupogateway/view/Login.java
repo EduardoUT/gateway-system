@@ -7,10 +7,12 @@ package com.mx.grupogateway.view;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.mx.grupogateway.employee.Employee;
 import com.mx.grupogateway.employee.EmployeeController;
+import com.mx.grupogateway.employee.category.EmployeeCategory;
 import com.mx.grupogateway.user.User;
 import com.mx.grupogateway.util.ValidacionJPasswordField;
 import com.mx.grupogateway.util.FondoLogin;
 import com.mx.grupogateway.util.IconoVentana;
+import com.mx.grupogateway.util.ValidacionPassword;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -50,17 +52,27 @@ public class Login extends javax.swing.JFrame {
      *
      * @param idCategoria Identificador de categoría obtenido de la BD.
      */
-    private void validarCategoria(Integer idCategoria) {
-        if (idCategoria.equals(1)) {
-            Gestion gestion = new Gestion();
-            gestion.setUser(optionalEmployee.get().getUser());
-            gestion.setVisible(true);
-        } else {
-            Facturacion facturacion = new Facturacion();
-            facturacion.setUser(optionalEmployee.get().getUser());
-            facturacion.setVisible(true);
+    private void validarCategoria(EmployeeCategory employeeCategory) {
+        switch (employeeCategory) {
+            case ADMINISTRADOR:
+                Gestion gestion = new Gestion();
+                gestion.setUser(optionalEmployee.get().getUser());
+                gestion.setVisible(true);
+                break;
+            case FACTURACION:
+                Facturacion facturacion = new Facturacion();
+                facturacion.setUser(optionalEmployee.get().getUser());
+                facturacion.setVisible(true);
+                break;
+            default:
+                JOptionPane.showMessageDialog(null, "Lo sentimos, pero el cargo "
+                        + "de este empleado no fue encontrado.",
+                        "Cargo no existe.",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+                break;
         }
-        this.dispose();
+        dispose();
     }
 
     /**
@@ -78,7 +90,7 @@ public class Login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null,
                     "El usuario o la contraseña son incorrectos.");
         } else {
-            validarCategoria(optionalEmployee.get().getEmployeeCategory().getId());
+            validarCategoria(optionalEmployee.get().getEmployeeCategory());
         }
     }
 
@@ -92,24 +104,30 @@ public class Login extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new FondoLogin();
+        enterpriseIcon = new javax.swing.JLabel();
         campoUsuario = new javax.swing.JTextField();
-        campoPassword = new javax.swing.JPasswordField();
-        checkBox = new javax.swing.JCheckBox();
-        botonIngresar = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
+        campoPassword = new javax.swing.JPasswordField();
         jSeparator2 = new javax.swing.JSeparator();
-        jLabel2 = new javax.swing.JLabel();
+        checkBox = new javax.swing.JCheckBox();
+        statusPassword = new javax.swing.JLabel();
+        botonIngresar = new javax.swing.JButton();
+        registerLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Iniciar Sesión");
         setResizable(false);
+
+        enterpriseIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/Logo.png"))); // NOI18N
 
         campoUsuario.setBackground(new Color(0, 0, 0, 0));
         campoUsuario.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         campoUsuario.setForeground(new java.awt.Color(0, 0, 0));
         campoUsuario.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1), "Usuario", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 16), new java.awt.Color(0, 0, 0))); // NOI18N
         campoUsuario.setCaretColor(new java.awt.Color(0, 0, 0));
+
+        jSeparator1.setBackground(new Color(0, 0, 0, 0));
+        jSeparator1.setForeground(new java.awt.Color(0, 0, 0));
 
         campoPassword.setBackground(new Color(0, 0, 0, 0));
         campoPassword.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
@@ -120,7 +138,13 @@ public class Login extends javax.swing.JFrame {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 campoPasswordKeyPressed(evt);
             }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                campoPasswordKeyReleased(evt);
+            }
         });
+
+        jSeparator2.setBackground(new Color(0, 0, 0, 0));
+        jSeparator2.setForeground(new java.awt.Color(0, 0, 0));
 
         checkBox.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         checkBox.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/ojoCerrado.png"))); // NOI18N
@@ -140,21 +164,13 @@ public class Login extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/Logo.png"))); // NOI18N
-
-        jSeparator1.setBackground(new Color(0, 0, 0, 0));
-        jSeparator1.setForeground(new java.awt.Color(0, 0, 0));
-
-        jSeparator2.setBackground(new Color(0, 0, 0, 0));
-        jSeparator2.setForeground(new java.awt.Color(0, 0, 0));
-
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel2.setText("Registrarse");
-        jLabel2.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+        registerLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        registerLabel.setForeground(new java.awt.Color(0, 0, 0));
+        registerLabel.setText("Registrarse");
+        registerLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        registerLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel2MouseClicked(evt);
+                registerLabelMouseClicked(evt);
             }
         });
 
@@ -170,15 +186,15 @@ public class Login extends javax.swing.JFrame {
                             .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                 .addComponent(campoUsuario, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addComponent(enterpriseIcon, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addGap(0, 434, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(129, 129, 129)
+                            .addComponent(statusPassword, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(botonIngresar)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel2))
+                                .addComponent(registerLabel))
                             .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(campoPassword, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -189,7 +205,7 @@ public class Login extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(89, 89, 89)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(enterpriseIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, Short.MAX_VALUE)
                 .addComponent(campoUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(2, 2, 2)
@@ -204,10 +220,12 @@ public class Login extends javax.swing.JFrame {
                         .addGap(13, 13, 13)))
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
+                .addComponent(statusPassword)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(botonIngresar)
-                    .addComponent(jLabel2))
-                .addGap(62, 62, 62))
+                    .addComponent(registerLabel))
+                .addGap(41, 41, 41))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -236,21 +254,34 @@ public class Login extends javax.swing.JFrame {
 
     private void botonIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonIngresarActionPerformed
         evt.getID();
-        validarPerfilUsuario();
+        if (ValidacionPassword.esPasswordValida(campoPassword.getPassword())) {
+            validarPerfilUsuario();
+        } else {
+            JOptionPane.showMessageDialog(null, "Favor de ingresar una contraseña válida.",
+                    "Contraseña incorrecta",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        }
     }//GEN-LAST:event_botonIngresarActionPerformed
 
-    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
+    private void registerLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_registerLabelMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1) {
             new Registro().setVisible(true);
-            this.dispose();
+            dispose();
         }
-    }//GEN-LAST:event_jLabel2MouseClicked
+    }//GEN-LAST:event_registerLabelMouseClicked
 
     private void campoPasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_campoPasswordKeyPressed
-        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER
+                && ValidacionPassword.esPasswordValida(campoPassword.getPassword())) {
             botonIngresar.doClick();
         }
     }//GEN-LAST:event_campoPasswordKeyPressed
+
+    private void campoPasswordKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_campoPasswordKeyReleased
+        evt.getID();
+        ValidacionJPasswordField.evaluarCampoPassword(campoPassword, statusPassword);
+    }//GEN-LAST:event_campoPasswordKeyReleased
 
     /**
      * @param args the command line arguments
@@ -269,10 +300,11 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JPasswordField campoPassword;
     private javax.swing.JTextField campoUsuario;
     private javax.swing.JCheckBox checkBox;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel enterpriseIcon;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JLabel registerLabel;
+    private javax.swing.JLabel statusPassword;
     // End of variables declaration//GEN-END:variables
 }
