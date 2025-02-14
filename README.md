@@ -25,42 +25,37 @@ de las hojas de cálculo con grandes cantidades de información y mantenerlas en
     archivos con extensión (.xlsx).
     - Conector MySQL para Java.
     - Java SE 8.
-    - MySQL (Línea de Comandos).
-    - PHPMyAdmin para la normalización del archivo SQL que crea la BD al instalar el software.
+    - MySQL 8.0
+    - Argon2
+    - c3p0 para configurar Pool de conexiones SQL.
+    - JUnit Jupiter
 
 **Entorno de Desarrollo IDE utilizado:**
 
-    - NetBeans 8.
+    - NetBeans 24.
 
 **Requerimientos:**
 1. Un sistema de escritorio con opciones CRUD para todas las áreas, esto debido a que Huawei no permitía editar la información en la plataforma web.
 2. Cada área tendrá acceso a una parte del sistema acorde a la categpría de su área.
-3. Se requería un sistema interno que pudiese obtener la información de estas hojas de cálculo, misma que sería procesada por el sistema que desarrollé y llevada a una base de datos por medio de Java como gestor visual y MySQL como Base de Datos.
+3. Se requería un sistema interno que pudiese obtener la información de estas hojas de cálculo de Excel, misma que sería procesada por el sistema que desarrollé y llevada a una base de datos por medio de Java como gestor visual y MySQL como Base de Datos.
 4. Categorías de Áreas (Ventanas):
   
   **1) Login:**
     
-        - El sistema debía contar debidamente con un inicio de sesión.
+        - Permite al usuario autenticarse acorde al nombre de usuario y contraseña.
+        - Permite al usuario dar de alta su contraseña cuando inicia sesión por primera vez.
   
-  **2) Administrador:** 
+  **2) Administrador Principal:** 
        
-       - Se encargará de gestionar a los usuarios del sistema y administradores o jefes de área, asignando y controlando los inicios de sesión y 
-       recuperación de contraseñas por medio de categorías de usuarios acorde a sus áreas o roles en la empresa.
+       - Creación de nuevos empleados.
+       - Eliminación de empleados.
      
   **3) Administrador Facturación:** 
     
     - Controla la asignación de Proyectos a Operadores de su área, la información de las asignaciones es la que es extraida de las
        hojas de Excel a la Base de Datos.
-    - Se encargará de respaldar las hojas de Excel de la plataforma Huawei ISDP al sistema con un botón de exportación.
-    - Puede eliminar registro u actualizar o ingresar manualmente por medio de un formulario.
-    - Realiza también la facturación de los proyectos.
-  
-  **4) Administrador Cierre de Proyectos:**
-  
-    - Realiza el ajuste de precios del proyecto al ser finalizado, su interfaz es similar al del Administrador de Facturación, a excepción de
-      la limitación de editar información de Facturación.
-      
-  **5)Administrador Almacén:**
-  
-    - Registrar los productos e insumos tanto entradas como salidas de los mismos en una Base de Datos con fecha, usando mi sistema para el control
-      de gastos, permitiendo editar, ingresar, eliminar y actualizar los insumos.
+    - Se encargará de respaldar las hojas de Excel de la plataforma Huawei ISDP al sistema con un botón de importación.
+    - El sistema abre el gestor de archivos con extensión (.xlsx) para fácil localización en la PC del usuario.
+    - Realiza la asignación de Ordenes de Compra (PO - PurchaseOrder) a los Empleados que correspondan a la misma área.
+    - Podrá actualizar su contraseña dentro de su sesión.
+    
