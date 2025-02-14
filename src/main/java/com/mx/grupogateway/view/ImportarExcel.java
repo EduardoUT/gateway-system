@@ -132,7 +132,6 @@ public class ImportarExcel extends javax.swing.JFrame {
         tituloStatus.setText("Status:");
 
         textoProgreso.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        textoProgreso.setText("Info");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
