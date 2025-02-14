@@ -4,7 +4,7 @@
  */
 package com.mx.grupogateway.purchaseorder.assignment;
 
-import com.mx.grupogateway.config.LoggerConfig;
+import static com.mx.grupogateway.GlobalLogger.*;
 import com.mx.grupogateway.employee.Employee;
 import com.mx.grupogateway.project.Project;
 import com.mx.grupogateway.purchaseorder.PurchaseOrder;
@@ -19,8 +19,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -28,8 +26,6 @@ import java.util.logging.Logger;
  */
 public class PurchaseOrderAssignmentImpl extends ConnectionStatus
         implements GetAllDAO<PurchaseOrderAssignment> {
-
-    private static final Logger logger = LoggerConfig.getLogger();
 
     public PurchaseOrderAssignmentImpl(Connection con) {
         super(con);
@@ -55,11 +51,11 @@ public class PurchaseOrderAssignmentImpl extends ConnectionStatus
                 preparedStatement.setLong(2, purchaseOrderProjectIdentifier);
                 preparedStatement.setBigDecimal(3, purchaseOrderAssignment.getAmount());
                 preparedStatement.setBigDecimal(4, purchaseOrderAssignment.getTotalPayment());
-                preparedStatement.setString(5, purchaseOrderAssignment.getStatusAsBinary());
+                preparedStatement.setBoolean(5, purchaseOrderAssignment.getStatus());
                 preparedStatement.execute();
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al guardar purchaseOrderAssignment: {0}", e.getMessage());
+            registerLoggerSevere("Error al guardar purchaseOrderAssignment: {0}", e);
         }
     }
 
@@ -117,14 +113,15 @@ public class PurchaseOrderAssignmentImpl extends ConnectionStatus
                     purchaseOrderDetail.setRequestedQty(resultSet.getBigDecimal("REQUESTED_QTY"));
                     purchaseOrderDetail.setLineAmount(resultSet.getBigDecimal("LINE_AMOUNT"));
                     purchaseOrderDetail.setPaymentTerms(resultSet.getString("PAYMENT_TERMS"));
-                    PurchaseOrder purchaseOrder = new PurchaseOrder();
-                    purchaseOrder.setPurchaseOrderDetail(purchaseOrderDetail);
-                    purchaseOrder.setProject(project);
-                    purchaseOrder.setPoLineNo(resultSet.getInt("PO_LINE_NO"));
-                    purchaseOrder.setDueQty(resultSet.getBigDecimal("DUE_QTY"));
-                    purchaseOrder.setBilledQty(resultSet.getBigDecimal("BILLED_QTY"));
-                    purchaseOrder.setUnit(resultSet.getString("UNIT"));
-                    purchaseOrder.setUnitPrice(resultSet.getBigDecimal("UNIT_PRICE"));
+                    PurchaseOrder purchaseOrder = new PurchaseOrder.PurchaseOrderBuilder()
+                            .withPurchaseOrderDetail(purchaseOrderDetail)
+                            .withProject(project)
+                            .withPoLineNo(resultSet.getInt("PO_LINE_NO"))
+                            .withDueQty(resultSet.getBigDecimal("DUE_QTY"))
+                            .withBilledQty(resultSet.getBigDecimal("BILLED_QTY"))
+                            .withUnit(resultSet.getString("UNIT"))
+                            .withUnitPrice(resultSet.getBigDecimal("UNIT_PRICE"))
+                            .build();
                     Employee empleado = new Employee(
                             resultSet.getInt("ID_EMPLEADO"),
                             resultSet.getString("NOMBRE"),
@@ -144,7 +141,7 @@ public class PurchaseOrderAssignmentImpl extends ConnectionStatus
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al consultar purchaseOrderAssignment: {0}", e.getMessage());
+            registerLoggerSevere("Error al consultar purchaseOrderAssignment: {0}", e);
         }
         return purchaseOrderAssignments;
     }
@@ -175,7 +172,7 @@ public class PurchaseOrderAssignmentImpl extends ConnectionStatus
             }
             preparedStatement.executeBatch();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al actualizar purchaseOrderAssignment: {0}", e.getMessage());
+            registerLoggerSevere("Error al actualizar purchaseOrderAssignment: {0}", e);
         }
     }
 }
