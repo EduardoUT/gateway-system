@@ -4,7 +4,7 @@
  */
 package com.mx.grupogateway.project;
 
-import com.mx.grupogateway.config.LoggerConfig;
+import static com.mx.grupogateway.GlobalLogger.*;
 import com.mx.grupogateway.config.ConnectionStatus;
 import com.mx.grupogateway.crud.CreateEntityDAO;
 import com.mx.grupogateway.crud.GetAllById;
@@ -18,8 +18,6 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -27,8 +25,6 @@ import java.util.logging.Logger;
  */
 public class ProjectImpl extends ConnectionStatus
         implements CreateEntityDAO<Project>, GetAllDAO<Project>, GetAllById<Long, Long> {
-
-    private static final Logger logger = LoggerConfig.getLogger();
 
     public ProjectImpl(Connection con) {
         super(con);
@@ -48,7 +44,7 @@ public class ProjectImpl extends ConnectionStatus
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setLong(1, project.getId());
-            preparedStatement.setLong(2, project.getSite().getSiteId());
+            preparedStatement.setLong(2, project.getSite().getId());
             preparedStatement.setString(3, project.getProjectCode());
             preparedStatement.setString(4, project.getProjectName());
             preparedStatement.setString(5, project.getCustomer());
@@ -56,7 +52,7 @@ public class ProjectImpl extends ConnectionStatus
             preparedStatement.setTimestamp(7, Timestamp.valueOf(project.getPublishDate()));
             preparedStatement.execute();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al guardar proyecto: {0}", e.getMessage());
+            registerLoggerSevere("Error al guardar proyecto: {0}", e);
         }
     }
 
@@ -80,7 +76,7 @@ public class ProjectImpl extends ConnectionStatus
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     Site site = new Site();
-                    site.setSiteId(resultSet.getLong("ID_SITE"));
+                    site.setId(resultSet.getLong("ID_SITE"));
                     site.setSiteCode(resultSet.getString("SITE_CODE"));
                     site.setSiteName(resultSet.getString("SITE_NAME"));
                     site.setBiddigArea(resultSet.getString("BIDDING_AREA"));
@@ -99,7 +95,7 @@ public class ProjectImpl extends ConnectionStatus
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al consultar proyecto: {0}", e.getMessage());
+            registerLoggerSevere("Error al consultar proyecto: {0}", e);
         }
         return projects;
     }
@@ -124,8 +120,7 @@ public class ProjectImpl extends ConnectionStatus
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al consultar identificador de proyecto: {0}",
-                    e.getMessage());
+            registerLoggerSevere("Error al consultar identificador de proyecto: {0}", e);
         }
         return projectIdentifiers;
     }
