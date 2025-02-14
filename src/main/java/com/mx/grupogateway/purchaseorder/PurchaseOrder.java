@@ -4,60 +4,154 @@
  */
 package com.mx.grupogateway.purchaseorder;
 
+import static com.mx.grupogateway.exception.IllegalArgumentExceptionTypeMessage.*;
 import com.mx.grupogateway.project.Project;
 import com.mx.grupogateway.purchaseorder.detail.PurchaseOrderDetail;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
+ * Clase PurchaseOrder con clase interna estática PurchaseOrderBuilder para su
+ * construcción de una nueva instancia acorde al contexto de las propiedades que
+ * el usuario requiera.
  *
+ * Toda la lógica de validación se centraliza en el PurchaseOrderBuilder.
+ *
+ * Ejemplo de creación de nueva instancia de PurchaseOrder:
+ *
+ * PurchaseOrder purchaseOrder = new PurchaseOrder.PurchaseOrderBuilder()
+ * .withProject(someProject).build();
+ *
+ * @see PurchaseOrderBuilder
  * @author eduar
  */
-public class PurchaseOrder implements Serializable {
+public class PurchaseOrder {
 
-    private static final long SERIAL_VERSION_UUID = 1L;
-    private PurchaseOrderDetail purchaseOrderDetail;
-    private Project project;
-    private Integer poLineNo;
-    private BigDecimal dueQty;
-    private BigDecimal billedQty;
-    private String unit;
-    private BigDecimal unitPrice;
+    private static final String DEFAULT_UNIT = "No Unit Info";
+    private final PurchaseOrderDetail purchaseOrderDetail;
+    private final Project project;
+    private final Integer poLineNo;
+    private final BigDecimal dueQty;
+    private final BigDecimal billedQty;
+    private final String unit;
+    private final BigDecimal unitPrice;
 
-    public PurchaseOrder() {
-        this.purchaseOrderDetail = new PurchaseOrderDetail();
-        this.project = new Project();
-        this.poLineNo = 0;
-        this.dueQty = new BigDecimal("0.00");
-        this.billedQty = new BigDecimal("0.00");
-        this.unit = "SITE";
-        this.unitPrice = new BigDecimal("0.00");
-    }
-
-    public PurchaseOrder(PurchaseOrderDetail purchaseOrderDetail, Project project) {
-        this();
-        this.purchaseOrderDetail = purchaseOrderDetail;
-        this.project = project;
-    }
-
-    public PurchaseOrder(PurchaseOrderDetail purchaseOrderDetail,
-            Project project, Integer poLineNo, BigDecimal dueQty, BigDecimal billedQty,
-            String unit, BigDecimal unitPrice) {
-        this.purchaseOrderDetail = purchaseOrderDetail;
-        this.project = project;
-        this.poLineNo = poLineNo;
-        this.dueQty = dueQty;
-        this.billedQty = billedQty;
-        this.unit = unit;
-        this.unitPrice = unitPrice;
+    private PurchaseOrder(PurchaseOrderBuilder purchaseOrderBuilder) {
+        purchaseOrderDetail = purchaseOrderBuilder.purchaseOrderDetail;
+        project = purchaseOrderBuilder.project;
+        poLineNo = purchaseOrderBuilder.poLineNo;
+        dueQty = purchaseOrderBuilder.dueQty;
+        billedQty = purchaseOrderBuilder.billedQty;
+        unit = purchaseOrderBuilder.unit;
+        unitPrice = purchaseOrderBuilder.unitPrice;
     }
 
     /**
-     * @return the SERIAL_VERSION_UUID
+     * Clase Builder para la construcción de un objeto PurchaseOrder.
      */
-    public static long getSERIAL_VERSION_UUID() {
-        return SERIAL_VERSION_UUID;
+    public static class PurchaseOrderBuilder {
+
+        private PurchaseOrderDetail purchaseOrderDetail;
+        private Project project;
+        private Integer poLineNo;
+        private BigDecimal dueQty;
+        private BigDecimal billedQty;
+        private String unit;
+        private BigDecimal unitPrice;
+
+        public PurchaseOrderBuilder withPurchaseOrderDetail(PurchaseOrderDetail purchaseOrderDetail) {
+            validatePurchaseOrderDetail(purchaseOrderDetail);
+            this.purchaseOrderDetail = purchaseOrderDetail;
+            return this;
+        }
+
+        public PurchaseOrderBuilder withProject(Project project) {
+            validateProject(project);
+            this.project = project;
+            return this;
+        }
+
+        public PurchaseOrderBuilder withPoLineNo(Integer poLineNo) {
+            validatePoLineNo(poLineNo);
+            this.poLineNo = poLineNo;
+            return this;
+        }
+
+        public PurchaseOrderBuilder withDueQty(BigDecimal dueQty) {
+            validateDueQty(dueQty);
+            this.dueQty = dueQty;
+            return this;
+        }
+
+        public PurchaseOrderBuilder withBilledQty(BigDecimal billedQty) {
+            validateBilledQty(billedQty);
+            this.billedQty = billedQty;
+            return this;
+        }
+
+        public PurchaseOrderBuilder withUnit(String unit) {
+            validateUnit(unit);
+            this.unit = unit;
+            return this;
+        }
+
+        public PurchaseOrderBuilder withUnitPrice(BigDecimal unitPrice) {
+            validateUnitPrice(unitPrice);
+            this.unitPrice = unitPrice;
+            return this;
+        }
+
+        public PurchaseOrder build() {
+            return new PurchaseOrder(this);
+        }
+
+        private void validatePurchaseOrderDetail(PurchaseOrderDetail purchaseOrderDetail) {
+            if (purchaseOrderDetail == null) {
+                throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+            }
+        }
+
+        private void validateProject(Project project) {
+            if (project == null) {
+                throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+            }
+        }
+
+        private void validatePoLineNo(Integer poLineNo) {
+            if (poLineNo == null) {
+                throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+            }
+            if (poLineNo < 0 || poLineNo > Integer.MAX_VALUE) {
+                throw new IllegalArgumentException(LESS_THAN_ZERO_OR_MAX_EXCEDED_MESSAGE.toString());
+            }
+        }
+
+        private void validateDueQty(BigDecimal dueQty) {
+            if (dueQty == null) {
+                throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+            }
+        }
+
+        private void validateBilledQty(BigDecimal billedQty) {
+            if (billedQty == null) {
+                throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+            }
+        }
+
+        private void validateUnit(String unit) {
+            if (unit == null) {
+                throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+            }
+            if (unit.isEmpty()) {
+                this.unit = DEFAULT_UNIT;
+            }
+        }
+
+        private void validateUnitPrice(BigDecimal unitPrice) {
+            if (unitPrice == null) {
+                throw new IllegalArgumentException(NULL_VALUE_MESSAGE.toString());
+            }
+        }
     }
 
     /**
@@ -68,24 +162,10 @@ public class PurchaseOrder implements Serializable {
     }
 
     /**
-     * @param purchaseOrderDetail the purchaseOrderDetail to set
-     */
-    public void setPurchaseOrderDetail(PurchaseOrderDetail purchaseOrderDetail) {
-        this.purchaseOrderDetail = purchaseOrderDetail;
-    }
-
-    /**
      * @return the project
      */
     public Project getProject() {
         return project;
-    }
-
-    /**
-     * @param project the project to set
-     */
-    public void setProject(Project project) {
-        this.project = project;
     }
 
     /**
@@ -96,24 +176,10 @@ public class PurchaseOrder implements Serializable {
     }
 
     /**
-     * @param poLineNo the poLineNo to set
-     */
-    public void setPoLineNo(Integer poLineNo) {
-        this.poLineNo = poLineNo;
-    }
-
-    /**
      * @return the dueQty
      */
     public BigDecimal getDueQty() {
         return dueQty;
-    }
-
-    /**
-     * @param dueQty the dueQty to set
-     */
-    public void setDueQty(BigDecimal dueQty) {
-        this.dueQty = dueQty;
     }
 
     /**
@@ -124,24 +190,10 @@ public class PurchaseOrder implements Serializable {
     }
 
     /**
-     * @param billedQty the billedQty to set
-     */
-    public void setBilledQty(BigDecimal billedQty) {
-        this.billedQty = billedQty;
-    }
-
-    /**
      * @return the unit
      */
     public String getUnit() {
         return unit;
-    }
-
-    /**
-     * @param unit the unit to set
-     */
-    public void setUnit(String unit) {
-        this.unit = unit;
     }
 
     /**
@@ -152,37 +204,29 @@ public class PurchaseOrder implements Serializable {
     }
 
     /**
-     * @param unitPrice the unitPrice to set
+     * Comparación por referencia, nombre de clase y composición por
+     * identificadores únicos entre PurchaseOrderDetail y Project.
+     *
+     * @param object
+     * @return
      */
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
-    }
-
     @Override
-    public boolean equals(Object purchaseOrder) {
-        if (this == purchaseOrder) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (purchaseOrder == null || getClass() != purchaseOrder.getClass()) {
+        if (object == null || getClass() != object.getClass()) {
             return false;
         }
-        PurchaseOrder otherPurchaseOrder = (PurchaseOrder) purchaseOrder;
-        boolean isSamePurchasOrderIdentifier = purchaseOrderDetail
-                .getId()
-                .equals(otherPurchaseOrder
-                        .getPurchaseOrderDetail()
-                        .getId()
-                );
-        boolean isSameProjectId = project
-                .getId()
-                .equals(otherPurchaseOrder
-                        .getProject()
-                        .getId()
-                );
-        if (isSamePurchasOrderIdentifier && isSameProjectId) {
-            return true;
-        }
-        return purchaseOrder instanceof PurchaseOrder;
+        PurchaseOrder otherPurchaseOrder = (PurchaseOrder) object;
+        boolean isSamePurchasOrderId = Objects.equals(
+                purchaseOrderDetail.getId(),
+                otherPurchaseOrder.getPurchaseOrderDetail().getId()
+        );
+        boolean isSameProjectId = Objects.equals(
+                project.getId(), otherPurchaseOrder.getProject().getId()
+        );
+        return isSamePurchasOrderId && isSameProjectId;
     }
 
     @Override
