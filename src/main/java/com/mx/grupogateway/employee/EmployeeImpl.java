@@ -5,7 +5,7 @@
 package com.mx.grupogateway.employee;
 
 import com.mx.grupogateway.employee.category.EmployeeCategory;
-import com.mx.grupogateway.config.LoggerConfig;
+import static com.mx.grupogateway.GlobalLogger.*;
 import com.mx.grupogateway.config.ConnectionStatus;
 import com.mx.grupogateway.crud.GetAllDAO;
 import com.mx.grupogateway.user.User;
@@ -16,16 +16,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author Eduardo Reyes Hernández
  */
 public class EmployeeImpl extends ConnectionStatus implements GetAllDAO<Employee> {
-
-    private static final Logger logger = LoggerConfig.getLogger();
 
     public EmployeeImpl(Connection con) {
         super(con);
@@ -42,15 +38,15 @@ public class EmployeeImpl extends ConnectionStatus implements GetAllDAO<Employee
         int employeeId = -1;
         String sql = "INSERT INTO EMPLEADOS "
                 + "(NOMBRE, APE_PAT, "
-                + "APE_MAT, ID_USUARIO, ID_CATEGORIA_EMPLEADO) "
+                + "APE_MAT, CARGO, ID_USUARIO) "
                 + "VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, employee.getName());
             preparedStatement.setString(2, employee.getPaternalSurname());
             preparedStatement.setString(3, employee.getMaternalSurname());
-            preparedStatement.setInt(4, employee.getUser().getId());
-            preparedStatement.setInt(5, employee.getEmployeeCategory().getId());
+            preparedStatement.setString(4, employee.getEmployeeCategory().getEmployeeCategoryName());
+            preparedStatement.setInt(5, employee.getUser().getId());
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 if (resultSet.next()) {
@@ -59,7 +55,7 @@ public class EmployeeImpl extends ConnectionStatus implements GetAllDAO<Employee
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al guardar empleado: {0}", e.getMessage());
+            registerLoggerSevere("Error al guardar empleado: {0}", e);
         }
         return employeeId;
     }
@@ -73,14 +69,10 @@ public class EmployeeImpl extends ConnectionStatus implements GetAllDAO<Employee
     @Override
     public List<Employee> getAll() {
         List<Employee> employees = new ArrayList<>();
-        String sql = "SELECT ID_EMPLEADO, NOMBRE, APE_PAT, APE_MAT, ID_USUARIO, "
-                + "NOMBRE_CATEGORIA, EMPLEADOS.ID_CATEGORIA_EMPLEADO "
-                + "FROM CATEGORIA_EMPLEADO "
-                + "INNER JOIN EMPLEADOS ON "
-                + "CATEGORIA_EMPLEADO.ID_CATEGORIA_EMPLEADO = "
-                + "EMPLEADOS.ID_CATEGORIA_EMPLEADO "
-                + "WHERE NOMBRE_CATEGORIA = 'Administrador Facturación' "
-                + "OR NOMBRE_CATEGORIA = 'Operador Facturación'";
+        String sql = "SELECT ID_EMPLEADO, NOMBRE, APE_PAT, APE_MAT, CARGO, ID_USUARIO "
+                + "FROM EMPLEADOS "
+                + "WHERE CARGO = 'Administrador Facturación' "
+                + "OR CARGO = 'Operador Facturación'";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
@@ -90,17 +82,13 @@ public class EmployeeImpl extends ConnectionStatus implements GetAllDAO<Employee
                             resultSet.getString("NOMBRE"),
                             resultSet.getString("APE_PAT"),
                             resultSet.getString("APE_MAT"),
-                            new User(resultSet.getInt("ID_USUARIO")),
-                            new EmployeeCategory(
-                                    resultSet.getInt("ID_CATEGORIA_EMPLEADO"),
-                                    resultSet.getString("NOMBRE_CATEGORIA")
-                            )
-                    )
-                    );
+                            EmployeeCategory.fromString(resultSet.getString("CARGO")),
+                            new User(resultSet.getInt("ID_USUARIO"))
+                    ));
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al consultar empleado: {0}", e.getMessage());
+            registerLoggerSevere("Error al consultar empleado: {0}", e);
         }
         return employees;
     }
@@ -116,18 +104,18 @@ public class EmployeeImpl extends ConnectionStatus implements GetAllDAO<Employee
         int updateCount = 0;
         String sql = "UPDATE EMPLEADOS "
                 + "SET NOMBRE = ?, APE_PAT = ?, APE_MAT = ?, "
-                + "ID_CATEGORIA_EMPLEADO = ? "
+                + "CARGO = ? "
                 + "WHERE ID_EMPLEADO = ?";
         try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
             preparedStatement.setString(1, employee.getName());
             preparedStatement.setString(2, employee.getPaternalSurname());
             preparedStatement.setString(3, employee.getMaternalSurname());
-            preparedStatement.setInt(4, employee.getEmployeeCategory().getId());
+            preparedStatement.setString(4, employee.getEmployeeCategory().getEmployeeCategoryName());
             preparedStatement.setInt(5, employee.getId());
             preparedStatement.execute();
             updateCount = preparedStatement.getUpdateCount();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al actualizar datos de empleado: {0}", e.getMessage());
+            registerLoggerSevere("Error al actualizar datos de empleado: {0}", e);
         }
         return updateCount;
     }
@@ -146,7 +134,7 @@ public class EmployeeImpl extends ConnectionStatus implements GetAllDAO<Employee
             preparedStatement.execute();
             registrosAfectados = preparedStatement.getUpdateCount();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al eliminar empleado: {0}", e.getMessage());
+            registerLoggerSevere("Error al eliminar empleado: {0}", e);
         }
         return registrosAfectados;
     }
