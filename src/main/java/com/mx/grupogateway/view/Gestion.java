@@ -5,7 +5,6 @@
 package com.mx.grupogateway.view;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
-import com.mx.grupogateway.employee.category.EmployeeCategoryController;
 import com.mx.grupogateway.employee.EmployeeController;
 import com.mx.grupogateway.user.UserController;
 import com.mx.grupogateway.employee.Employee;
@@ -28,7 +27,6 @@ import javax.swing.JOptionPane;
 public class Gestion extends javax.swing.JFrame {
 
     private EmployeeController employeeController;
-    private EmployeeCategoryController employeeCategoryController;
     private UserController userController;
     private User user;
 
@@ -43,7 +41,6 @@ public class Gestion extends javax.swing.JFrame {
     private void iniciarProcesos() {
         cargarIconoVentana();
         this.employeeController = new EmployeeController();
-        this.employeeCategoryController = new EmployeeCategoryController();
         this.userController = new UserController();
         configurarFormularioEmpleado();
         cargarTablaUsuario();
@@ -70,17 +67,14 @@ public class Gestion extends javax.swing.JFrame {
      */
     private void guardarEmpleado() {
         if (sonCamposValidosEmpleado()) {
-            Employee empleado = new Employee(
+            Employee employee = new Employee(
                     campoNombre.getText(),
                     campoApellidoP.getText(),
                     campoApellidoM.getText(),
-                    new EmployeeCategory(
-                            empleadoCargos.getSelectedIndex(),
-                            empleadoCargos.getSelectedItem().toString()
-                    )
+                    EmployeeCategory.fromString(empleadoCargos.getSelectedItem().toString())
             );
-            int idEmpleado = this.employeeController.create(empleado);
-            if (idEmpleado != -1) {
+            int employeeId = this.employeeController.create(employee);
+            if (employeeId != -1) {
                 JOptionPane.showMessageDialog(null, "Empleado guardado "
                         + "éxitosamente.");
             } else {
@@ -122,15 +116,11 @@ public class Gestion extends javax.swing.JFrame {
      */
     private void actualizarEmpleado() {
         if (sonCamposValidosEmpleado()) {
-            EmployeeCategory employeeCategory = new EmployeeCategory();
-            employeeCategory.setCategoryName(
-                    String.valueOf(empleadoCargos.getSelectedIndex())
-            );
             Employee employee = new Employee(AccionesTabla.obtenerID(tablaEmpleado, 0));
             employee.setName(campoNombre.getText());
             employee.setPaternalSurname(campoApellidoP.getText());
             employee.setMaternalSurname(campoApellidoM.getText());
-            employee.setEmployeeCategory(employeeCategory);
+            employee.setEmployeeCategory(EmployeeCategory.fromString(empleadoCargos.getSelectedItem().toString()));
             int lineasActualizadas;
             lineasActualizadas = this.employeeController
                     .update(employee);
@@ -219,9 +209,9 @@ public class Gestion extends javax.swing.JFrame {
         DefaultComboBoxModel<String> modeloComboBoxCargoEmpleado;
         modeloComboBoxCargoEmpleado = (DefaultComboBoxModel) empleadoCargos.getModel();
         modeloComboBoxCargoEmpleado.addElement("Seleccione un cargo");
-        List<EmployeeCategory> listaCargos = this.employeeCategoryController.getAll();
+        EmployeeCategory[] listaCargos = EmployeeCategory.values();
         for (EmployeeCategory empleadoCategoria : listaCargos) {
-            modeloComboBoxCargoEmpleado.addElement(empleadoCategoria.getCategoryName());
+            modeloComboBoxCargoEmpleado.addElement(empleadoCategoria.getEmployeeCategoryName());
         }
     }
 
