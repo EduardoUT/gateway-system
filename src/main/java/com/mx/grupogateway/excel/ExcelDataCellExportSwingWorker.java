@@ -4,6 +4,7 @@
  */
 package com.mx.grupogateway.excel;
 
+import static com.mx.grupogateway.GlobalLogger.*;
 import com.mx.grupogateway.project.ProjectController;
 import com.mx.grupogateway.purchaseorder.PurchaseOrderController;
 import com.mx.grupogateway.purchaseorder.detail.PurchaseOrderDetailController;
@@ -91,8 +92,14 @@ class ExcelDataCellExportSwingWorker extends SwingWorker<Void, Integer> {
      * @throws Exception
      */
     @Override
-    protected Void doInBackground() throws Exception {
-        exportDataCellExcel();
+    protected Void doInBackground() {
+        try {
+            exportDataCellExcel();
+        } catch (Exception e) {
+            registerLoggerSevere("{0}Error en la exportaci\u00f3n de los datos "
+                    + "de la hoja de Excel: ", e
+            );
+        }
         return null;
     }
 
