@@ -68,7 +68,7 @@ public class EmployeeController implements DataModelForJTable {
                             employee.getPaternalSurname(),
                             employee.getMaternalSurname(),
                             employee.getUser().getId(),
-                            employee.getEmployeeCategory().getCategoryName()
+                            employee.getEmployeeCategory().getEmployeeCategoryName()
                         }
                 );
             }
