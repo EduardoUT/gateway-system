@@ -12,6 +12,7 @@ package com.mx.grupogateway.util;
 public class ValidacionPassword {
 
     private ValidacionPassword() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
     /**
