@@ -4,7 +4,7 @@
  */
 package com.mx.grupogateway.purchaseorder;
 
-import com.mx.grupogateway.config.LoggerConfig;
+import static com.mx.grupogateway.GlobalLogger.*;
 import com.mx.grupogateway.project.Project;
 import com.mx.grupogateway.purchaseorder.detail.PurchaseOrderDetail;
 import com.mx.grupogateway.site.Site;
@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -32,7 +30,6 @@ public class PurchaseOrderImpl extends ConnectionStatus
         implements CreateEntityDAO<PurchaseOrder>, GetAllDAO<PurchaseOrder>,
         GetAllById<Long, String> {
 
-    private static final Logger logger = LoggerConfig.getLogger();
     private static final String ID_PROJECT = "ID_PROJECT";
 
     public PurchaseOrderImpl(Connection con) {
@@ -61,7 +58,7 @@ public class PurchaseOrderImpl extends ConnectionStatus
             preparedStatement.setBigDecimal(7, purchaseOrder.getUnitPrice());
             preparedStatement.execute();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al guardar PurchasOrder: {0}", e.getMessage());
+            registerLoggerSevere("Error al guardar PurchasOrder: {0}", e);
         }
     }
 
@@ -120,20 +117,20 @@ public class PurchaseOrderImpl extends ConnectionStatus
                     purchaseOrderDetail.setLineAmount(resultSet.getBigDecimal("LINE_AMOUNT"));
                     purchaseOrderDetail.setPaymentTerms(resultSet.getString("PAYMENT_TERMS"));
 
-                    PurchaseOrder purchaseOrder = new PurchaseOrder();
-                    purchaseOrder.setPurchaseOrderDetail(purchaseOrderDetail);
-                    purchaseOrder.setProject(project);
-                    purchaseOrder.setPoLineNo(resultSet.getInt("PO_LINE_NO"));
-                    purchaseOrder.setDueQty(resultSet.getBigDecimal("DUE_QTY"));
-                    purchaseOrder.setBilledQty(resultSet.getBigDecimal("BILLED_QTY"));
-                    purchaseOrder.setUnit(resultSet.getString("UNIT"));
-                    purchaseOrder.setUnitPrice(resultSet.getBigDecimal("UNIT_PRICE"));
-
+                    PurchaseOrder purchaseOrder = new PurchaseOrder.PurchaseOrderBuilder()
+                            .withPurchaseOrderDetail(purchaseOrderDetail)
+                            .withProject(project)
+                            .withPoLineNo(resultSet.getInt("PO_LINE_NO"))
+                            .withDueQty(resultSet.getBigDecimal("DUE_QTY"))
+                            .withBilledQty(resultSet.getBigDecimal("BILLED_QTY"))
+                            .withUnit(resultSet.getString("UNIT"))
+                            .withUnitPrice(resultSet.getBigDecimal("UNIT_PRICE"))
+                            .build();
                     purchaseOrders.add(purchaseOrder);
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al consultar PurchasOrder compuesta: {0}", e.getMessage());
+            registerLoggerSevere("Error al consultar PurchasOrder compuesta: {0}", e);
         }
         return purchaseOrders;
     }
@@ -152,13 +149,14 @@ public class PurchaseOrderImpl extends ConnectionStatus
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    PurchaseOrder purchaseOrderProject = new PurchaseOrder();
-                    purchaseOrderProject.setProject(new Project(resultSet.getLong(ID_PROJECT)));
+                    PurchaseOrder purchaseOrderProject = new PurchaseOrder.PurchaseOrderBuilder()
+                            .withProject(new Project(resultSet.getLong(ID_PROJECT)))
+                            .build();
                     purchaseOrderProjectIdentifiers.add(purchaseOrderProject.getProject().getId());
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al consultar PurchasOrder: {0}", e.getMessage());
+            registerLoggerSevere("Error al consultar PurchasOrder: {0}", e);
         }
         return purchaseOrderProjectIdentifiers;
     }
@@ -182,13 +180,10 @@ public class PurchaseOrderImpl extends ConnectionStatus
             preparedStatement.execute();
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
-                    PurchaseOrder purchaseOrder = new PurchaseOrder();
-                    purchaseOrder.setPurchaseOrderDetail(
-                            new PurchaseOrderDetail(resultSet.getString("PO_NO"))
-                    );
-                    purchaseOrder.setProject(
-                            new Project(resultSet.getLong(ID_PROJECT))
-                    );
+                    PurchaseOrder purchaseOrder = new PurchaseOrder.PurchaseOrderBuilder()
+                            .withPurchaseOrderDetail(new PurchaseOrderDetail(resultSet.getString("PO_NO")))
+                            .withProject(new Project(resultSet.getLong(ID_PROJECT)))
+                            .build();
                     purchaseOrderIdentifiers.put(
                             purchaseOrder.getProject().getId(),
                             purchaseOrder.getPurchaseOrderDetail().getId()
@@ -196,7 +191,7 @@ public class PurchaseOrderImpl extends ConnectionStatus
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al consultar PurchasOrder: {0}", e.getMessage());
+            registerLoggerSevere("Error al consultar PurchasOrder: {0}", e);
         }
         return purchaseOrderIdentifiers;
     }
