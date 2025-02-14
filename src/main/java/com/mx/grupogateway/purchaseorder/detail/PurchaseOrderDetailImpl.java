@@ -4,7 +4,7 @@
  */
 package com.mx.grupogateway.purchaseorder.detail;
 
-import com.mx.grupogateway.config.LoggerConfig;
+import static com.mx.grupogateway.GlobalLogger.*;
 import com.mx.grupogateway.config.ConnectionStatus;
 import com.mx.grupogateway.crud.CreateEntityDAO;
 import com.mx.grupogateway.crud.GetAllById;
@@ -16,8 +16,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -26,9 +24,7 @@ import java.util.logging.Logger;
 public class PurchaseOrderDetailImpl extends ConnectionStatus implements
         CreateEntityDAO<PurchaseOrderDetail>, GetAllById<String, String>,
         UpdateEntityDAO<PurchaseOrderDetail> {
-
-    private static final Logger logger = LoggerConfig.getLogger();
-
+    
     public PurchaseOrderDetailImpl(Connection con) {
         super(con);
     }
@@ -55,7 +51,7 @@ public class PurchaseOrderDetailImpl extends ConnectionStatus implements
             preparedStatement.setString(7, purchaseOrderDetail.getPaymentTerms());
             preparedStatement.execute();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al guardar PurchaseOrder: {0}", e.getMessage());
+            registerLoggerSevere("Error al guardar PurchaseOrder: {0}", e);
         }
     }
 
@@ -79,7 +75,7 @@ public class PurchaseOrderDetailImpl extends ConnectionStatus implements
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al consultar PurchaseOrder: {0}", e.getMessage());
+            registerLoggerSevere("Error al consultar PurchaseOrder: {0}", e);
         }
         return purchaseOrders;
     }
@@ -98,7 +94,7 @@ public class PurchaseOrderDetailImpl extends ConnectionStatus implements
             preparedStatement.setString(2, purchaseOrderDetail.getId());
             preparedStatement.execute();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al actualizar PurchaseOrder: {0}", e.getMessage());
+            registerLoggerSevere("Error al actualizar PurchaseOrder: {0}", e);
         }
     }
 }
