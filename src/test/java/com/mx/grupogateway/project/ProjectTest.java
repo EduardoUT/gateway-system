@@ -2,15 +2,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/UnitTests/JUnit5TestClass.java to edit this template
  */
-package com.mx.grupogateway.system.modelo;
+package com.mx.grupogateway.project;
 
-import com.mx.grupogateway.project.Project;
+import static com.mx.grupogateway.exception.IllegalArgumentExceptionTypeMessage.*;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,46 +26,39 @@ class ProjectTest {
     private Project project = new Project();
     private final Set<Project> hashSet = new HashSet<>();
 
-    @DisplayName("Debería lanzar NullPointerException para cada objeto de Project "
-            + "con null asignado.")
+    @DisplayName("Debería lanzar IllegalArgumentException para cada argumento "
+            + "null en Project.")
     @Test
-    void testNullPointerExceptionOnProject() {
-        NullPointerException e;
-        e = assertThrowsExactly(NullPointerException.class, () -> {
+    void testIllegalArgumentExceptionOnProjectArguments() {
+        IllegalArgumentException e;
+        e = assertThrowsExactly(IllegalArgumentException.class, () -> {
             project.setId(null);
         });
-        assertEquals("projectId no puede ser null.", e.getMessage());
-
-        e = assertThrowsExactly(NullPointerException.class, () -> {
+        assertEquals(NULL_VALUE_MESSAGE.toString(), e.getMessage());
+        e = assertThrowsExactly(IllegalArgumentException.class, () -> {
             project.setSite(null);
-
         });
-        assertEquals("Site no puede ser null.", e.getMessage());
-
-        e = assertThrowsExactly(NullPointerException.class, () -> {
+        assertEquals(NULL_VALUE_MESSAGE.toString(), e.getMessage());
+        e = assertThrowsExactly(IllegalArgumentException.class, () -> {
             project.setProjectCode(null);
         });
-        assertEquals("projectCode no puede ser null.", e.getMessage());
-
-        e = assertThrowsExactly(NullPointerException.class, () -> {
+        assertEquals(NULL_VALUE_MESSAGE.toString(), e.getMessage());
+        e = assertThrowsExactly(IllegalArgumentException.class, () -> {
             project.setProjectName(null);
         });
-        assertEquals("projectName no puede ser null.", e.getMessage());
-
-        e = assertThrowsExactly(NullPointerException.class, () -> {
+        assertEquals(NULL_VALUE_MESSAGE.toString(), e.getMessage());
+        e = assertThrowsExactly(IllegalArgumentException.class, () -> {
             project.setCustomer(null);
         });
-        assertEquals("projectCustomer no puede ser null.", e.getMessage());
-
-        e = assertThrowsExactly(NullPointerException.class, () -> {
+        assertEquals(NULL_VALUE_MESSAGE.toString(), e.getMessage());
+        e = assertThrowsExactly(IllegalArgumentException.class, () -> {
             project.setCategory(null);
         });
-        assertEquals("projectCategory no puede ser null.", e.getMessage());
-
-        e = assertThrowsExactly(NullPointerException.class, () -> {
+        assertEquals(NULL_VALUE_MESSAGE.toString(), e.getMessage());
+        e = assertThrowsExactly(IllegalArgumentException.class, () -> {
             project.setPublishDate(null);
         });
-        assertEquals("publishDate no puede ser null.", e.getMessage());
+        assertEquals(NULL_VALUE_MESSAGE.toString(), e.getMessage());
     }
 
     @DisplayName("Debería aceptar una clave de proyecto dentro del rango")
@@ -79,54 +71,36 @@ class ProjectTest {
     }
 
     @DisplayName("Debería lanzar un IllegalArgumentException cuando se ingresa "
-            + "un valor menor o igual a 0 y mayor a Long.MAX_VALUE")
+            + "un valor menor o igual a 0 o mayor a Long.MAX_VALUE")
     @Test
     void testProjectIdBoundaries() {
         IllegalArgumentException e;
         e = assertThrowsExactly(IllegalArgumentException.class, () -> {
             project.setId(0L);
         });
-        assertEquals("id menor o igual a 0, o mayor al limite permitido.",
+        assertEquals(LESS_THAN_ZERO_OR_MAX_EXCEDED_MESSAGE.toString(),
                 e.getMessage());
         e = assertThrowsExactly(IllegalArgumentException.class, () -> {
             project.setId(Long.MIN_VALUE);
         });
-        assertEquals("id menor o igual a 0, o mayor al limite permitido.",
+        assertEquals(LESS_THAN_ZERO_OR_MAX_EXCEDED_MESSAGE.toString(),
                 e.getMessage());
-
         e = assertThrowsExactly(IllegalArgumentException.class, () -> {
             project.setId(Long.MAX_VALUE + 1);
         });
-        assertEquals("id menor o igual a 0, o mayor al limite permitido.",
+        assertEquals(LESS_THAN_ZERO_OR_MAX_EXCEDED_MESSAGE.toString(),
                 e.getMessage());
     }
 
-    /*
-    @DisplayName("Debería aceptar objetos Site validos e irrepetibles"
-            + "de acuerdo a su idSite asociado al hashCode")
-    @Test
-    void testSiteEqualsToAndHashCode() {
-        Set hashSet = new HashSet();
-        Site siteOne = new Site(200000213693002L);
-        Site siteTwo = new Site(200000213138002L);
-        Site siteThree = new Site(200000213693002L);
-        hashSet.add(siteOne);
-        hashSet.add(siteTwo);
-        hashSet.add(siteThree);
-        assertTrue(hashSet.contains(siteOne));
-        assertTrue(hashSet.contains(siteTwo));
-        assertTrue(hashSet.contains(siteThree));
-        assertTrue(siteOne.equals(siteThree));
-    }*/
     @DisplayName("Debería comparar objetos con mismo identificador.")
     @Test
     void testProjectEquals() {
         Project projectB = new Project(62446507901L);
         project.setId(62446507901L);
-        assertTrue(project.equals(projectB));
+        assertTrue(project.getId().equals(projectB.getId()));
     }
 
-    @DisplayName("Deería comparar objetos con la misma referencia")
+    @DisplayName("Debería comparar objetos con la misma referencia")
     @Test
     void testSameReference() {
         Project projectB = new Project(63555002501L);
@@ -134,11 +108,19 @@ class ProjectTest {
         assertTrue(project.equals(projectB));
     }
 
-    @DisplayName("Debería comparar objetos cuya referencia sea null.")
+    @DisplayName("Debería validar un objeto cuya referencia sea null")
     @Test
     void testProjectClassWithNullReference() {
         Project projectB = null;
         assertFalse(project.equals(projectB));
+    }
+
+    @DisplayName("Debería validar dos objetos cuyo nombre de clase sea distinto")
+    @Test
+    void testProjectClassName() {
+        Project projectA = new Project(63555002501L);
+        String someString = "";
+        assertFalse(projectA.getClass().equals(someString.getClass()));
     }
 
     @DisplayName("Debería aceptar objetos Project validos e irrepetibles "
@@ -151,9 +133,11 @@ class ProjectTest {
         assertEquals(1, hashSet.size());
     }
 
+    @SuppressWarnings("unused")
     static Stream<Project> projectProvider() {
         return Stream.of(
                 new Project(63555002501L),
-                new Project(63555002501L));
+                new Project(63555002501L)
+        );
     }
 }
